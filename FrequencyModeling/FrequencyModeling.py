@@ -41,9 +41,8 @@ def build_model():
 
 def execute_model(poisson_model, dataframe):
     y_pred = poisson_model.predict(dataframe)
-    # y_true = df_test["Freq_Act"].values
-    np.savetxt("output.csv", y_pred, delimiter=',')
-    dataframe.to_csv("df_test.csv")
+    np.savetxt("CSV\\output.csv", y_pred, delimiter=',')
+    dataframe.to_csv("CSV\\df_test.csv")
 
 
 df = pd.read_csv("Insurance.csv")
@@ -63,7 +62,7 @@ print(df.shape)
 # on ``X`` via a (scaled) Poisson distribution, and use ``Exposure`` as
 # ``sample_weight``.
 
-df_train, df_test = train_test_split(df, test_size=0.33, random_state=0)
+df_train, df_test = train_test_split(df, test_size=0.30, random_state=0)
 poisson = build_model()
 # drop multiple columns from DataFrame
 # df.drop(df.columns[[0, 1]], axis=1, inplace=True)
