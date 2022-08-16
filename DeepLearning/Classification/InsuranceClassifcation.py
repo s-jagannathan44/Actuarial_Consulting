@@ -91,7 +91,7 @@ def create_output_dataframe():
     GenderYoungestAdditionalDriver = my_input[:, 7]
     BonusMalusProtection = my_input[:, 8]
     DrivingRestriction = my_input[:, 9]
-    GenderYoungestDriver = my_input[10]
+    GenderYoungestDriver = my_input[:, 10]
 
     df = pd.DataFrame({"Make": Make, "GenderMainDriver": Gender, "MaritalMainDriver": MaritalMainDriver,
                        "Use": Use, "PaymentMethod": PaymentMethod, "PaymentFrequency": PaymentFrequency,
