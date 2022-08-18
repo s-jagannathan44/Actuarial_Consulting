@@ -37,7 +37,7 @@ def create_model():
                   metrics=metrics)
 
     model.fit(X_train, y_train, epochs=30, verbose=0)
-    model.save("frequency_ml")
+    model.save("frequency.h5")
     return model
 
 
@@ -153,16 +153,20 @@ y = df[target_column].values
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=40)
 
 # reconstructed_model = create_model()
-var = 0
+var = 1
 if var:
-    reconstructed_model = keras.models.load_model("frequency_ml")
+    reconstructed_model = keras.models.load_model("frequency.h5")
+    reconstructed_model.compile(optimizer='adam',
+                                loss='binary_crossentropy')
+
     # Step 5
     independent_data = X
     dependent_data = y
     y_pred = reconstructed_model.predict(independent_data)
+    np.savetxt("Output\\X_test.csv", independent_data, delimiter=",")
     np.savetxt("Output\\y.csv", dependent_data, delimiter=",")
     np.savetxt("Output\\y_pred.csv", y_pred, delimiter=",")
-
+    print(sum(y_pred))
     # Step 6 ------------------begin--------------------------------
     numeric_column_count = independent_data.shape[1] - len(categorical_columns)
     my_numerical_input = independent_data[:, 0:numeric_column_count]
