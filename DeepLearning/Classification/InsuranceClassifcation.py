@@ -100,6 +100,16 @@ def create_output_dataframe():
                        "GenderYoungestDriver": GenderYoungestDriver})
 
 
+'''
+Traditionally, this would require you to separate the numerical and categorical data and then manually 
+apply the transforms on those groups of features before combining the columns back together 
+in order to fit and evaluate a model.
+Now, you can use the ColumnTransformer to perform this operation for you.
+
+In this code file we have taken the traditional approach.
+Column Transformers have been used in GLM and in Keras Regression 
+'''
+
 # Step 1 read the CSV file
 # Step 2 scale and impute the values
 # Step 3 Map   the values

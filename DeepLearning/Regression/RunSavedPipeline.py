@@ -26,6 +26,17 @@ def fetch_severity():
     return data, target
 
 
+'''
+Traditionally, this would require you to separate the numerical and categorical data and then manually 
+apply the transforms on those groups of features before combining the columns back together 
+in order to fit and evaluate a model.
+Now, you can use the ColumnTransformer to perform this operation for you.
+
+In this code file we have taken used the  Column Transformer.
+The traditional approach has been used in  Insurance Classification 
+'''
+
+
 def build_model():
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, train_size=0.67, random_state=123)
     print(X_train.shape, X_test.shape, Y_train.shape, Y_test.shape)
