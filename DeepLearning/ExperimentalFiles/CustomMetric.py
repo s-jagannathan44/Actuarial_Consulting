@@ -59,7 +59,7 @@ class EarlyStoppingAtMinLoss(Callback):
                 print("Restoring model weights from the end of the best epoch.")
                 print(pred, float(current), loss_percentage)
                 self.model.set_weights(self.best_weights)
-                self.model.save("frequency.h5")
+                self.model.save("Callback.h5")
 
     def on_train_end(self, logs=None):
         if self.stopped_epoch > 0:
@@ -84,7 +84,7 @@ def create_model():
     return model
 
 
-df = pd.read_csv("Input.csv")
+df = pd.read_csv("Output\\Input.csv")
 X = df.iloc[:, :39]
 y = df.iloc[:, 39:]
 
