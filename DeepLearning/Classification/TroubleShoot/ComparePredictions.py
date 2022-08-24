@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import KBinsDiscretizer, OrdinalEncoder
 from tensorflow import keras
 
@@ -19,35 +20,59 @@ def load_predict(filename):
     return float(np.sum(my_model.predict(X)))
 
 
-def transform(data):
-    transformer = ColumnTransformer(
+def impute_missing_values(column_name):
+    imp_mean = SimpleImputer(missing_values=-1, strategy='most_frequent')
+    df.loc[df[column_name].isnull(), column_name] = -1
+    column_values = np.asarray(df[column_name]).reshape(-1, 1)
+    df[column_name] = imp_mean.fit_transform(column_values)
+
+
+def transform():
+    return ColumnTransformer(
         [
-            ("binned_numeric", KBinsDiscretizer(n_bins=10, encode='ordinal', strategy='quantile'), ["VehicleValue"]),
+            ("passthrough_1", "passthrough", ["AnalysisPeriod"]),
+            ("passthrough_8", "passthrough", ["NumberOfDrivers"]),
+            ("passthrough_14", "passthrough", ["VoluntaryExcess"]),
+            ("passthrough_17", "passthrough", ["NumberOfPastClaims"]),
+            ("passthrough_18", "passthrough", ["NumberOfPastConvictions"]),
+            ("passthrough_24", "passthrough", ["ClaimLastYr"]),
+            ("binned_2", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["AgeMainDriver"]),
+            ("binned_3", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["AgeYoungestDriver"]),
+            ("binned_4", KBinsDiscretizer(n_bins=2, encode='ordinal', strategy='quantile'),
+             ["AgeYoungestAdditionalDriver"]),
+            ("binned_9", KBinsDiscretizer(n_bins=2, encode='ordinal', strategy='quantile'), ["VehicleAge"]),
+            ("binned_11", KBinsDiscretizer(n_bins=10, encode='ordinal', strategy='quantile'), ["VehicleValue"]),
+            ("binned_13", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["VehicleMileage"]),
+            ("binned_15", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["BonusMalusYears"]),
+            ("binned_19", KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='quantile'), ["PolicyTenure"]),
             (
                 "onehot_categorical",
                 OrdinalEncoder(),
-                ["GenderMainDriver", "MaritalMainDriver", "Make", "Use", "PaymentMethod", "PaymentFrequency"],
+                ["GenderMainDriver", "GenderYoungestDriver",  "MaritalMainDriver",
+                 "Make", "Use", "PaymentMethod", "PaymentFrequency", "BonusMalusProtection",
+                 "GenderYoungestAdditionalDriver", "VehFuel1"],
             ),
         ],
         remainder='drop'
     )
-    return transformer.fit_transform(data)
 
 
-df = pd.read_csv("Output\\Input.csv")
+df = pd.read_csv("Output\\Input30k.csv")
+impute_missing_values("AgeYoungestAdditionalDriver")
+impute_missing_values("GenderYoungestAdditionalDriver")
 X = df.iloc[:, :39]
 y = df.iloc[:, 39:]
-X = transform(X)
+X = transform().fit_transform(X)
 actual_value = float(np.sum(y))
 
-normal = load_predict("ModelFiles\\Normal.h5")
+normal = load_predict("Output\\Normal_All.h5")
 print("Normal prediction:", normal)
 print("Normal Error:", (abs(normal-actual_value)/actual_value) * 100)
 
-checkpoint = load_predict("ModelFiles\\Checkpoint.h5")
+checkpoint = load_predict("Output\\Checkpoint_All.h5")
 print("Model prediction:", checkpoint)
 print("Model Error:", (abs(checkpoint-actual_value)/actual_value) * 100)
 
-callback = load_predict("ModelFiles\\Callback.h5")
+callback = load_predict("Output\\Callback_All.h5")
 print("Callback  prediction:", callback)
 print("Callback Error:", (abs(callback-actual_value)/actual_value) * 100)

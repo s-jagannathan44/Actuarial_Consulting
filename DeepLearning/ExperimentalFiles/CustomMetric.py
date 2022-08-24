@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense
@@ -59,7 +60,7 @@ class EarlyStoppingAtMinLoss(Callback):
                 print("Restoring model weights from the end of the best epoch.")
                 print(pred, float(current), loss_percentage)
                 self.model.set_weights(self.best_weights)
-                self.model.save("Callback.h5")
+                self.model.save("Output\\Callback_All.h5")
 
     def on_train_end(self, logs=None):
         if self.stopped_epoch > 0:
@@ -69,7 +70,7 @@ class EarlyStoppingAtMinLoss(Callback):
 def create_model():
     # Define the model
     model = Sequential([
-        Dense(500, activation='relu', input_shape=(7,)),
+        Dense(500, activation='relu', input_shape=(24,)),
         Dense(100, activation='relu'),
         Dense(50, activation='relu'),
         Dense(1, activation="sigmoid"),
@@ -78,29 +79,56 @@ def create_model():
     model.compile(optimizer='adam',
                   loss='binary_crossentropy',
                   metrics=my_loss)
-    csv_logger = CSVLogger('training.log')
+    csv_logger = CSVLogger('Output\\training.log')
     model.fit(X_train, y_train, epochs=200, batch_size=100,
               callbacks=[EarlyStoppingAtMinLoss(patience=2), csv_logger])
     return model
 
 
+def impute_missing_values(column_name):
+    imp_mean = SimpleImputer(missing_values=-1, strategy='most_frequent')
+    df.loc[df[column_name].isnull(), column_name] = -1
+    column_values = np.asarray(df[column_name]).reshape(-1, 1)
+    df[column_name] = imp_mean.fit_transform(column_values)
+
+
+def transform():
+    return ColumnTransformer(
+        [
+            ("passthrough_1", "passthrough", ["AnalysisPeriod"]),
+            ("passthrough_8", "passthrough", ["NumberOfDrivers"]),
+            ("passthrough_14", "passthrough", ["VoluntaryExcess"]),
+            ("passthrough_17", "passthrough", ["NumberOfPastClaims"]),
+            ("passthrough_18", "passthrough", ["NumberOfPastConvictions"]),
+            ("passthrough_24", "passthrough", ["ClaimLastYr"]),
+            ("binned_2", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["AgeMainDriver"]),
+            ("binned_3", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["AgeYoungestDriver"]),
+            ("binned_4", KBinsDiscretizer(n_bins=2, encode='ordinal', strategy='quantile'),
+             ["AgeYoungestAdditionalDriver"]),
+            ("binned_9", KBinsDiscretizer(n_bins=2, encode='ordinal', strategy='quantile'), ["VehicleAge"]),
+            ("binned_11", KBinsDiscretizer(n_bins=10, encode='ordinal', strategy='quantile'), ["VehicleValue"]),
+            ("binned_13", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["VehicleMileage"]),
+            ("binned_15", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["BonusMalusYears"]),
+            ("binned_19", KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='quantile'), ["PolicyTenure"]),
+            (
+                "onehot_categorical",
+                OrdinalEncoder(),
+                ["GenderMainDriver", "GenderYoungestDriver",  "MaritalMainDriver",
+                 "Make", "Use", "PaymentMethod", "PaymentFrequency", "BonusMalusProtection",
+                 "GenderYoungestAdditionalDriver", "VehFuel1"],
+            ),
+        ],
+        remainder='drop'
+    )
+
+
 df = pd.read_csv("Output\\Input.csv")
+impute_missing_values("AgeYoungestAdditionalDriver")
+impute_missing_values("GenderYoungestAdditionalDriver")
 X = df.iloc[:, :39]
 y = df.iloc[:, 39:]
 
-transformer = ColumnTransformer(
-    [
-        ("binned_numeric", KBinsDiscretizer(n_bins=10, encode='ordinal', strategy='quantile'), ["VehicleValue"]),
-        (
-            "onehot_categorical",
-            OrdinalEncoder(),
-            ["GenderMainDriver", "MaritalMainDriver", "Make", "Use", "PaymentMethod", "PaymentFrequency"],
-        ),
-    ],
-    remainder='drop'
-)
-
-X = transformer.fit_transform(X)
+X = transform().fit_transform(X)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=40)
 actual_count = np.sum(y_test)
@@ -109,4 +137,3 @@ actual_chance = float(actual_count / total_count)
 
 y_pred_ = np.sum(create_model().predict(X_test))
 print(y_pred_)
-
