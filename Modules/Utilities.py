@@ -82,12 +82,3 @@ passthrough_list = []
 ordinal_list = ["GenderMainDriver", "MaritalMainDriver", "Make", "Use"]
 to_bin_list = [['VehicleValue', 10, 'uniform']]
 
-X, y = fetch_data("Input30k.csv", 5)
-
-X = transform(passthrough_list, to_bin_list, ordinal_list).fit_transform(X)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=40)
-
-# create_model(5, X_train, y_train).save("My_Model.h5")
-load_predict("My_Model.h5", X)
-
-
