@@ -2,10 +2,9 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import KBinsDiscretizer, OrdinalEncoder
 from keras import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Dropout
 from tensorflow import keras
 
 
@@ -22,7 +21,7 @@ def fetch_data(filename, length):
     return data, target
 
 
-def create_model(length, dep, independent):
+def create_model(length, X, y):
     # Define the model
     model = Sequential([
         Dense(500, activation='relu', input_shape=(length,)),
@@ -32,7 +31,37 @@ def create_model(length, dep, independent):
     ])
 
     model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(dep, independent, epochs=200, batch_size=100)
+    model.fit(X, y, epochs=200, batch_size=100)
+    return model
+
+
+def create_classifier_model(length, X, y, metrics):
+    model = Sequential(
+        [
+            keras.layers.Dense(
+                256, activation="relu", input_shape=(length,)
+            ),
+            Dense(256, activation="relu"),
+            Dropout(0.3),
+            Dense(256, activation="relu"),
+            Dropout(0.3),
+            Dense(1, activation="sigmoid"),
+        ]
+    )
+    model.compile(
+        optimizer=keras.optimizers.Adam(1e-2), loss="binary_crossentropy", metrics=metrics
+    )
+    weight_for_0 = 1.0
+    weight_for_1 = 1.0
+    class_weight = {0: weight_for_0, 1: weight_for_1}
+    model.fit(
+        X,
+        y,
+        batch_size=2048,
+        epochs=30,
+        verbose=2,
+        class_weight=class_weight,
+    )
     return model
 
 
@@ -76,9 +105,3 @@ def load_predict(filename, data):
                      loss='mean_squared_error')
     y_pred = my_model.predict(data)
     np.savetxt("y_pred.csv", y_pred, delimiter=",")
-
-
-passthrough_list = []
-ordinal_list = ["GenderMainDriver", "MaritalMainDriver", "Make", "Use"]
-to_bin_list = [['VehicleValue', 10, 'uniform']]
-
