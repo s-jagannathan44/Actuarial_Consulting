@@ -13,6 +13,19 @@ to_bin_list = []
 
 X = Modules.Utilities.transform(passthrough_list, to_bin_list, ordinal_list).fit_transform(X)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=40)
+print("Number of training samples:", X_train.shape[0])
+
+"""
+## Analyze class imbalance in the targets
+"""
+
+counts = np.bincount(y_train.iloc[:, 0])
+print(
+    "Number of positive samples in training data: {} ({:.2f}% of total)".format(
+        counts[1], 100 * float(counts[1]) / len(y_train)
+    )
+)
+
 
 metrics = [
     FalseNegatives(name="fn"),
@@ -22,7 +35,7 @@ metrics = [
     Precision(name="precision"),
     Recall(name="recall"),
 ]
-model = Modules.Utilities.create_classifier_model(24, X_train, y_train, metrics)
+model = Modules.Utilities.create_classifier_model(X_train.shape[1], X_train, y_train, metrics)
 
 
 '''
