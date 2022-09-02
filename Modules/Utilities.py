@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import KBinsDiscretizer, OrdinalEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import KBinsDiscretizer, OrdinalEncoder, MinMaxScaler
 from keras import Sequential
 from keras.layers import Dense, Dropout
 from tensorflow import keras
@@ -105,3 +106,43 @@ def load_predict(filename, data):
                      loss='mean_squared_error')
     y_pred = my_model.predict(data)
     np.savetxt("y_pred.csv", y_pred, delimiter=",")
+
+
+def motor_third_party_transform(freq):
+    freq = freq.drop(['IDpol', 'VehBrand', 'Region'], axis=1)
+    columns = ["Area", "ClaimNb", "Exposure", "VehPower", "VehAge", "DrivAge", "BonusMalus",
+               "VehGas", "Density", 'GroupID']
+
+    freq['VehGas'] = freq['VehGas'].apply(lambda x: 0.5 if x == "'Regular'" else -0.5)
+    area_pipe = Pipeline([
+        ('encoder', OrdinalEncoder()),
+        ('Scaler', MinMaxScaler())
+    ])
+
+    preprocessor = ColumnTransformer(
+        [("area", area_pipe, ["Area"])], remainder='passthrough')
+
+    ct = ColumnTransformer(
+        [("Scaler", MinMaxScaler(), ["VehPower", "VehAge", "DrivAge", "BonusMalus", "Density"]), ],
+        remainder='passthrough'
+    )
+    preprocessor.fit(freq)
+    area_transform = pd.DataFrame(preprocessor.transform(freq), columns=columns)
+    ct.fit(area_transform)
+
+    temp = ct.transform(area_transform)
+    full_columns = ["VehPower", "VehAge", "DrivAge", "BonusMalus", "Density", "Area", "ClaimNb", "Exposure",
+                    "VehGas", "GroupID"]
+    return pd.DataFrame(temp, columns=full_columns)
+
+
+def fetch_xy(dataframe, length):
+    print(dataframe.shape)
+    dataframe.dropna(how="all", axis=1)
+
+    # X is list of input features
+    data = dataframe.iloc[:, 0:length]
+    # Y is label of what we want to predict
+    target = dataframe.iloc[:, length:]
+
+    return data, target
