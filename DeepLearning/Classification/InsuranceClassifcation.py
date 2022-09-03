@@ -2,10 +2,28 @@ import math
 import Modules.Utilities as Ut
 from sklearn.model_selection import GroupShuffleSplit
 import pandas as pd
-import numpy as np
+from keras.metrics import MeanSquaredError, Poisson
+
+
+def data_verification():
+    # Step 6 Check if the proportion of train set to test set is indeed 80:20
+    global train, test
+    train = df_freq_ml.iloc[train_ind]
+    test = df_freq_ml.iloc[test_ind]
+    print("train %age ", len(train) / len(df_freq_ml))
+    print("test %age ", len(test) / len(df_freq_ml))
+    # Step 7 check if the average claims frequencies are similar between train set and test set.
+    # They should be very similar, otherwise that means group shuffle has not been done appropriately.
+    print("training Claim frequency", train['ClaimNb'].sum() / train['Exposure'].sum())
+    print("test Claim frequency", test['ClaimNb'].sum() / test['Exposure'].sum())
+    # Step 8 Check the sum of Exposure and count of ClaimNb in the train and test sets.
+    print(train.groupby(by=['ClaimNb']).agg({'Exposure': ['sum'], 'ClaimNb': ['count']}))
+    print('\n-------------------------\n')
+    print(test.groupby(by=['ClaimNb']).agg({'Exposure': ['sum'], 'ClaimNb': ['count']}))
+
 
 # Step 1 read File
-freq = pd.read_csv('Output\\FMTPL2freq.csv')
+freq = pd.read_csv('Output\\Input.csv')
 print(freq.describe())
 print(freq.corr())
 
@@ -38,7 +56,6 @@ df_freq['BonusMalus'] = df_freq['BonusMalus'].apply(lambda x: 150 if x > 150 els
 df_freq['Density'] = df_freq['Density'].apply(lambda x: round(math.log(x), 2))
 df_freq['Exposure'] = df_freq['Exposure'].apply(lambda x: 1. if x > 1 else x)
 
-
 # Step 4 Normalize the data.
 # we use One hot  encoding for the feature components VehBrand and Region
 # We use the MinMaxScaler for Area (after transforming {A,...,F} ↦ {1,...,6})
@@ -53,31 +70,23 @@ df_freq_ml["Target"] = df_freq_ml['ClaimNb'] / df_freq_ml['Exposure']
 splitter = GroupShuffleSplit(test_size=0.2, n_splits=2, random_state=999)
 split = splitter.split(df_freq_ml, groups=df_freq_ml['GroupID'])
 train_ind, test_ind = next(split)
-train = df_freq_ml.iloc[train_ind]
-test = df_freq_ml.iloc[test_ind]
+data_verification()
 
-# Step 6 Check if the proportion of train set to test set is indeed 80:20
-print("train %age ", len(train) / len(df_freq_ml))
-print("test %age ", len(test) / len(df_freq_ml))
+df_freq_ml = df_freq_ml.drop(['ClaimNb', 'Exposure', 'GroupID'], axis=1)
+# df_freq_ml = df_freq_ml.drop(['BonusMalus', 'Density', 'Area'], axis=1)
 
-# Step 7 check if the average claims frequencies are similar between train set and test set.
-# They should be very similar, otherwise that means group shuffle has not been done appropriately.
-
-print("training Claim frequency", train['ClaimNb'].sum() / train['Exposure'].sum())
-print("test Claim frequency", test['ClaimNb'].sum() / test['Exposure'].sum())
-
-# Step 8 Check the sum of Exposure and count of ClaimNb in the train and test sets.
-print(train.groupby(by=['ClaimNb']).agg({'Exposure': ['sum'], 'ClaimNb': ['count']}))
-print('\n-------------------------\n')
-print(test.groupby(by=['ClaimNb']).agg({'Exposure': ['sum'], 'ClaimNb': ['count']}))
-
-df_freq_ml = df_freq_ml.drop(['ClaimNb', 'Exposure', 'GroupID', 'VehGas'], axis=1)
 train = df_freq_ml.iloc[train_ind]
 test = df_freq_ml.iloc[test_ind]
 
 # print(df_freq_ml.describe())
+# df_freq_ml = df_freq_ml.drop(['ClaimNb', 'Exposure', 'GroupID', 'VehGas'], axis=1)
 df_freq_ml.to_csv("Output\\normalised.csv")
-np.savetxt("Output\\test.csv", test, delimiter=",")
 
-X_train, y_train = Ut.fetch_xy(train, 6)
-X_test, y_test = Ut.fetch_xy(test, 6)
+X_train, y_train = Ut.fetch_xy(train, 7)
+X_test, y_test = Ut.fetch_xy(test, 7)
+
+metrics = [
+    Poisson(name="mean_absolute_percentage_error")]
+
+# model = Ut.create_model(X_train.shape[1], X_train, y_train, metrics)
+# Ut.load_predict("Output\\Checkpoint.h5", X_test)

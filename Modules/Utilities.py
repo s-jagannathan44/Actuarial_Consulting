@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from keras.callbacks import ModelCheckpoint
+from keras.optimizers import  SGD
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
@@ -22,17 +24,17 @@ def fetch_data(filename, length):
     return data, target
 
 
-def create_model(length, X, y):
+def create_model(length, X, y, metrics):
     # Define the model
     model = Sequential([
-        Dense(500, activation='relu', input_shape=(length,)),
-        Dense(100, activation='relu'),
-        Dense(50, activation='relu'),
-        Dense(1, activation="sigmoid"),
+        Dense(7, activation='sigmoid', input_shape=(length,)),
+        Dense(14, activation='relu'),
+        Dense(1, activation='sigmoid'),
     ])
-
-    model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(X, y, epochs=200, batch_size=100)
+    checkpoint = ModelCheckpoint(filepath="Output\\Checkpoint.h5", monitor="mean_absolute_percentage_error", verbose=1,
+                                 save_best_only=True, mode="min")
+    model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.1), loss="poisson", metrics=metrics)
+    model.fit(X, y, epochs=32, batch_size=2048, callbacks=[checkpoint])
     return model
 
 
@@ -105,7 +107,8 @@ def load_predict(filename, data):
     my_model.compile(optimizer='adam',
                      loss='mean_squared_error')
     y_pred = my_model.predict(data)
-    np.savetxt("y_pred.csv", y_pred, delimiter=",")
+    np.savetxt("Output\\y_pred.csv", y_pred, delimiter=",")
+    return y_pred
 
 
 def motor_third_party_transform(freq):

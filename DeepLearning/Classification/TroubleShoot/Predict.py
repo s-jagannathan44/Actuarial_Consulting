@@ -1,63 +1,89 @@
+from keras.metrics import Poisson
+from sklearn.model_selection import train_test_split
 import numpy as np
-import pandas as pd
+import Modules.Utilities as Ut
+
+X, y = Ut.fetch_data("normalised.csv", 6)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=40)
+metrics = [Poisson(name="mean_absolute_percentage_error")]
+model = Ut.create_model(X.shape[1], X_train, y_train, metrics)
+
+np.savetxt("Output\\X_train.csv", X_train, delimiter=",")
+np.savetxt("Output\\y_train.csv", y_train, delimiter=",")
+np.savetxt("Output\\X_test.csv", X_test, delimiter=",")
+np.savetxt("Output\\y_test.csv", y_test, delimiter=",")
+actual = np.sum(y_test)
+''''''
+# X, y = Ut.fetch_data("Output\\X_test.csv", 7)
+# actual = np.sum(y)
+predicted = np.sum(Ut.load_predict("Output\\Checkpoint.h5", X_test))
+
+error = 1 - (predicted / actual)
+
+print("error", float(error) * 100)
+
+# freq = pd.read_csv('Output\\Y_test.csv')
+# print(freq.describe())
+
+'''
+X, y = Ut.fetch_data("FMTPL2.csv", 7)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=40)
+metrics = [Poisson(name="poisson")]
+model = Ut.create_model(X.shape[1], X_train, y_train, metrics)
+'''
+
+'''
+np.savetxt("Output\\X_train.csv", X_train, delimiter=",")
+np.savetxt("Output\\y_train.csv", y_train, delimiter=",")
+np.savetxt("Output\\X_test.csv", X_test, delimiter=",")
+np.savetxt("Output\\y_test.csv", y_test, delimiter=",")
+
+from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import KBinsDiscretizer, OrdinalEncoder
-from tensorflow import keras
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, MinMaxScaler
+import pandas as pd
+import numpy as np
+
+freq = pd.read_csv('Output\\FMTPL2freq.csv')
+freq = freq.drop('IDpol', axis=1)
+categorical = list(freq.select_dtypes('object').columns)
+numerical = list(freq.select_dtypes('int').columns)
+print(freq.dtypes)
+print(f"Categorical columns are: {categorical}")
+categorical = ["VehBrand", "Region"]
+residual = ["VehGas", "Area", "Exposure", ]
+
+columns = ["Area", "ClaimNb", "Exposure", "VehPower", "VehAge", "DrivAge", "BonusMalus", "VehBrand",
+           "VehGas", "Density", "Region"]
+
+freq['VehGas'] = freq['VehGas'].apply(lambda x: 0.5 if x == "'Regular'" else -0.5)
+area_pipe = Pipeline([
+    ('encoder', OrdinalEncoder()),
+    ('Scaler', MinMaxScaler())
+])
+
+preprocessor = ColumnTransformer(
+    [("area", area_pipe, ["Area"])], remainder='passthrough')
+
+ct = ColumnTransformer(
+    # [("onehot_categorical", OneHotEncoder(), ["VehBrand", "Region"]),
+    [("Scaler", MinMaxScaler(), ["VehPower", "VehAge", "DrivAge", "BonusMalus", "Density"]), ],
+    remainder='passthrough'
+)
+preprocessor.fit(freq)
+area_transform = pd.DataFrame(preprocessor.transform(freq), columns=columns)
+ct.fit(area_transform)
 
 
-def my_loss(y_true, y_pred):
-    actual = float(y_true)
-    predicted = float(y_pred)
-    loss = actual - predicted
-    return loss
+cat_columns = ct.named_transformers_['onehot_categorical'].get_feature_names_out(categorical)
+print(f"One hot  columns are: {cat_columns}")
+columns = np.append(numerical, residual)
+columns = np.append(columns, cat_columns)
 
-
-def impute_missing_values(column_name):
-    imp_mean = SimpleImputer(missing_values=-1, strategy='most_frequent')
-    df.loc[df[column_name].isnull(), column_name] = -1
-    column_values = np.asarray(df[column_name]).reshape(-1, 1)
-    df[column_name] = imp_mean.fit_transform(column_values)
-
-
-def transform():
-    return ColumnTransformer(
-        [
-            ("passthrough_1", "passthrough", ["AnalysisPeriod"]),
-            ("passthrough_8", "passthrough", ["NumberOfDrivers"]),
-            ("passthrough_14", "passthrough", ["VoluntaryExcess"]),
-            ("passthrough_17", "passthrough", ["NumberOfPastClaims"]),
-            ("passthrough_18", "passthrough", ["NumberOfPastConvictions"]),
-            ("passthrough_24", "passthrough", ["ClaimLastYr"]),
-            ("binned_2", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["AgeMainDriver"]),
-            ("binned_3", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["AgeYoungestDriver"]),
-            ("binned_4", KBinsDiscretizer(n_bins=2, encode='ordinal', strategy='quantile'),
-             ["AgeYoungestAdditionalDriver"]),
-            ("binned_9", KBinsDiscretizer(n_bins=2, encode='ordinal', strategy='quantile'), ["VehicleAge"]),
-            ("binned_11", KBinsDiscretizer(n_bins=10, encode='ordinal', strategy='quantile'), ["VehicleValue"]),
-            ("binned_13", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["VehicleMileage"]),
-            ("binned_15", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["BonusMalusYears"]),
-            ("binned_19", KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='quantile'), ["PolicyTenure"]),
-            (
-                "onehot_categorical",
-                OrdinalEncoder(),
-                ["GenderMainDriver", "GenderYoungestDriver",  "MaritalMainDriver",
-                 "Make", "Use", "PaymentMethod", "PaymentFrequency", "BonusMalusProtection",
-                 "GenderYoungestAdditionalDriver", "VehFuel1"],
-            ),
-        ],
-        remainder='drop'
-    )
-
-
-df = pd.read_csv("Output\\Input.csv")
-impute_missing_values("AgeYoungestAdditionalDriver")
-impute_missing_values("GenderYoungestAdditionalDriver")
-X = df.iloc[:, :39]
-y = df.iloc[:, 39:]
-X = transform().fit_transform(X)
-
-reconstructed_model = keras.models.load_model("Output\\Normal_All.h5", custom_objects={"my_loss": my_loss})
-reconstructed_model.compile(optimizer='adam',
-                            loss='binary_crossentropy')
-np.savetxt("Output\\y_pred.csv", reconstructed_model.predict(X), delimiter=",")
+temp = ct.transform(area_transform)
+full_columns = ["VehPower", "VehAge", "DrivAge", "BonusMalus", "Density", "Area", "ClaimNb", "Exposure",
+                "VehBrand", "VehGas", "Region"]
+final_transform = pd.DataFrame(temp, columns=full_columns)
+final_transform.to_csv("Output\\final.csv")
+'''
