@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 from keras.callbacks import ModelCheckpoint
-from keras.optimizers import  SGD
+from keras.optimizers import SGD, Adam
+from scikeras.wrappers import KerasRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
@@ -68,6 +69,27 @@ def create_classifier_model(length, X, y, metrics):
     return model
 
 
+def create_severity_model(length, X, y, metrics):
+    # Define the model
+    model = Sequential([
+        Dense(7, activation='relu', input_shape=(length,)),
+        Dense(14, activation='relu'),
+        Dense(1),
+    ])
+    model.compile(optimizer=Adam(learning_rate=0.01), loss="mean_squared_error", metrics=metrics)
+
+    checkpoint = ModelCheckpoint(filepath="Output\\Checkpoint.h5", monitor="mean_absolute_percentage_error", verbose=1,
+                                 save_best_only=True, mode="min")
+    sev_regressor = KerasRegressor(model=model,
+                                   callbacks=[checkpoint],
+                                   batch_size=2048,
+                                   epochs=32,
+                                   verbose=2
+                                   )
+    sev_regressor.fit(X, y)
+    return sev_regressor
+
+
 def impute_missing_values(dataframe, column_name):
     imp_mean = SimpleImputer(missing_values=-1, strategy='most_frequent')
     dataframe.loc[dataframe[column_name].isnull(), column_name] = -1
@@ -102,10 +124,7 @@ def transform(pass_list, bin_list, categorical_list):
     return ct
 
 
-def load_predict(filename, data):
-    my_model = keras.models.load_model(filename)
-    my_model.compile(optimizer='adam',
-                     loss='mean_squared_error')
+def load_predict(my_model, data):
     y_pred = my_model.predict(data)
     np.savetxt("Output\\y_pred.csv", y_pred, delimiter=",")
     return y_pred
@@ -136,6 +155,34 @@ def motor_third_party_transform(freq):
     temp = ct.transform(area_transform)
     full_columns = ["VehPower", "VehAge", "DrivAge", "BonusMalus", "Density", "Area", "ClaimNb", "Exposure",
                     "VehGas", "GroupID"]
+    return pd.DataFrame(temp, columns=full_columns)
+
+
+def motor_third_party_severity_transform(freq):
+    freq = freq.drop(['IDpol', 'VehBrand', 'Region'], axis=1)
+    columns = ["Area", "ClaimNb", "Exposure", "VehPower", "VehAge", "DrivAge", "BonusMalus",
+               "VehGas", "Density", "Claim", 'GroupID']
+
+    freq['VehGas'] = freq['VehGas'].apply(lambda x: 0.5 if x == "'Regular'" else -0.5)
+    area_pipe = Pipeline([
+        ('encoder', OrdinalEncoder()),
+        ('Scaler', MinMaxScaler())
+    ])
+
+    preprocessor = ColumnTransformer(
+        [("area", area_pipe, ["Area"])], remainder='passthrough')
+
+    ct = ColumnTransformer(
+        [("Scaler", MinMaxScaler(), ["VehPower", "VehAge", "DrivAge", "BonusMalus", "Density"]), ],
+        remainder='passthrough'
+    )
+    preprocessor.fit(freq)
+    area_transform = pd.DataFrame(preprocessor.transform(freq), columns=columns)
+    ct.fit(area_transform)
+
+    temp = ct.transform(area_transform)
+    full_columns = ["VehPower", "VehAge", "DrivAge", "BonusMalus", "Density", "Area", "ClaimNb", "Exposure",
+                    "VehGas", "Claim", "GroupID"]
     return pd.DataFrame(temp, columns=full_columns)
 
 
