@@ -5,12 +5,12 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense
 
-df = pd.read_csv("california_housing_train.csv")
+df = pd.read_csv("Output\\cal_housing.csv")
 dataset = df.values
 # X is list of input features
-X = dataset[:, 2:6]
+X = dataset[:, :7]
 # Y is label of what we want to predict
-Y = dataset[:, 8]
+Y = dataset[:, 7:]
 Y = Y.reshape(-1, 1)
 min_max_scaler = preprocessing.MinMaxScaler()
 y_scaler = preprocessing.MinMaxScaler()
@@ -36,8 +36,8 @@ Make predictions
 
 # Define the model
 model = Sequential([
-    Dense(32, activation='relu', input_shape=(4,)),
-    Dense(32, activation='relu'),
+    Dense(7, activation='relu', input_shape=(7,)),
+    Dense(14, activation='relu'),
     Dense(1),  # output layer with one node uses the default or linear activation function (no activation function).
 ])
 
@@ -59,7 +59,7 @@ model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_square
 # Fit the Model
 
 hist = model.fit(X_train, Y_train,
-                 batch_size=32, epochs=100, verbose=2,
+                 batch_size=250, epochs=32, verbose=2,
                  validation_data=(X_val, Y_val))
 # Evaluate the model
 # print accuracy as loss is stored in [0]
@@ -70,6 +70,6 @@ print("evaluate", model.evaluate(X_test, Y_test, verbose=2))
 y_pred = model.predict(X_test)
 y_pred = y_scaler.inverse_transform(y_pred)
 Y_test = y_scaler.inverse_transform(Y_test)
-np.savetxt("output.csv", y_pred, delimiter=',')
-np.savetxt("Y_test.csv", Y_test, delimiter=',')
-np.savetxt("X_test.csv", X_test, delimiter=',')
+np.savetxt("Output\\output.csv", y_pred, delimiter=',')
+np.savetxt("Output\\Y_test.csv", Y_test, delimiter=',')
+np.savetxt("Output\\X_test.csv", X_test, delimiter=',')
