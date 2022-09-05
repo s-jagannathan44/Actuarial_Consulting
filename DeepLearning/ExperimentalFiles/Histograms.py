@@ -5,8 +5,7 @@ from matplotlib import pyplot as plt
 # Generate data on commute times.
 commutes = pd.read_csv("Output\\freq_pred.csv")
 print(commutes.describe(percentiles=[0.25, 0.5, 0.75, 0.85, 0.95, 1]))
-ax = commutes.plot.hist(alpha=0.5, grid=True, bins=50, rwidth=None,
-                        color='#607c8e')
+ax = commutes.plot.hist(alpha=0.5, grid=True, bins=50, rwidth=None)
 plt.title('Histogram for FMTPL Claims <5000')
 plt.xlabel('Claim Amount')
 plt.ylabel('Count')
