@@ -1,92 +1,146 @@
-import math
-import Modules.Utilities as Ut
-from sklearn.model_selection import GroupShuffleSplit
+import numpy as np
 import pandas as pd
-from keras.metrics import MeanSquaredError, Poisson
+import matplotlib.pyplot as plt
+import seaborn as sns
+from imblearn.over_sampling import RandomOverSampler
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report
+from sklearn.preprocessing import LabelEncoder
+from keras import Sequential
+from keras.layers import Dense, Dropout
+from keras.callbacks import EarlyStopping
+from sklearn.metrics import plot_confusion_matrix
+from sklearn.svm import SVC
+from keras.metrics import FalseNegatives, FalsePositives, TrueNegatives, TruePositives, Precision, Recall
 
 
-def data_verification():
-    # Step 6 Check if the proportion of train set to test set is indeed 80:20
-    global train, test
-    train = df_freq_ml.iloc[train_ind]
-    test = df_freq_ml.iloc[test_ind]
-    print("train %age ", len(train) / len(df_freq_ml))
-    print("test %age ", len(test) / len(df_freq_ml))
-    # Step 7 check if the average claims frequencies are similar between train set and test set.
-    # They should be very similar, otherwise that means group shuffle has not been done appropriately.
-    print("training Claim frequency", train['ClaimNb'].sum() / train['Exposure'].sum())
-    print("test Claim frequency", test['ClaimNb'].sum() / test['Exposure'].sum())
-    # Step 8 Check the sum of Exposure and count of ClaimNb in the train and test sets.
-    print(train.groupby(by=['ClaimNb']).agg({'Exposure': ['sum'], 'ClaimNb': ['count']}))
-    print('\n-------------------------\n')
-    print(test.groupby(by=['ClaimNb']).agg({'Exposure': ['sum'], 'ClaimNb': ['count']}))
+df = pd.read_csv("Output\\freq_data.csv")
+print(df.shape)
+print(df.describe())
+print(df.info())
+print(df["Claim"].unique())
+
+# Feature target split
+X = df.drop("Claim", axis=1)
+y = df["Claim"]
+
+print(X.shape)
+print(y.shape)
+
+# Label encoding on target column
+le = LabelEncoder()
+y = le.fit_transform(y)
+# Split categorical and numerical data
+df_num = X.select_dtypes(["int64", "float64"])
+df_cat = X.select_dtypes("object")
+
+# Standard Scaler:- A standard scaler converts a distribution, such that it has 0 mean and 1 standard deviation
+for col in df_num:
+    ss = StandardScaler()
+    df_num[col] = ss.fit_transform(df_num[[col]])
+
+# Categorical data plot
+for col in df_cat:
+    plt.figure()
+    sns.countplot(data=df_cat, x=col)
+    plt.xticks(rotation=90)
+   # plt.show()
 
 
-# Step 1 read File
-freq = pd.read_csv('Output\\Input.csv')
-print(freq.describe())
-print(freq.corr())
+# encoding on categorical column
+df_cat = pd.get_dummies(df_cat)
+# Combine both categorical and numerical data for training
+X = pd.concat([df_num, df_cat], axis=1)
 
-# Step 2 Add group id by clubbing rows which belong to the same policy as one group.
-# This is done by finding all rows which have same values for below columns
-# Area	VehPower	VehAge	Driver Age	BonusMalus	VehBrand	VehGas	Density	Region
-# This is achieved by dropping all columns other than above , finding duplicate rows
-# and then and assigning them the same group id
-# Once the group Ids have been found the new dataframe is merged back into the old data frame using
-# a left outer join and the missing group ids are filled in
+# visualize the target variable
+g = sns.countplot(df['Claim'])
+# fix this NOW
+# g.set_xticklabels([0, 1])
+# plt.show()
 
-df_freq = freq.iloc[freq.drop(['IDpol', 'Exposure', 'ClaimNb'], axis=1).drop_duplicates().index]
-df_freq = df_freq.reset_index(drop=True)
-df_freq['GroupID'] = df_freq.index + 1
-df_freq = pd.merge(freq, df_freq, how='left')
-df_freq['GroupID'] = df_freq['GroupID'].fillna(method='ffill')
-print(df_freq['GroupID'].max())
+# class count for 0 & 1
+class_count_0, class_count_1 = df['Claim'].value_counts()
+
+# Separate class
+class_0 = df[df['Claim'] == 0]
+class_1 = df[df['Claim'] == 1]
+
+# print the shape of the class
+print('class 0:', class_0.shape)
+print('class 1:', class_1.shape)
+
+# oversampling for class 1
+class_1_over = class_1.sample(class_count_0, replace=True)
+
+test_over = pd.concat([class_1_over, class_0], axis=0)
+
+print("total class of 1 and 0:", test_over['Claim'].value_counts())
+
+# plot the count after under-sampling
+test_over['Claim'].value_counts().plot(kind='bar', title='Count (Claim)')
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1)
+
+np.savetxt("Output\\X_train.csv", X_train, delimiter=",")
+np.savetxt("Output\\y_train.csv", y_train, delimiter=",")
+np.savetxt("Output\\X_test.csv", X_test, delimiter=",")
+np.savetxt("Output\\y_test.csv", y_test, delimiter=",")
+
+ros = RandomOverSampler(random_state=42)
+# fit predictor and target variable
+X_train_ros, y_train_ros = ros.fit_resample(X_train, y_train)
+X_test_ros, y_test_ros = ros.fit_resample(X_test, y_test)
+
+print('Original dataset shape', y_train.shape)
+print('New dataset shape', y_train_ros.shape)
+
+print("New feature shape", X_train_ros.shape)
+
+X_test_ros.to_csv("Output\\Files\\X_test_ros.csv")
+y_test_ros.to_csv("Output\\Files\\y_test_ros.csv")
 
 '''
-Step3 We will also simplify the data for our model. In particular, we will adjust the following columns:
-VehAge: cap at 20 years
-DrivAge: cap at 90 years old
-BonusMalus: cap at 150, round to nearest integer
-Density: apply log
-Exposure: cap at 1 year
+np.savetxt("Output\\X_train_ros.csv", X_train_ros, delimiter=",")
+np.savetxt("Output\\y_train_ros.csv", y_train_ros, delimiter=",")
+np.savetxt("Output\\y_test_ros.csv", y_test_ros, delimiter=",")
+np.savetxt("Output\\X_test_ros.csv", X_test_ros, delimiter=",")
 '''
-df_freq['VehAge'] = df_freq['VehAge'].apply(lambda x: 20 if x > 20 else x)
-df_freq['DrivAge'] = df_freq['DrivAge'].apply(lambda x: 90 if x > 90 else x)
-df_freq['BonusMalus'] = df_freq['BonusMalus'].apply(lambda x: 150 if x > 150 else int(x))
-df_freq['Density'] = df_freq['Density'].apply(lambda x: round(math.log(x), 2))
-df_freq['Exposure'] = df_freq['Exposure'].apply(lambda x: 1. if x > 1 else x)
-
-# Step 4 Normalize the data.
-# we use One hot  encoding for the feature components VehBrand and Region
-# We use the MinMaxScaler for Area (after transforming {A,...,F} ↦ {1,...,6})
-# VehPower , VehAge , DrivAge , BonusMalus, Density
-# VehGas we transform to ±1/2 and the volume Exposure 0-1 we keep untransformed
-
-df_freq_ml = Ut.motor_third_party_transform(df_freq)
-df_freq_ml["Target"] = df_freq_ml['ClaimNb'] / df_freq_ml['Exposure']
-
-# Step 5 create  a copy and split  using GroupShuffleSplit instead of train_test_split
-# df_freq_ml = deepcopy(df_freq)
-splitter = GroupShuffleSplit(test_size=0.2, n_splits=2, random_state=999)
-split = splitter.split(df_freq_ml, groups=df_freq_ml['GroupID'])
-train_ind, test_ind = next(split)
-data_verification()
-
-df_freq_ml = df_freq_ml.drop(['ClaimNb', 'Exposure', 'GroupID'], axis=1)
-# df_freq_ml = df_freq_ml.drop(['BonusMalus', 'Density', 'Area'], axis=1)
-
-train = df_freq_ml.iloc[train_ind]
-test = df_freq_ml.iloc[test_ind]
-
-# print(df_freq_ml.describe())
-# df_freq_ml = df_freq_ml.drop(['ClaimNb', 'Exposure', 'GroupID', 'VehGas'], axis=1)
-df_freq_ml.to_csv("Output\\normalised.csv")
-
-X_train, y_train = Ut.fetch_xy(train, 7)
-X_test, y_test = Ut.fetch_xy(test, 7)
+model = Sequential()
+# model.add(Dense(16, activation="relu", input_dim=154))
+model.add(Dense(16, activation="relu", input_dim=48))
+model.add(Dropout(0.5))
+model.add(Dense(16, activation="relu"))
+model.add(Dropout(0.5))
+model.add(Dense(8, activation="relu"))
+model.add(Dropout(0.5))
+model.add(Dense(4, activation="relu"))
+model.add(Dropout(0.5))
+model.add(Dense(1, activation="sigmoid"))
 
 metrics = [
-    Poisson(name="mean_absolute_percentage_error")]
+    FalseNegatives(name="fn"),
+    FalsePositives(name="fp"),
+    TrueNegatives(name="tn"),
+    TruePositives(name="tp"),
+    Precision(name="precision"),
+    Recall(name="recall"),
+]
 
-model = Ut.create_model(X_train.shape[1], X_train, y_train, metrics)
-# Ut.load_predict("Output\\Checkpoint.h5", X_test)
+model.compile(optimizer="adam", loss="binary_crossentropy", metrics=metrics)
+early_stopping = EarlyStopping(monitor="loss", min_delta=0.01, patience=5)
+
+model.fit(X_train_ros, y_train_ros, batch_size=2048, epochs=32)
+
+y_pred = model.predict(X_test_ros)
+np.savetxt("Output\\y_pred.csv", y_pred, delimiter=",")
+y_pred = np.where(y_pred >= 0.5, 1, 0)
+print(classification_report(y_test_ros, y_pred))
+
+'''
+clf = SVC(random_state=1)
+clf.fit(X_train_ros, y_train_ros)
+SVC(random_state=1)
+plot_confusion_matrix(clf, X_test, y_test)
+plt.show()
+'''
