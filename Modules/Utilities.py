@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from keras.callbacks import ModelCheckpoint
-from keras.optimizers import SGD, Adam
+from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.optimizers import SGD
 from scikeras.wrappers import KerasRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -72,18 +72,18 @@ def create_classifier_model(length, X, y, metrics):
 def create_severity_model(length, X, y, metrics):
     # Define the model
     model = Sequential([
-        Dense(7, activation='relu', input_shape=(length,)),
-        Dense(14, activation='relu'),
+        Dense(26, activation='relu', input_shape=(length,)),
+        Dense(52, activation='relu'),
         Dense(1),
     ])
-    model.compile(optimizer=Adam(learning_rate=0.01), loss="mean_squared_error", metrics=metrics)
-
-    checkpoint = ModelCheckpoint(filepath="Output\\Checkpoint.h5", monitor="mean_absolute_percentage_error", verbose=1,
+    model.compile(optimizer="adam", loss="mean_squared_error", metrics=metrics)
+    early_stopping = EarlyStopping(monitor="mse", min_delta=0.01, patience=5)
+    checkpoint = ModelCheckpoint(filepath="Output\\Checkpoint.h5", monitor="mse", verbose=1,
                                  save_best_only=True, mode="min")
     sev_regressor = KerasRegressor(model=model,
-                                   callbacks=[checkpoint],
-                                   batch_size=2048,
-                                   epochs=32,
+                                   callbacks=[early_stopping, checkpoint],
+                                   batch_size=32,
+                                   epochs=100,
                                    verbose=2
                                    )
     sev_regressor.fit(X, y)

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
@@ -58,9 +59,9 @@ model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_square
 
 # Fit the Model
 
-hist = model.fit(X_train, Y_train,
-                 batch_size=250, epochs=32, verbose=2,
-                 validation_data=(X_val, Y_val))
+history = model.fit(X_train, Y_train,
+                    batch_size=250, epochs=32, verbose=2,
+                    validation_data=(X_val, Y_val))
 # Evaluate the model
 # print accuracy as loss is stored in [0]
 # print("history", hist)
@@ -73,3 +74,11 @@ Y_test = y_scaler.inverse_transform(Y_test)
 np.savetxt("Output\\output.csv", y_pred, delimiter=',')
 np.savetxt("Output\\Y_test.csv", Y_test, delimiter=',')
 np.savetxt("Output\\X_test.csv", X_test, delimiter=',')
+
+pyplot.title('Learning Curves')
+pyplot.xlabel('Epoch')
+pyplot.ylabel('Mean Squared Error')
+pyplot.plot(history.history['loss'], label='train')
+pyplot.plot(history.history['val_loss'], label='val')
+pyplot.legend()
+pyplot.show()
