@@ -28,14 +28,15 @@ def fetch_data(filename, length):
 def create_model(length, X, y, metrics):
     # Define the model
     model = Sequential([
-        Dense(7, activation='sigmoid', input_shape=(length,)),
+        Dense(2, activation='sigmoid', input_shape=(length,)),
         Dense(14, activation='relu'),
         Dense(1, activation='sigmoid'),
     ])
-    checkpoint = ModelCheckpoint(filepath="Output\\Checkpoint.h5", monitor="mean_absolute_percentage_error", verbose=1,
+    checkpoint = ModelCheckpoint(filepath="Output\\Checkpoint.h5", monitor="poisson", verbose=1,
                                  save_best_only=True, mode="min")
+    early_stopping = EarlyStopping(monitor="poisson", min_delta=0.00001, patience=5)
     model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.1), loss="poisson", metrics=metrics)
-    model.fit(X, y, epochs=32, batch_size=2048, callbacks=[checkpoint])
+    model.fit(X, y, epochs=1000, batch_size=1000, callbacks=[checkpoint, early_stopping])
     return model
 
 
