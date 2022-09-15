@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.optimizers import SGD
+from matplotlib import pyplot as plt
 from scikeras.wrappers import KerasRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -38,6 +39,30 @@ def create_model(length, X, y, metrics):
     model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.1), loss="poisson", metrics=metrics)
     model.fit(X, y, epochs=1000, batch_size=1000, callbacks=[checkpoint, early_stopping])
     return model
+
+
+def plot_scatter(columns, levels):
+    features = pd.read_csv("Output\\X_test.csv")
+    actual = pd.read_csv("Output\\y_test.csv")
+    predicted = pd.read_csv("Output\\y_pred.csv")
+
+    features['Actual'] = actual
+    features['Predicted'] = predicted
+
+    df_freq = features.iloc[features.drop_duplicates().index]
+    df_freq = df_freq.reset_index(drop=True)
+    df_freq['GroupID'] = df_freq.index + 1
+    df_freq = pd.merge(features, df_freq, how='left')
+    df_freq['GroupID'] = df_freq['GroupID'].fillna(method='ffill')
+    df_freq.set_index("GroupID", inplace=True, drop=True)
+
+    df3 = df_freq.set_index(columns).groupby(level=levels).sum()
+
+    df3.to_csv("Output\\pivot.csv")
+    x = df3["Actual"]
+    y = df3["Predicted"]
+    plt.scatter(x, y)
+    plt.show()
 
 
 def create_classifier_model(length, X, y, metrics):

@@ -58,3 +58,7 @@ frame = pd.DataFrame(X_test, columns=["Gender", "MaritalMainDriver", "DrivingRes
 frame.to_csv("Output\\X_test.csv")
 np.savetxt("Output\\y_test.csv", y_test, delimiter=",")
 np.savetxt("Output\\y_pred.csv", y_pred_, delimiter=",")
+
+columns_ = ['Gender', 'MaritalMainDriver', 'DrivingRestriction', "Make", 'VehFuel1']
+levels_ = [0, 1, 2, 3, 4]
+Ut.plot_scatter(columns_, levels_)
