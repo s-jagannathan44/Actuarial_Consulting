@@ -49,7 +49,8 @@ def plot_scatter(columns, levels):
     features['Actual'] = actual
     features['Predicted'] = predicted
 
-    df_freq = features.iloc[features.drop_duplicates().index]
+    df_freq = features.drop(['Actual', 'Predicted'], axis=1)
+    df_freq = df_freq.iloc[df_freq.drop_duplicates().index]
     df_freq = df_freq.reset_index(drop=True)
     df_freq['GroupID'] = df_freq.index + 1
     df_freq = pd.merge(features, df_freq, how='left')
