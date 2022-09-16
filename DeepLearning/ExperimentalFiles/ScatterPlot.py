@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-freq = pd.read_csv("Output\\X_test.csv")
-df_freq = freq.iloc[freq.drop_duplicates().index]
+freq = pd.read_csv("Output\\df_test.csv")
+df_freq = freq.drop(['Actual', 'Predicted'], axis=1)
+df_freq = df_freq.iloc[df_freq.drop_duplicates().index]
 df_freq = df_freq.reset_index(drop=True)
 df_freq['GroupID'] = df_freq.index + 1
 df_freq = pd.merge(freq, df_freq, how='left')
