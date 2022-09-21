@@ -4,14 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Yet another frequency model from &#10;https://github.com/Priya2216/Insurance_Claim_Prediction-Neural-Network/blob/main/Insurance_prediction.ipynb">
-      <change beforePath="$PROJECT_DIR$/.idea/Actuarial Consulting.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Actuarial Consulting.iml" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Frequency code with Binary Classification and Scatter plot . Please refer to previous check in for Frequency code with Regression and Scatter Plot">
+      <change afterPath="$PROJECT_DIR$/DecisionTrees/CART/DecisionTreeClassifier.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/Classification/Housing.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepLearning/Classification/Housing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/Classification/TroubleShoot/Build.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepLearning/Classification/TroubleShoot/Build.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/Freq_Sev/Frequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepLearning/Freq_Sev/Frequency.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/Freq_Sev/Severity.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepLearning/Freq_Sev/Severity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Modules/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Modules/Utilities.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -326,7 +321,56 @@
       <option name="project" value="LOCAL" />
       <updated>1662527544211</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Baseline code for Freq &amp; Severity">
+      <created>1662637664177</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1662637664177</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Baseline code for Frequency using SGD and ScatterPlot">
+      <created>1663241622473</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1663241622473</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Integrated ScatterPlot Code into Main File so scatter plot is generated everytime model is run">
+      <created>1663244191568</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1663244191568</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Bug Fix">
+      <created>1663317069860</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1663317069860</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Bug Fix">
+      <created>1663317133211</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1663317133211</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Charts">
+      <created>1663317444909</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1663317444909</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Frequency code with Binary Classification and Scatter plot . Please refer to previous check in for Frequency code with Regression and Scatter Plot">
+      <created>1663331956436</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1663331956436</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -353,12 +397,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Renamed ColumnTransform.py to KerasClassifier.py" />
-    <MESSAGE value="Added new Code file which creates a custom metric" />
-    <MESSAGE value="Added new Code file which help in troubleshooting" />
-    <MESSAGE value="Added new Code file which implement CustomCallbacks and Custom metrics" />
-    <MESSAGE value="Code changes for comparing predictions by multiple models" />
-    <MESSAGE value="Rewrote Code to predict Frequency using Neural Networks" />
     <MESSAGE value="Modified code to use 24 columns instead of 7" />
     <MESSAGE value="Added Model  to use 24 columns instead of 7" />
     <MESSAGE value="File which demonstrates use of BinaryAccuracy metric" />
@@ -378,6 +416,12 @@
     <MESSAGE value="Added Line Chart and Modified Histogram" />
     <MESSAGE value="Made changes to Cal_Housing" />
     <MESSAGE value="Yet another frequency model from &#10;https://github.com/Priya2216/Insurance_Claim_Prediction-Neural-Network/blob/main/Insurance_prediction.ipynb" />
-    <option name="LAST_COMMIT_MESSAGE" value="Yet another frequency model from &#10;https://github.com/Priya2216/Insurance_Claim_Prediction-Neural-Network/blob/main/Insurance_prediction.ipynb" />
+    <MESSAGE value="Baseline code for Freq &amp; Severity" />
+    <MESSAGE value="Baseline code for Frequency using SGD and ScatterPlot" />
+    <MESSAGE value="Integrated ScatterPlot Code into Main File so scatter plot is generated everytime model is run" />
+    <MESSAGE value="Bug Fix" />
+    <MESSAGE value="Charts" />
+    <MESSAGE value="Frequency code with Binary Classification and Scatter plot . Please refer to previous check in for Frequency code with Regression and Scatter Plot" />
+    <option name="LAST_COMMIT_MESSAGE" value="Frequency code with Binary Classification and Scatter plot . Please refer to previous check in for Frequency code with Regression and Scatter Plot" />
   </component>
 </project>
