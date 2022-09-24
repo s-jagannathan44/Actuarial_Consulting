@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Frequency code with Binary Classification and Scatter plot . Please refer to previous check in for Frequency code with Regression and Scatter Plot">
-      <change afterPath="$PROJECT_DIR$/DecisionTrees/CART/DecisionTreeClassifier.py" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Setup  Regression trees to use Mean Absolute Error as a Metric">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -370,7 +369,56 @@
       <option name="project" value="LOCAL" />
       <updated>1663331956436</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="Initial Commit of DecisionTreeClassifier using scikit">
+      <created>1663738621121</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1663738621121</updated>
+    </task>
+    <task id="LOCAL-00043" summary="First change to incorporate oversampling">
+      <created>1663760588913</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1663760588913</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Second  change to incorporate predict_proba instead of oversampling">
+      <created>1663821976473</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1663821976473</updated>
+    </task>
+    <task id="LOCAL-00045" summary="3rd change to incorporate Column transformer">
+      <created>1663826323205</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1663826323205</updated>
+    </task>
+    <task id="LOCAL-00046" summary="First implementation of Regression trees">
+      <created>1663928282783</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1663928282783</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Setup  Regression trees to use Mean Absolute Error as a Metric">
+      <created>1663971505463</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1663971505463</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Setup  Regression trees to use Mean Absolute Error as a Metric">
+      <created>1663990268659</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1663990268659</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -397,12 +445,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Modified code to use 24 columns instead of 7" />
-    <MESSAGE value="Added Model  to use 24 columns instead of 7" />
-    <MESSAGE value="File which demonstrates use of BinaryAccuracy metric" />
-    <MESSAGE value="Deleted 6 files related to classification which are no longer required" />
-    <MESSAGE value="Added Utilities file which contains commonly used methods" />
-    <MESSAGE value="Adding Transformed Excel sheet" />
     <MESSAGE value="Added precision and recall definitions" />
     <MESSAGE value="Removed test code" />
     <MESSAGE value="Refactored to use utilities file" />
@@ -422,6 +464,12 @@
     <MESSAGE value="Bug Fix" />
     <MESSAGE value="Charts" />
     <MESSAGE value="Frequency code with Binary Classification and Scatter plot . Please refer to previous check in for Frequency code with Regression and Scatter Plot" />
-    <option name="LAST_COMMIT_MESSAGE" value="Frequency code with Binary Classification and Scatter plot . Please refer to previous check in for Frequency code with Regression and Scatter Plot" />
+    <MESSAGE value="Initial Commit of DecisionTreeClassifier using scikit" />
+    <MESSAGE value="First change to incorporate oversampling" />
+    <MESSAGE value="Second  change to incorporate predict_proba instead of oversampling" />
+    <MESSAGE value="3rd change to incorporate Column transformer" />
+    <MESSAGE value="First implementation of Regression trees" />
+    <MESSAGE value="Setup  Regression trees to use Mean Absolute Error as a Metric" />
+    <option name="LAST_COMMIT_MESSAGE" value="Setup  Regression trees to use Mean Absolute Error as a Metric" />
   </component>
 </project>
