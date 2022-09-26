@@ -103,9 +103,9 @@ def create_severity_model(length, X, y, metrics):
         Dense(52, activation='relu'),
         Dense(1),
     ])
-    model.compile(optimizer="adam", loss="mean_squared_error", metrics=metrics)
-    early_stopping = EarlyStopping(monitor="mse", min_delta=0.01, patience=5)
-    checkpoint = ModelCheckpoint(filepath="Output\\Checkpoint.h5", monitor="mse", verbose=1,
+    model.compile(optimizer="adam", loss="mean_absolute_error", metrics=metrics)
+    early_stopping = EarlyStopping(monitor="mean_absolute_error", min_delta=0.01, patience=5)
+    checkpoint = ModelCheckpoint(filepath="Output\\Severity.h5", monitor="mean_absolute_error", verbose=1,
                                  save_best_only=True, mode="min")
     sev_regressor = KerasRegressor(model=model,
                                    callbacks=[early_stopping, checkpoint],

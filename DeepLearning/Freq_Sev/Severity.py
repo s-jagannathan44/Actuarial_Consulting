@@ -1,9 +1,12 @@
 import math
 import numpy as np
+from keras.optimizers import SGD
+from tensorflow import keras
+
 import Modules.Utilities as Ut
 from sklearn.model_selection import train_test_split
 import pandas as pd
-from keras.metrics import MeanSquaredError
+from keras.metrics import MeanAbsoluteError
 
 
 def data_verification():
@@ -18,7 +21,7 @@ def data_verification():
 
 
 # Step 1 read File
-sev = pd.read_csv('Output\\Sev_1.csv')
+sev = pd.read_csv('Output\\Sev_2.csv')
 
 sev = sev[sev["Claim"] > 0]
 sev = sev.drop(sev[sev["Claim"] > 4000].index)
@@ -36,14 +39,18 @@ data_verification()
 
 
 metrics = [
-    MeanSquaredError(name="mse")]
+    MeanAbsoluteError(name="mean_absolute_error")]
 
-model = Ut.create_severity_model(X_train.shape[1], X_train, y_train, metrics)
-y_pred = model.predict(X_test)
+Ut.create_severity_model(X_train.shape[1], X_train, y_train, metrics)
+my_model = keras.models.load_model("Output\\Severity.h5")
+my_model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.1), loss="mean_absolute_error", metrics=metrics)
+
+
+y_pred = my_model.predict(X)
 np.savetxt("Output\\y_pred.csv", y_pred, delimiter=",")
-np.savetxt("Output\\y_test.csv", y_test, delimiter=",")
-np.savetxt("Output\\X_test.csv", X_test, delimiter=",")
-actual = np.sum(y_test)
+np.savetxt("Output\\y_test.csv", y, delimiter=",")
+np.savetxt("Output\\X_test.csv", X, delimiter=",")
+actual = np.sum(y)
 predicted = np.sum(y_pred)
 
 error = 1 - (predicted / actual)

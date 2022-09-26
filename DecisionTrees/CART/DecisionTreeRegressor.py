@@ -121,6 +121,7 @@ def build_tree(X_val, y_val, alpha):
 def predict_tree(X_val, y_val, tree_):
     # We will predict the output  here
     y_pred_dt_ = tree_.predict(X_val)
+    np.savetxt("Output\\y_pred.csv", y_pred_dt_, delimiter=",")
     # print('r2 score', tree_.score(X_val, y_val))
     print('predicted mean', y_pred_dt_.mean())
     mae_model = mean_absolute_error(y_val, y_pred_dt_)
