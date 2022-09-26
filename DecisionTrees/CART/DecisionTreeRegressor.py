@@ -1,27 +1,30 @@
+import joblib
 import numpy as np
 import pandas as pd
+from sklearn import tree
 from sklearn.compose import ColumnTransformer
-from sklearn.metrics import mean_absolute_error, r2_score, make_scorer
+from sklearn.metrics import mean_absolute_error, make_scorer
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-from sklearn.tree import DecisionTreeRegressor, plot_tree
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
 
 
-def calculate_alpha(X_val, y_val, tree):
+def calculate_alpha(X_val, y_val, tree_):
     # We will calculate cost complexity here
-    path = tree.cost_complexity_pruning_path(X_val, y_val)  # determine values for alpha
+    path = tree_.cost_complexity_pruning_path(X_val, y_val)  # determine values for alpha
     ccp_alphas = path.ccp_alphas  # extract different values of alpha
     ccp_alphas = ccp_alphas[:-1]  # exclude maximum value for alpha
     # create scoring function for MAE to be used with cross_val_score instead of R2
-    mae_scorer = make_scorer(mean_absolute_error, greater_is_better=False)
+    mae__scorer = make_scorer(mean_absolute_error, greater_is_better=False)
     # create an array to store the results of each fold during cross validation
     alpha_loop_values = []
     for ccp_alpha in ccp_alphas:
-        clf_dt = DecisionTreeRegressor(random_state=0, ccp_alpha=ccp_alpha, criterion='absolute_error')
-        scores = cross_val_score(clf_dt, X_val, y_val, cv=10, scoring=mae_scorer)
-        alpha_loop_values.append([ccp_alpha, np.mean(scores), np.std(scores)])
+        if ccp_alpha > 0:
+            clf_dt = DecisionTreeRegressor(random_state=0, ccp_alpha=ccp_alpha, criterion='absolute_error')
+            scores = cross_val_score(clf_dt, X_val, y_val, cv=10, scoring=mae__scorer)
+            alpha_loop_values.append([ccp_alpha, np.mean(scores), np.std(scores)])
     # now we can draw a graph of the means and standard deviations of the scores for each candidate value of alpha
     alpha_results = pd.DataFrame(alpha_loop_values, columns=['alpha', "mean_error", 'std'])
     alpha_results.plot(x='alpha', y='mean_error', yerr='std', marker='o', linestyle='--')
@@ -30,8 +33,31 @@ def calculate_alpha(X_val, y_val, tree):
     return frame["alpha"].iloc[0]
 
 
-def plot_feature_importance():
-    importance = dt.feature_importances_
+def return_best_tree(tree_, X_train_val, y_train_val, y_test_val):
+    # get the mean baseline because this is a regression problem
+    # with regression, the baseline can be as simple as the mean.
+    mean_baseline = y_test_val.mean()
+    y_pred_base = [mean_baseline] * len(y_test_val)
+
+    mae_base = mean_absolute_error(y_test_val, y_pred_base)
+    print(f'Mean Baseline: {mean_baseline:.1f} ')
+    print(f'Baseline mean absolute error: {mae_base}')
+    # print(f'r2 score: {r2_base}')
+    # defining parameter range
+    param_grid = {
+        'max_depth': [3, 4, 5, 6],
+        'min_samples_leaf': [100, 20, 1],
+    }
+    mae_scorer = make_scorer(mean_absolute_error, greater_is_better=False)
+    tree_reg = GridSearchCV(tree_, param_grid, scoring=mae_scorer, cv=5, refit=True, verbose=3, n_jobs=-1)
+    tree_reg.fit(X_train_val, y_train_val)
+    # print best parameter after tuning
+    print(tree_reg.best_params_)
+    return tree_reg.best_estimator_
+
+
+def plot_feature_importance(tree_):
+    importance = tree_.feature_importances_
     print(importance)
     columns = get_columns()
     combo = pd.Series(importance, columns)
@@ -49,7 +75,7 @@ def get_columns():
     return columns
 
 
-def write_output(X_val, actual_val,  pred_val):
+def write_output(X_val, actual_val, pred_val):
     one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_val[:, :4])
     ordinal = transformer.named_transformers_['ordinal'].inverse_transform(X_val[:, 4:])
     one_frame = pd.DataFrame(one_hot, columns=["MaritalMainDriver"])
@@ -64,16 +90,17 @@ def write_output(X_val, actual_val,  pred_val):
     frame.to_csv("Output\\Output.csv")
 
 
-def read_analyze_transform():
-    df_ = pd.read_csv("Output\\Sev_1.csv")
-    for c in df_.columns:
-        print(df_[c].name, df_[c].unique())
+def read_analyze_transform(filename):
+    df_ = pd.read_csv(filename)
+    for c in df_.drop('Claim', axis=1).columns:
+        csv_file_name = "Output\\Columns\\" + c + ".csv"
+        insight = df_[c].value_counts()
+        insight.to_csv(csv_file_name)
     X_ = df_.drop('Claim', axis=1)
     y_ = df_["Claim"]
-    print(X_["GenderMainDriver"].value_counts())
     transformer_ = ColumnTransformer(
-        [("onehot_categorical", OneHotEncoder(), ["MaritalMainDriver"],),
-         ("ordinal", OrdinalEncoder(), ["GenderMainDriver"],),
+        [("onehot_categorical", OneHotEncoder(), ["MaritalMainDriver", "DrivingRestriction", "Make"],),
+         ("ordinal", OrdinalEncoder(), ["GenderMainDriver", "VehFuel1"],),
          ],
         remainder='drop'
     )
@@ -84,46 +111,39 @@ def read_analyze_transform():
 def build_tree(X_val, y_val, alpha):
     dt_ = DecisionTreeRegressor(random_state=42, criterion='absolute_error', ccp_alpha=alpha)
     dt_.fit(X_val, y_val)
-    # We will plot the tree here
-    plt.figure(figsize=(15, 7.5))
-    plot_tree(dt_, filled=True, rounded=True, feature_names=get_columns())
+    # We will export the tree here
+    tree.export_graphviz(dt_, out_file="Output\\tree.png", filled=True, rounded=True, feature_names=get_columns())
+    dt_ = return_best_tree(dt_, X_train, y_train, y_test)
+    joblib.dump(dt_, "SeverityRegressionTree.sav")
     return dt_
 
 
-def predict_tree(X_val, y_val, tree):
+def predict_tree(X_val, y_val, tree_):
     # We will predict the output  here
-    y_pred_dt_ = tree.predict(X_val)
-    print('r2 score', tree.score(X_val, y_val))
+    y_pred_dt_ = tree_.predict(X_val)
+    # print('r2 score', tree_.score(X_val, y_val))
     print('predicted mean', y_pred_dt_.mean())
     mae_model = mean_absolute_error(y_val, y_pred_dt_)
     print(f'Model mean absolute error: {mae_model}')
     return y_pred_dt_
 
 
-#  Part 1 read study and transform the file
-df, X, y, transformer = read_analyze_transform()
+# -------------------- CODE STARTS HERE ---------------------------------------
 
+df, X, y, transformer = read_analyze_transform("Output\\Sev_2.csv")
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=40)
-dt = build_tree(X_train, y_train, 0.0)
+build_tree(X_train, y_train, 0.0)
 
-# get the mean baseline because this is a regression problem
-# with regression, the baseline can be as simple as the mean.
-mean_baseline = y_test.mean()
-y_pred_base = [mean_baseline] * len(y_test)
-r2_base = r2_score(y_test, y_pred_base)
-mae_base = mean_absolute_error(y_test, y_pred_base)
-print(f'Mean Baseline: {mean_baseline:.1f} ')
-print(f'Baseline mean absolute error: {mae_base}')
-print(f'r2 score: {r2_base}')
 
-y_pred_dt = predict_tree(X_test, y_test, dt)
+model = joblib.load("SeverityRegressionTree.sav")
+predict_tree(X, y, model)
 
-alpha_ = calculate_alpha(X_train, y_train, dt)
-dt_pruned = build_tree(X_train, y_train, alpha_)
-y_pred_pruned = predict_tree(X_test, y_test, dt_pruned)
-write_output(X_test, y_test,  y_pred_pruned)
+# alpha_ = calculate_alpha(X_train, y_train, dt)
+# dt_pruned = build_tree(X_train, y_train, alpha_)
+# y_pred_pruned = predict_tree(X_test, y_test, dt_pruned)
+# write_output(X_test, y_test,  y_pred_pruned)
 # plot_feature_importance()
-plt.show()
+# plt.show()
 """
 Why R2 of 0?
 

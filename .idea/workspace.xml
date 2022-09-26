@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Setup  Regression trees to use Mean Absolute Error as a Metric">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/CART/DecisionTreeRegressor.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/CART/DecisionTreeRegressor.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -418,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1663990268659</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="Rewrote code to create and prune trees using cost complexity pruning">
+      <created>1664009161797</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1664009161797</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -445,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Added precision and recall definitions" />
     <MESSAGE value="Removed test code" />
     <MESSAGE value="Refactored to use utilities file" />
     <MESSAGE value="Rewrote Build, Added new methods to Utilities and added CreditCardFraud" />
@@ -470,6 +477,7 @@
     <MESSAGE value="3rd change to incorporate Column transformer" />
     <MESSAGE value="First implementation of Regression trees" />
     <MESSAGE value="Setup  Regression trees to use Mean Absolute Error as a Metric" />
-    <option name="LAST_COMMIT_MESSAGE" value="Setup  Regression trees to use Mean Absolute Error as a Metric" />
+    <MESSAGE value="Rewrote code to create and prune trees using cost complexity pruning" />
+    <option name="LAST_COMMIT_MESSAGE" value="Rewrote code to create and prune trees using cost complexity pruning" />
   </component>
 </project>
