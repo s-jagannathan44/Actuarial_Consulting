@@ -31,11 +31,20 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 
 
+def get_columns():
+    encoder = transformer.named_transformers_['onehot_categorical']
+    columns = encoder.get_feature_names_out()
+    encoder = transformer.named_transformers_['ordinal']
+    ord_columns = encoder.get_feature_names_out()
+    columns = np.append(columns, ord_columns)
+    return columns
+
 # %%
 # Load the data
 # -------------------------------------
 #
 # First we need to load the data.
+
 
 def read_analyze_transform(filename):
     df_ = pd.read_csv(filename)
@@ -49,13 +58,13 @@ def read_analyze_transform(filename):
         [("onehot_categorical", OneHotEncoder(), ["MaritalMainDriver", "DrivingRestriction", "Make"],),
          ("ordinal", OrdinalEncoder(), ["GenderMainDriver", "VehFuel1"],),
          ],
-        remainder='drop'
+        remainder='passthrough'
     )
     X_ = transformer_.fit_transform(X_)
     return df_, X_, y_, transformer_
 
 
-df, X, y, transformer = read_analyze_transform("Output\\Sev_2.csv")
+df, X, y, transformer = read_analyze_transform("Output\\Sev_3.csv")
 # %%
 # Data preprocessing
 # -------------------------------------
@@ -80,6 +89,10 @@ df, X, y, transformer = read_analyze_transform("Output\\Sev_2.csv")
 # :class:`~sklearn.ensemble.GradientBoostingRegressor` ).
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=40)
+X_train = X_train.toarray()
+
+exposure = X_train[:, 49:]
+flat_arr = np.reshape(exposure, 2512)
 params = {
     "n_estimators": 500,
     "max_depth": 4,
