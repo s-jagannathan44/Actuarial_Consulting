@@ -33,7 +33,7 @@ def calculate_alpha(X_val, y_val, tree_):
     return frame["alpha"].iloc[0]
 
 
-def return_best_tree(tree_, X_train_val, y_train_val, y_test_val):
+def return_best_tree(tree_, X_train_val, y_train_val, y_test_val, exposure):
     # get the mean baseline because this is a regression problem
     # with regression, the baseline can be as simple as the mean.
     mean_baseline = y_test_val.mean()
@@ -48,9 +48,10 @@ def return_best_tree(tree_, X_train_val, y_train_val, y_test_val):
         'max_depth': [3, 4, 5, 6],
         'min_samples_leaf': [100, 20, 1],
     }
+    param_dict = {'sample_weight': exposure}
     mae_scorer = make_scorer(mean_absolute_error, greater_is_better=False)
     tree_reg = GridSearchCV(tree_, param_grid, scoring=mae_scorer, cv=5, refit=True, verbose=3, n_jobs=-1)
-    tree_reg.fit(X_train_val, y_train_val)
+    tree_reg.fit(X_train_val, y_train_val, **param_dict)
     # print best parameter after tuning
     print(tree_reg.best_params_)
     return tree_reg.best_estimator_
@@ -67,23 +68,26 @@ def plot_feature_importance(tree_):
 
 
 def get_columns():
+    global ord_col_size, ohe_col_size
     encoder = transformer.named_transformers_['onehot_categorical']
     columns = encoder.get_feature_names_out()
+    ohe_col_size = columns.size
     encoder = transformer.named_transformers_['ordinal']
     ord_columns = encoder.get_feature_names_out()
     columns = np.append(columns, ord_columns)
+    ord_col_size = ord_columns.size
     return columns
 
 
-def write_output(X_val, actual_val, pred_val):
-    one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_val[:, :4])
-    ordinal = transformer.named_transformers_['ordinal'].inverse_transform(X_val[:, 4:])
-    one_frame = pd.DataFrame(one_hot, columns=["MaritalMainDriver"])
-    ordinal_frame = pd.DataFrame(ordinal, columns=["GenderMainDriver"])
+def write_output(X_val, actual_val, pred_val, exposure):
+    one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_val[:, ord_col_size:])
+    ordinal = transformer.named_transformers_['ordinal'].inverse_transform(X_val[:, :ord_col_size])
+    one_frame = pd.DataFrame(one_hot, columns=["MaritalMainDriver", "DrivingRestriction", "Make"])
+    ordinal_frame = pd.DataFrame(ordinal, columns=["GenderMainDriver", "VehFuel1"])
 
     # axis 0 is vertical and axis 1 is horizontal
     output = pd.concat([one_frame, ordinal_frame], axis=1)
-
+    output["Exposure"] = exposure
     frame = pd.DataFrame(output.copy(), columns=df.columns)
     frame["Claim"] = actual_val.to_list()
     frame['Predicted'] = pred_val
@@ -98,10 +102,13 @@ def read_analyze_transform(filename):
         insight.to_csv(csv_file_name)
     X_ = df_.drop('Claim', axis=1)
     y_ = df_["Claim"]
+
     transformer_ = ColumnTransformer(
-        [("onehot_categorical", OneHotEncoder(), ["MaritalMainDriver", "DrivingRestriction", "Make"],),
-         ("ordinal", OrdinalEncoder(), ["GenderMainDriver", "VehFuel1"],),
-         ],
+        [
+            ("passthrough_numeric", "passthrough", ["Exposure"]),
+            ("ordinal", OrdinalEncoder(), ["GenderMainDriver", "VehFuel1"]),
+            ("onehot_categorical", OneHotEncoder(), ["MaritalMainDriver", "DrivingRestriction", "Make"],),
+        ],
         remainder='drop'
     )
     X_ = transformer_.fit_transform(X_)
@@ -110,10 +117,13 @@ def read_analyze_transform(filename):
 
 def build_tree(X_val, y_val, alpha):
     dt_ = DecisionTreeRegressor(random_state=42, criterion='absolute_error', ccp_alpha=alpha)
-    dt_.fit(X_val, y_val)
+    flat_arr = X_val[:, :1]
+    exposure = np.reshape(flat_arr, np.shape(X_val)[0])
+    X_val = X_val[:, 1:]
+    dt_.fit(X_val, y_val, sample_weight=exposure)
     # We will export the tree here
-    tree.export_graphviz(dt_, out_file="Output\\tree.png", filled=True, rounded=True, feature_names=get_columns())
-    dt_ = return_best_tree(dt_, X_train, y_train, y_test)
+    dt_ = return_best_tree(dt_, X_val, y_val, y_val, exposure)
+    tree.export_graphviz(dt_, out_file="Output\\tree.img", filled=True, rounded=True, feature_names=get_columns())
     joblib.dump(dt_, "SeverityRegressionTree.sav")
     return dt_
 
@@ -130,14 +140,22 @@ def predict_tree(X_val, y_val, tree_):
 
 
 # -------------------- CODE STARTS HERE ---------------------------------------
-
-df, X, y, transformer = read_analyze_transform("Output\\Sev_2.csv")
+ord_col_size = ohe_col_size = 0
+df, X, y, transformer = read_analyze_transform("Output\\Sev_3.csv")
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=40)
+X_train = X_train.toarray()
+X = X.toarray()
 build_tree(X_train, y_train, 0.0)
 
+# remove exposure from feature set
+X_train = X_train[:, 1:]
+exposure_arr = X[:, :1]
+test_exposure = np.reshape(exposure_arr, np.shape(X)[0])
+X = X[:, 1:]
 
 model = joblib.load("SeverityRegressionTree.sav")
-predict_tree(X, y, model)
+y_pred = predict_tree(X, y, model)
+write_output(X, y,  y_pred, test_exposure)
 
 # alpha_ = calculate_alpha(X_train, y_train, dt)
 # dt_pruned = build_tree(X_train, y_train, alpha_)
