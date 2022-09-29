@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Baseline code that runs on full file and uses GridSearch ." />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Baseline weight model">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/CART/SeverityRegressionTree.sav" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/CART/SeverityRegressionTree.sav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/GBM/SeverityBoostedTree.sav" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/GBM/SeverityBoostedTree.sav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/GBM/plot_gradient_boosting_regression.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/GBM/plot_gradient_boosting_regression.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -79,62 +84,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Bug fix , Also Added new Excel file with pivot tables">
-      <created>1660638476175</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1660638476175</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Bug fix , Also Added new Excel file with pivot tables">
-      <created>1660638492901</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1660638492901</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Added code to save and load model from file">
-      <created>1660687802939</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1660687802939</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Code changes to identify issue of model predicting different values everytime it is run">
-      <created>1660858221799</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1660858221799</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Add comments to reflect difference between Traditional approach and Column transformer">
-      <created>1660879229508</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1660879229508</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Add new folder to be used for Experimental Code">
-      <created>1660965554053</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1660965554053</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Renamed ColumnTransform.py to KerasClassifier.py">
-      <created>1660969026877</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1660969026877</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Added new Code file which creates a custom metric">
-      <created>1660986463246</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1660986463246</updated>
     </task>
     <task id="LOCAL-00010" summary="Added new Code file which help in troubleshooting">
       <created>1661121972441</created>
@@ -423,7 +372,63 @@
       <option name="project" value="LOCAL" />
       <updated>1664164973465</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="Baseline Rt model">
+      <created>1664165100557</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1664165100557</updated>
+    </task>
+    <task id="LOCAL-00052" summary="Made changes so as to generate baseline MAE data">
+      <created>1664187950760</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1664187950760</updated>
+    </task>
+    <task id="LOCAL-00053" summary="Added GBM Code">
+      <created>1664188015690</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1664188015690</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Added Code which Groups the Claims , Calculates the exposure and the merges the Exposures back into the ungrouped Claims">
+      <created>1664249484074</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1664249484074</updated>
+    </task>
+    <task id="LOCAL-00055" summary="Added weights">
+      <created>1664258920559</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1664258920559</updated>
+    </task>
+    <task id="LOCAL-00056" summary="Added weights">
+      <created>1664374376468</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1664374376468</updated>
+    </task>
+    <task id="LOCAL-00057" summary="With exposure but without weights">
+      <created>1664378732811</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1664378732811</updated>
+    </task>
+    <task id="LOCAL-00058" summary="Baseline weight model">
+      <created>1664437596075</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1664437596075</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -450,13 +455,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Refactored to use utilities file" />
-    <MESSAGE value="Rewrote Build, Added new methods to Utilities and added CreditCardFraud" />
-    <MESSAGE value="Made small changes" />
-    <MESSAGE value="Added code and data files for French motor third party liability (FMTPL)" />
-    <MESSAGE value="Updated Code for FMT" />
-    <MESSAGE value="Final Code for FMT using Poisson" />
-    <MESSAGE value="Added code for Histograms and Severity" />
     <MESSAGE value="Made Changes to Predict" />
     <MESSAGE value="Added Line Chart and Modified Histogram" />
     <MESSAGE value="Made changes to Cal_Housing" />
@@ -475,6 +473,13 @@
     <MESSAGE value="Setup  Regression trees to use Mean Absolute Error as a Metric" />
     <MESSAGE value="Rewrote code to create and prune trees using cost complexity pruning" />
     <MESSAGE value="Baseline code that runs on full file and uses GridSearch ." />
-    <option name="LAST_COMMIT_MESSAGE" value="Baseline code that runs on full file and uses GridSearch ." />
+    <MESSAGE value="Baseline Rt model" />
+    <MESSAGE value="Made changes so as to generate baseline MAE data" />
+    <MESSAGE value="Added GBM Code" />
+    <MESSAGE value="Added Code which Groups the Claims , Calculates the exposure and the merges the Exposures back into the ungrouped Claims" />
+    <MESSAGE value="Added weights" />
+    <MESSAGE value="With exposure but without weights" />
+    <MESSAGE value="Baseline weight model" />
+    <option name="LAST_COMMIT_MESSAGE" value="Baseline weight model" />
   </component>
 </project>
