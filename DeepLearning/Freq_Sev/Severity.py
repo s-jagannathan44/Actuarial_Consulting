@@ -1,6 +1,6 @@
-import math
 import numpy as np
 from keras.optimizers import SGD
+from sklearn.metrics import mean_absolute_error
 from tensorflow import keras
 
 import Modules.Utilities as Ut
@@ -21,17 +21,26 @@ def data_verification():
 
 
 # Step 1 read File
-sev = pd.read_csv('Output\\Sev_2.csv')
+sev = pd.read_csv('Output\\Policies.csv')
 
 sev = sev[sev["Claim"] > 0]
-sev = sev.drop(sev[sev["Claim"] > 4000].index)
-# freq["Claim"] = freq["Claim"].clip(upper=5000)
-print(sev.describe(percentiles=[0.1, 0.25, 0.5, 0.75, 0.95, 0.98, 1]))
-sev.corr().to_csv("Output\\cross_correlation.csv")
 X = sev.drop("Claim", axis=1)
 y = sev["Claim"]
 
-X = pd.get_dummies(X)
+passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess", "NumberOfPastClaims",
+                    "NumberOfPastConvictions", "ClaimLastYr"]
+ordinal_list = ["GenderMainDriver", "GenderYoungestDriver", "MaritalMainDriver",
+                "Make", "Use", "PaymentMethod", "PaymentFrequency", "BonusMalusProtection",
+                "GenderYoungestAdditionalDriver", "VehFuel1"]
+to_bin_list = [['AgeMainDriver', 4, 'uniform'], ['AgeYoungestDriver', 4, 'uniform'],
+               ['AgeYoungestAdditionalDriver', 2, 'uniform'], ['VehicleAge', 2, 'uniform'],
+               ['VehicleValue', 10, 'uniform'], ['VehicleMileage', 4, 'uniform'],
+               ['BonusMalusYears', 4, 'quantile'], ['PolicyTenure', 3, 'quantile']]
+
+X = Ut.impute_missing_values(X, "AgeYoungestAdditionalDriver")
+X = Ut.impute_missing_values(X, "GenderYoungestAdditionalDriver")
+
+X = Ut.transform(passthrough_list, to_bin_list, ordinal_list).fit_transform(X)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=40)
 
@@ -48,12 +57,10 @@ my_model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.1), loss="mean_abs
 
 y_pred = my_model.predict(X)
 np.savetxt("Output\\y_pred.csv", y_pred, delimiter=",")
-np.savetxt("Output\\y_test.csv", y, delimiter=",")
-np.savetxt("Output\\X_test.csv", X, delimiter=",")
 actual = np.sum(y)
 predicted = np.sum(y_pred)
 
 error = 1 - (predicted / actual)
 print("error", float(error) * 100)
+print("MAE", mean_absolute_error(y, y_pred))
 
-#Ut.load_predict("Output\\Checkpoint.h5", X_test)

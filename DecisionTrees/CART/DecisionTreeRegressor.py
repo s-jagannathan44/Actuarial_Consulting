@@ -1,7 +1,6 @@
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn import tree
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import mean_absolute_error, make_scorer
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
@@ -9,6 +8,17 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
+from Modules import Utilities as Ut
+
+passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess", "NumberOfPastClaims",
+                    "NumberOfPastConvictions", "ClaimLastYr"]
+ordinal_list = ["GenderMainDriver", "GenderYoungestDriver", "MaritalMainDriver",
+                "Make", "Use", "PaymentMethod", "PaymentFrequency", "BonusMalusProtection",
+                "GenderYoungestAdditionalDriver", "VehFuel1"]
+to_bin_list = [['AgeMainDriver', 4, 'uniform'], ['AgeYoungestDriver', 4, 'uniform'],
+               ['AgeYoungestAdditionalDriver', 2, 'uniform'], ['VehicleAge', 2, 'uniform'],
+               ['VehicleValue', 10, 'uniform'], ['VehicleMileage', 4, 'uniform'],
+               ['BonusMalusYears', 4, 'quantile'], ['PolicyTenure', 3, 'quantile']]
 
 
 def calculate_alpha(X_val, y_val, tree_):
@@ -89,7 +99,7 @@ def write_output(X_val, actual_val, pred_val, exposure):
     # axis 0 is vertical and axis 1 is horizontal
     output = pd.concat([one_frame, ordinal_frame], axis=1)
     output["Exposure"] = exposure
-    frame = pd.DataFrame(output.copy(), columns=df.columns)
+    frame = pd.DataFrame(output.copy(), columns=sev.columns)
     frame["Claim"] = actual_val.to_list()
     frame['Predicted'] = pred_val
     frame.to_csv("Output\\Output.csv")
@@ -118,13 +128,7 @@ def read_analyze_transform(filename):
 
 def build_tree(X_val, y_val, alpha):
     dt_ = DecisionTreeRegressor(random_state=42, criterion='absolute_error', ccp_alpha=alpha)
-    flat_arr = X_val[:, :1]
-    exposure = np.reshape(flat_arr, np.shape(X_val)[0])
-    X_val = X_val[:, 1:]
-    dt_.fit(X_val, y_val, sample_weight=exposure)
-    # We will export the tree here
-    dt_ = return_best_tree(dt_, X_val, y_val, y_val, exposure)
-    tree.export_graphviz(dt_, out_file="Output\\tree.img", filled=True, rounded=True, feature_names=get_columns())
+    dt_.fit(X_val, y_val)
     joblib.dump(dt_, "SeverityRegressionTree.sav")
     return dt_
 
@@ -133,7 +137,7 @@ def predict_tree(X_val, y_val, tree_):
     # We will predict the output  here
     y_pred_dt_ = tree_.predict(X_val)
     np.savetxt("Output\\y_pred.csv", y_pred_dt_, delimiter=",")
-    # print('r2 score', tree_.score(X_val, y_val))
+    print('Actual mean', y_val.mean())
     print('predicted mean', y_pred_dt_.mean())
     mae_model = mean_absolute_error(y_val, y_pred_dt_)
     print(f'Model mean absolute error: {mae_model}')
@@ -142,34 +146,20 @@ def predict_tree(X_val, y_val, tree_):
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 ord_col_size = ohe_col_size = 0
-df, X, y, transformer = read_analyze_transform("Output\\Sev_3.csv")
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=40)
-X_train = X_train.toarray()
-X = X.toarray()
-build_tree(X_train, y_train, 0.0)
+sev = pd.read_csv('Output\\Policies.csv')
 
-# remove exposure from feature set
-X_train = X_train[:, 1:]
-exposure_arr = X[:, :1]
-test_exposure = np.reshape(exposure_arr, np.shape(X)[0])
-X = X[:, 1:]
+sev = sev[sev["Claim"] > 0]
+X = sev.drop("Claim", axis=1)
+y = sev["Claim"]
+
+X = Ut.impute_missing_values(X, "AgeYoungestAdditionalDriver")
+X = Ut.impute_missing_values(X, "GenderYoungestAdditionalDriver")
+
+transformer = Ut.transform(passthrough_list, to_bin_list, ordinal_list)
+X = transformer.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=40)
+
+# build_tree(X_train, y_train, 0.0)
 
 model = joblib.load("SeverityRegressionTree.sav")
 y_pred = predict_tree(X, y, model)
-write_output(X, y, y_pred, test_exposure)
-
-# alpha_ = calculate_alpha(X_train, y_train, model)
-# dt_pruned = build_tree(X_train, y_train, alpha_)
-# y_pred_pruned = predict_tree(X, y, dt_pruned)
-# write_output(X, y,  y_pred_pruned, test_exposure)
-# plot_feature_importance()
-# plt.show()
-"""
-Why R2 of 0?
-
-From SKLEARN
-
-"A constant model that always predicts the expected value of y, 
-disregarding the input features, would get a R^2 score of 0.0."
- Try out Permutation Importance
-"""

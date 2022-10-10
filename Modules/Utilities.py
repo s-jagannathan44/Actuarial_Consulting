@@ -7,7 +7,7 @@ from scikeras.wrappers import KerasRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import KBinsDiscretizer, OrdinalEncoder, MinMaxScaler
+from sklearn.preprocessing import KBinsDiscretizer, MinMaxScaler, OrdinalEncoder
 from keras import Sequential
 from keras.layers import Dense, Dropout
 from tensorflow import keras
@@ -103,7 +103,7 @@ def create_severity_model(length, X, y, metrics):
         Dense(52, activation='relu'),
         Dense(1),
     ])
-    model.compile(optimizer="adam", loss="mean_absolute_error", metrics=metrics)
+    model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.1), loss="mean_absolute_error", metrics=metrics, )
     early_stopping = EarlyStopping(monitor="mean_absolute_error", min_delta=0.01, patience=5)
     checkpoint = ModelCheckpoint(filepath="Output\\Severity.h5", monitor="mean_absolute_error", verbose=1,
                                  save_best_only=True, mode="min")
