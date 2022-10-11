@@ -4,15 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="wrote code for modeling Data.xls using  XGBoost">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="wrote code for modeling 24 columns">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/CART/DecisionTreeRegressor.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/CART/DecisionTreeRegressor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/CART/SeverityRegressionTree.sav" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/CART/SeverityRegressionTree.sav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/Regression.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/Regression.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/Freq_Sev/Severity.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepLearning/Freq_Sev/Severity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Modules/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Modules/Utilities.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SeverityModeling/Severity.py" beforeDir="false" afterPath="$PROJECT_DIR$/SeverityModeling/Severity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SeverityModeling/SeverityModel.sav" beforeDir="false" afterPath="$PROJECT_DIR$/SeverityModeling/SeverityModel.sav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/BinaryAccuracy.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/CalculateExposure.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/CreditCardFraud/Fraud.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/CustomCallback.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/CustomMetric.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/DictionaryOperations.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/FrenchMotorThirdPartyTransform.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/GridSearchCV.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/Histograms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/KerasClassifier.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/LineChart.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/ModelCheckpoint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/ScatterPlot.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExperimentalFiles/CalculateExposure.py" beforeDir="false" afterPath="$PROJECT_DIR$/ExperimentalFiles/CalculateExposure.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,13 +95,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00016" summary="File which demonstrates use of BinaryAccuracy metric">
-      <created>1661548676084</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1661548676084</updated>
     </task>
     <task id="LOCAL-00017" summary="Deleted 6 files related to classification which are no longer required">
       <created>1661749378335</created>
@@ -432,7 +432,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665387797800</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="wrote code for modeling 24 columns">
+      <created>1665407018470</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1665407018470</updated>
+    </task>
+    <option name="localTasksCounter" value="66" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -459,7 +466,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Baseline code for Frequency using SGD and ScatterPlot" />
     <MESSAGE value="Integrated ScatterPlot Code into Main File so scatter plot is generated everytime model is run" />
     <MESSAGE value="Bug Fix" />
     <MESSAGE value="Charts" />
@@ -484,6 +490,7 @@
     <MESSAGE value="Code that runs on 24 columns" />
     <MESSAGE value="Simple XgBoost and Xgboost with Gridsearch &amp; weights" />
     <MESSAGE value="wrote code for modeling Data.xls using  XGBoost" />
-    <option name="LAST_COMMIT_MESSAGE" value="wrote code for modeling Data.xls using  XGBoost" />
+    <MESSAGE value="wrote code for modeling 24 columns" />
+    <option name="LAST_COMMIT_MESSAGE" value="wrote code for modeling 24 columns" />
   </component>
 </project>

@@ -1,6 +1,6 @@
 import pandas as pd
 
-freq = pd.read_csv("Output\\Sev_2.csv")
+freq = pd.read_csv("Output\\Policies.csv")
 df_freq = freq.drop(['Actual', 'Exposure'], axis=1)
 df_freq = df_freq.iloc[df_freq.drop_duplicates().index]
 df_freq = df_freq.reset_index(drop=True)
