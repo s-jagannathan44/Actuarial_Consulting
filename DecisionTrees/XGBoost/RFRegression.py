@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split, GridSearchCV
 from Modules import Utilities as Ut
-from xgboost import XGBRegressor
+from xgboost import XGBRFRegressor
 
 passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess", "NumberOfPastClaims",
                     "NumberOfPastConvictions", "ClaimLastYr"]
@@ -29,16 +29,16 @@ def return_best_model(estimator):
     # defining parameter range
     param_grid = {
         'max_depth': [2, 3, 4, 5, 6, 7, 8],
-        'learning_rate': [0.1, 0.2, 0.3, 0.4, 0.5],
+        'learning_rate': [0.01, 0.02, 0.03, 0.04, 0.05],
         'n_estimators': [100, 200, 300, 500],
-        'early_stopping_rounds': [10],
-        'eval_metric': ['mae']
+        'eval_metric': ['mae'],
+        'grow_policy': ['depthwise', 'lossguide']
     }
     param_dict = {'eval_set': [(X_val, y_val)], 'verbose': True}
     xgb_reg = GridSearchCV(estimator, param_grid, cv=5, refit=True, verbose=3, n_jobs=-1)
     xgb_reg.fit(X_train, y_train, **param_dict)
     # print best parameter after tuning
-    print(xgb_reg.best_params_, xgb_reg.best_score_)
+    print(xgb_reg.best_params_)
     return xgb_reg.best_estimator_
 
 
@@ -78,7 +78,7 @@ X = Ut.impute_missing_values(X, "GenderYoungestAdditionalDriver")
 transformer = Ut.transform(passthrough_list, to_bin_list, ordinal_list)
 X = transformer.fit_transform(X)
 
-rgr = XGBRegressor(objective='reg:gamma', seed=42)
+rgr = XGBRFRegressor(objective='reg:gamma', seed=42)
 
 X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
 X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)

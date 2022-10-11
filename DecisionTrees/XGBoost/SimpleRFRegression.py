@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from Modules import Utilities as Ut
-from xgboost import XGBRegressor
+from xgboost import XGBRFRegressor
 
 passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess", "NumberOfPastClaims",
                     "NumberOfPastConvictions", "ClaimLastYr"]
@@ -14,32 +14,6 @@ to_bin_list = [['AgeMainDriver', 4, 'uniform'], ['AgeYoungestDriver', 4, 'unifor
                ['AgeYoungestAdditionalDriver', 2, 'uniform'], ['VehicleAge', 2, 'uniform'],
                ['VehicleValue', 10, 'uniform'], ['VehicleMileage', 4, 'uniform'],
                ['BonusMalusYears', 4, 'quantile'], ['PolicyTenure', 3, 'quantile']]
-
-
-def return_best_model(estimator):
-    # get the mean baseline because this is a regression problem
-    # with regression, the baseline can be as simple as the mean.
-    mean_baseline = y_test.mean()
-    y_pred_base = [mean_baseline] * len(y_test)
-
-    mae_base = mean_absolute_error(y_test, y_pred_base)
-    print(f'Mean Baseline: {mean_baseline:.1f} ')
-    print(f'Baseline mean absolute error: {mae_base}')
-    # print(f'r2 score: {r2_base}')
-    # defining parameter range
-    param_grid = {
-        'max_depth': [2, 3, 4, 5, 6, 7, 8],
-        'learning_rate': [0.1, 0.2, 0.3, 0.4, 0.5],
-        'n_estimators': [100, 200, 300, 500],
-        'early_stopping_rounds': [10],
-        'eval_metric': ['mae']
-    }
-    param_dict = {'eval_set': [(X_val, y_val)], 'verbose': True}
-    xgb_reg = GridSearchCV(estimator, param_grid, cv=5, refit=True, verbose=3, n_jobs=-1)
-    xgb_reg.fit(X_train, y_train, **param_dict)
-    # print best parameter after tuning
-    print(xgb_reg.best_params_, xgb_reg.best_score_)
-    return xgb_reg.best_estimator_
 
 
 def get_columns():
@@ -78,15 +52,15 @@ X = Ut.impute_missing_values(X, "GenderYoungestAdditionalDriver")
 transformer = Ut.transform(passthrough_list, to_bin_list, ordinal_list)
 X = transformer.fit_transform(X)
 
-rgr = XGBRegressor(objective='reg:gamma', seed=42)
-
 X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
 X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
 
-model = return_best_model(rgr)
+rgr = XGBRFRegressor(objective='reg:gamma', random_state=42, eval_metric='mae', max_depth=5, missing=0,
+                     learning_rate=0.5, grow_policy='depthwise', n_estimators=300)
+rgr.fit(X_train, y_train, verbose=True, eval_set=[(X_val, y_val)])
 # rgr.save_model('Output\\model.json')
 # rgr.load_model('Output\\model.json')
-y_pred = predict(X_test, y_test, model)
+y_pred = predict(X_test, y_test, rgr)
 Output = pd.DataFrame(columns=['Actual_XGB', 'Predicted_XGB'])
 Output["Actual_XGB"] = y_test
 Output["Predicted_XGB"] = y_pred
