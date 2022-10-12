@@ -1,20 +1,18 @@
 import pandas as pd
 
-freq = pd.read_csv("Output\\Policies.csv")
+freq = pd.read_csv("Output\\Commercial - Input.csv")
 df_freq = freq.drop(['Actual', 'Exposure'], axis=1)
 df_freq = df_freq.iloc[df_freq.drop_duplicates().index]
 df_freq = df_freq.reset_index(drop=True)
 df_freq['GroupID'] = df_freq.index + 1
 temp = df_freq.copy()
 
-
 df_freq = pd.merge(freq, df_freq, how='left')
 df_freq['GroupID'] = df_freq['GroupID'].fillna(method='ffill')
 df_freq.set_index("GroupID", inplace=True, drop=True)
 
-
-df3 = df_freq.set_index(['GenderMainDriver', 'MaritalMainDriver', 'DrivingRestriction', "Make", 'VehFuel1'])\
-    .groupby(level=[0, 1, 2, 3, 4]).sum()
+df3 = df_freq.set_index(['FY', 'TP Pool / Non TP Pool', 'Loss Type', "Make", 'Segment 1', "Product Type 1",
+                         "RTO State - RTO State"]).groupby(level=[0, 1, 2, 3, 4, 5, 6]).sum()
 
 df3["Average_Sev"] = df3["Actual"] / df3["Exposure"]
 df3["Actual"] = df3["Average_Sev"]
