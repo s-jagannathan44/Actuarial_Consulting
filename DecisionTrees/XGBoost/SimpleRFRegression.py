@@ -1,19 +1,13 @@
 import numpy as np
 import pandas as pd
+from sklearn.compose import ColumnTransformer
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
-from Modules import Utilities as Ut
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
 from xgboost import XGBRFRegressor
 
-passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess", "NumberOfPastClaims",
-                    "NumberOfPastConvictions", "ClaimLastYr"]
-ordinal_list = ["GenderMainDriver", "GenderYoungestDriver", "MaritalMainDriver",
-                "Make", "Use", "PaymentMethod", "PaymentFrequency", "BonusMalusProtection",
-                "GenderYoungestAdditionalDriver", "VehFuel1"]
-to_bin_list = [['AgeMainDriver', 4, 'uniform'], ['AgeYoungestDriver', 4, 'uniform'],
-               ['AgeYoungestAdditionalDriver', 2, 'uniform'], ['VehicleAge', 2, 'uniform'],
-               ['VehicleValue', 10, 'uniform'], ['VehicleMileage', 4, 'uniform'],
-               ['BonusMalusYears', 4, 'quantile'], ['PolicyTenure', 3, 'quantile']]
+ordinal_columns = ["TP Pool / Non TP Pool", "FY", "Loss Type"]
+ohe_columns = ["Segment 1", "Make", "Product Type 1", "RTO State - RTO State"]
 
 
 def get_columns():
@@ -28,40 +22,70 @@ def get_columns():
     return columns
 
 
-def predict(X_value, y_value, estimator):
+def get_transformer():
+    ordinal_tuple = ("ordinal", OrdinalEncoder(), ordinal_columns)
+    transformer_ = ColumnTransformer(
+        [("passthrough_numeric", "passthrough", ["Exposure"]), ordinal_tuple,
+         ("onehot_categorical", OneHotEncoder(sparse=False), ohe_columns)],
+        remainder='drop')
+    return transformer_
+
+
+def write_output(X_val, actual_val, pred_val):
+    one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_val[:, ord_col_size:])
+    ordinal = transformer.named_transformers_['ordinal'].inverse_transform(X_val[:, :ord_col_size])
+    one_frame = pd.DataFrame(one_hot, columns=ohe_columns)
+    ordinal_frame = pd.DataFrame(ordinal, columns=ordinal_columns)
+
+    # axis 0 is vertical and axis 1 is horizontal
+    frame = pd.concat([one_frame, ordinal_frame], axis=1)
+    frame["Actual"] = actual_val.to_list()
+    frame['Predicted'] = pred_val
+    frame["Exposure"] = test_exposure
+    frame.to_csv("Output\\Output.csv")
+
+
+def predict(X_val, y_val, estimator):
     # We will predict the output  here
-    y_pred_ = estimator.predict(X_value)
-    print('Actual mean', y_value.mean())
+    y_pred_ = estimator.predict(X_val)
+
+    mean_baseline = y_val.mean()
+    y_pred_base = [mean_baseline] * len(y_val)
+    mae_base = mean_absolute_error(y_val, y_pred_base)
+    print(f'Mean Baseline: {mean_baseline:.1f} ')
+    print(f'Baseline mean absolute error: {mae_base}')
+
     print('predicted mean', y_pred_.mean())
-    mae_model = mean_absolute_error(y_value, y_pred_)
+    mae_model = mean_absolute_error(y_val, y_pred_)
     print(f'Model mean absolute error: {mae_model}')
     return y_pred_
 
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 ord_col_size = ohe_col_size = 0
-sev = pd.read_csv('Output\\Policies.csv')
+df = pd.read_csv("Output\\Commercial - WeightedInput.csv")
+df.drop(df[(df['Actual'] < 1000)].index, inplace=True)
+df.drop(df[(df['Actual'] > 2000000)].index, inplace=True)
 
-sev = sev[sev["Claim"] > 0]
-X = sev.drop("Claim", axis=1)
-y = sev["Claim"]
+transformer = get_transformer()
 
-X = Ut.impute_missing_values(X, "AgeYoungestAdditionalDriver")
-X = Ut.impute_missing_values(X, "GenderYoungestAdditionalDriver")
-
-transformer = Ut.transform(passthrough_list, to_bin_list, ordinal_list)
+X = df.drop('Actual', axis=1)
+y = df["Actual"]
 X = transformer.fit_transform(X)
 
 X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
-X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
+X_test, X_vali, y_test, y_vali = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
 
-rgr = XGBRFRegressor(objective='reg:gamma', random_state=42, eval_metric='mae', max_depth=5, missing=0,
-                     learning_rate=0.5, grow_policy='depthwise', n_estimators=300)
-rgr.fit(X_train, y_train, verbose=True, eval_set=[(X_val, y_val)])
-# rgr.save_model('Output\\model.json')
-# rgr.load_model('Output\\model.json')
+rgr = XGBRFRegressor()
+flat_arr = X_train[:, :1]
+exposure = np.reshape(flat_arr, np.shape(X_train)[0])
+X_train = X_train[:, 1:]
+test_exposure = np.reshape(X_test[:, :1], np.shape(X_test)[0])
+X_test = X_test[:, 1:]
+X_vali = X_vali[:, 1:]
+param_dict = {'sample_weight': exposure, 'verbose': True}
+
+rgr.fit(X_train, y_train, eval_set=[(X_vali, y_vali)], **param_dict)
 y_pred = predict(X_test, y_test, rgr)
-Output = pd.DataFrame(columns=['Actual_XGB', 'Predicted_XGB'])
-Output["Actual_XGB"] = y_test
-Output["Predicted_XGB"] = y_pred
-Output.to_csv("Output\\Output.csv")
+get_columns()
+write_output(X_test, y_test, y_pred)
