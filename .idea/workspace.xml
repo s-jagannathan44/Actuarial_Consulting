@@ -4,22 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="wrote code for modeling 24 columns">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="XGBoost Vs GLM comparison 24 columns">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/BinaryAccuracy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/CalculateExposure.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/CreditCardFraud/Fraud.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/CustomCallback.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/CustomMetric.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/DictionaryOperations.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/FrenchMotorThirdPartyTransform.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/GridSearchCV.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/Histograms.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/KerasClassifier.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/LineChart.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/ModelCheckpoint.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepLearning/ExperimentalFiles/ScatterPlot.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExperimentalFiles/CalculateExposure.py" beforeDir="false" afterPath="$PROJECT_DIR$/ExperimentalFiles/CalculateExposure.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/Regression.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/Regression.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SeverityModeling/Severity.py" beforeDir="false" afterPath="$PROJECT_DIR$/SeverityModeling/Severity.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SeverityModeling/SeverityModel.sav" beforeDir="false" afterPath="$PROJECT_DIR$/SeverityModeling/SeverityModel.sav" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,20 +84,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Deleted 6 files related to classification which are no longer required">
-      <created>1661749378335</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1661749378335</updated>
-    </task>
-    <task id="LOCAL-00018" summary="Added Utilities file which contains commonly used methods">
-      <created>1661765021135</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1661765021135</updated>
     </task>
     <task id="LOCAL-00019" summary="Adding Transformed Excel sheet">
       <created>1661852125793</created>
@@ -439,7 +414,21 @@
       <option name="project" value="LOCAL" />
       <updated>1665407018470</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="moved it out .">
+      <created>1665451860495</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1665451860495</updated>
+    </task>
+    <task id="LOCAL-00067" summary="XGBoost Vs GLM comparison 24 columns">
+      <created>1665494904952</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1665494904952</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -466,8 +455,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Integrated ScatterPlot Code into Main File so scatter plot is generated everytime model is run" />
-    <MESSAGE value="Bug Fix" />
     <MESSAGE value="Charts" />
     <MESSAGE value="Frequency code with Binary Classification and Scatter plot . Please refer to previous check in for Frequency code with Regression and Scatter Plot" />
     <MESSAGE value="Initial Commit of DecisionTreeClassifier using scikit" />
@@ -491,6 +478,8 @@
     <MESSAGE value="Simple XgBoost and Xgboost with Gridsearch &amp; weights" />
     <MESSAGE value="wrote code for modeling Data.xls using  XGBoost" />
     <MESSAGE value="wrote code for modeling 24 columns" />
-    <option name="LAST_COMMIT_MESSAGE" value="wrote code for modeling 24 columns" />
+    <MESSAGE value="moved it out ." />
+    <MESSAGE value="XGBoost Vs GLM comparison 24 columns" />
+    <option name="LAST_COMMIT_MESSAGE" value="XGBoost Vs GLM comparison 24 columns" />
   </component>
 </project>
