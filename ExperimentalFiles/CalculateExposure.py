@@ -1,7 +1,12 @@
 import pandas as pd
 
-freq = pd.read_csv("Output\\Commercial - Input.csv")
-df_freq = freq.drop(['Actual', 'Exposure'], axis=1)
+col_list = ["VehicleValue", "GenderMainDriver", "MaritalMainDriver", "Make", "Use", "PaymentMethod", "PaymentFrequency"]
+full_list = ["VehicleValue", "GenderMainDriver", "MaritalMainDriver", "Make", "Use", "PaymentMethod",
+             "PaymentFrequency", "Exposure"]
+freq = pd.read_csv("Output\\Policies.csv")
+freq = freq[full_list]
+df_freq = freq[col_list]
+
 df_freq = df_freq.iloc[df_freq.drop_duplicates().index]
 df_freq = df_freq.reset_index(drop=True)
 df_freq['GroupID'] = df_freq.index + 1
@@ -11,23 +16,32 @@ df_freq = pd.merge(freq, df_freq, how='left')
 df_freq['GroupID'] = df_freq['GroupID'].fillna(method='ffill')
 df_freq.set_index("GroupID", inplace=True, drop=True)
 
-df3 = df_freq.set_index(['FY', 'TP Pool / Non TP Pool', 'Loss Type', "Make", 'Segment 1', "Product Type 1",
-                         "RTO State - RTO State"]).groupby(level=[0, 1, 2, 3, 4, 5, 6]).sum()
+df3 = df_freq.set_index(col_list).groupby(level=[0, 1, 2, 3, 4, 5, 6]).sum()
 
-df3["Average_Sev"] = df3["Actual"] / df3["Exposure"]
-df3["Actual"] = df3["Average_Sev"]
-df3 = df3.drop(['Average_Sev'], axis=1)
 
 df3.to_csv("Output\\pivot.csv")
 df3 = pd.read_csv("Output\\pivot.csv")
 df_4 = pd.merge(temp, df3, how='left')
 df_4['GroupID'] = df_4['GroupID'].fillna(method='ffill')
+df_4.set_index("GroupID", inplace=True, drop=True)
+df_4["Key"] = df_4["GenderMainDriver"] + df_4["MaritalMainDriver"] + df_4["Make"] + df_4["Use"] \
+              + df_4["PaymentMethod"] + df_4["PaymentFrequency"] + df_4["VehicleValue"].astype(str)
 
-df5 = df_4.merge(df_freq["Exposure"], on='GroupID', how="left")
-df_freq = df_freq.reset_index(drop=True)
-df5["Actual"] = df_freq["Actual"]
-df5["Exposure"] = df5["Exposure_x"]
-df5 = df5.drop(['Exposure_x', 'Exposure_y'], axis=1)
+# df_4.to_csv("Output\\pivot.csv")
 
-df5.set_index("GroupID", inplace=True, drop=True)
-df5.to_csv("Output\\df5.csv")
+freq = pd.read_csv("Output\\Policies.csv")
+full_list = full_list + ["Actual"]
+freq = freq[full_list]
+freq["Key"] = freq["GenderMainDriver"] + freq["MaritalMainDriver"] + freq["Make"] + freq["Use"] \
+              + freq["PaymentMethod"] + freq["PaymentFrequency"] + freq["VehicleValue"].astype(str)
+
+# freq.to_csv("Output\\P.csv")
+
+df = pd.merge(
+    left=freq,
+    right=df_4,
+    on="Key",
+    how='left'
+)
+
+df.to_csv("Output\\df.csv")
