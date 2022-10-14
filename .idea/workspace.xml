@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="XGBoost Vs GLM comparison 24 columns">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Updated to fix issues">
+      <change afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/Tweedie.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/Regression.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/Regression.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SeverityModeling/Severity.py" beforeDir="false" afterPath="$PROJECT_DIR$/SeverityModeling/Severity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SeverityModeling/SeverityModel.sav" beforeDir="false" afterPath="$PROJECT_DIR$/SeverityModeling/SeverityModel.sav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LossCostViaTweedie/Tweedie.py" beforeDir="false" afterPath="$PROJECT_DIR$/LossCostViaTweedie/Tweedie.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,48 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00019" summary="Adding Transformed Excel sheet">
-      <created>1661852125793</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1661852125793</updated>
-    </task>
-    <task id="LOCAL-00020" summary="Added precision and recall definitions">
-      <created>1661898496421</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1661898496421</updated>
-    </task>
-    <task id="LOCAL-00021" summary="Removed test code">
-      <created>1661899694835</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1661899694835</updated>
-    </task>
-    <task id="LOCAL-00022" summary="Refactored to use utilities file">
-      <created>1661900896293</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1661900896293</updated>
-    </task>
-    <task id="LOCAL-00023" summary="Rewrote Build, Added new methods to Utilities and added CreditCardFraud">
-      <created>1661941836426</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1661941836426</updated>
-    </task>
-    <task id="LOCAL-00024" summary="Made small changes">
-      <created>1661945373617</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1661945373617</updated>
     </task>
     <task id="LOCAL-00025" summary="Added code and data files for French motor third party liability (FMTPL)">
       <created>1662033435808</created>
@@ -428,7 +385,49 @@
       <option name="project" value="LOCAL" />
       <updated>1665494904952</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="XGBoost Vs GLM comparison for Data.xls">
+      <created>1665547145624</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1665547145624</updated>
+    </task>
+    <task id="LOCAL-00069" summary="Added Weights and created models for Data.xls">
+      <created>1665572721263</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1665572721264</updated>
+    </task>
+    <task id="LOCAL-00070" summary="Added Weights and created Random forest model for Data.xls">
+      <created>1665576323577</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1665576323577</updated>
+    </task>
+    <task id="LOCAL-00071" summary="deleted redundant files">
+      <created>1665626488199</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1665626488200</updated>
+    </task>
+    <task id="LOCAL-00072" summary="reorganised files in Modeling_Files">
+      <created>1665630687709</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1665630687709</updated>
+    </task>
+    <task id="LOCAL-00073" summary="Updated to fix issues">
+      <created>1665713987660</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1665713987660</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -455,12 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Charts" />
-    <MESSAGE value="Frequency code with Binary Classification and Scatter plot . Please refer to previous check in for Frequency code with Regression and Scatter Plot" />
-    <MESSAGE value="Initial Commit of DecisionTreeClassifier using scikit" />
-    <MESSAGE value="First change to incorporate oversampling" />
-    <MESSAGE value="Second  change to incorporate predict_proba instead of oversampling" />
-    <MESSAGE value="3rd change to incorporate Column transformer" />
     <MESSAGE value="First implementation of Regression trees" />
     <MESSAGE value="Setup  Regression trees to use Mean Absolute Error as a Metric" />
     <MESSAGE value="Rewrote code to create and prune trees using cost complexity pruning" />
@@ -480,6 +473,12 @@
     <MESSAGE value="wrote code for modeling 24 columns" />
     <MESSAGE value="moved it out ." />
     <MESSAGE value="XGBoost Vs GLM comparison 24 columns" />
-    <option name="LAST_COMMIT_MESSAGE" value="XGBoost Vs GLM comparison 24 columns" />
+    <MESSAGE value="XGBoost Vs GLM comparison for Data.xls" />
+    <MESSAGE value="Added Weights and created models for Data.xls" />
+    <MESSAGE value="Added Weights and created Random forest model for Data.xls" />
+    <MESSAGE value="deleted redundant files" />
+    <MESSAGE value="reorganised files in Modeling_Files" />
+    <MESSAGE value="Updated to fix issues" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated to fix issues" />
   </component>
 </project>
