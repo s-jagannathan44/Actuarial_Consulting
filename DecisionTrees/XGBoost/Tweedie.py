@@ -42,6 +42,7 @@ def write_output(X_val, actual_val, pred_val):
     frame["Actual"] = actual_val.to_list()
     frame['Predicted'] = pred_val
     frame["Exposure"] = test_exposure
+    frame["Error"] = abs(frame["Actual"] - frame["Predicted"])
     frame.to_csv("Output\\Output.csv")
 
 
@@ -91,3 +92,10 @@ rgr.fit(X_train, y_train, **param_dict)
 y_pred = predict(X_test, y_test, rgr)
 get_columns()
 write_output(X_test, y_test, y_pred)
+
+df = pd.read_csv("Output\\Output.csv")
+df = df[df["Actual"] > 0]
+df["%ageError"] = df["Error"] / df["Actual"]
+df["Below%% "] = df[df["%ageError"] < 0.05].shape[0] / df.shape[0]
+df.to_csv("Output\\WithError.csv")
+print(df[df["%ageError"] < 0.05].shape[0] / df.shape[0])
