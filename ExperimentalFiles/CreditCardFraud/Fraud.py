@@ -21,7 +21,7 @@ to train a classification model on data with highly imbalanced classes.
 import numpy as np
 
 # Get the real data from https://www.kaggle.com/mlg-ulb/creditcardfraud/
-fname = "creditcard.csv"
+fname = "Output\\creditcard.csv"
 
 all_features = []
 all_targets = []

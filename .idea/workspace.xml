@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Weighted Tweedie">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Updated Tweedie to calculate % with less than 5% error">
+      <change afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/Tweedie.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/Tweedie.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExperimentalFiles/CreditCardFraud/Fraud.py" beforeDir="false" afterPath="$PROJECT_DIR$/ExperimentalFiles/CreditCardFraud/Fraud.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00026" summary="Added code and data files for French motor third party liability (FMTPL)">
-      <created>1662118174314</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1662118174314</updated>
     </task>
     <task id="LOCAL-00027" summary="Updated Code for FMT">
       <created>1662155347499</created>
@@ -426,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665721847353</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="Updated Tweedie to calculate % with less than 5% error">
+      <created>1665744322063</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1665744322063</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Setup  Regression trees to use Mean Absolute Error as a Metric" />
     <MESSAGE value="Rewrote code to create and prune trees using cost complexity pruning" />
     <MESSAGE value="Baseline code that runs on full file and uses GridSearch ." />
     <MESSAGE value="Baseline Rt model" />
@@ -478,6 +478,7 @@
     <MESSAGE value="reorganised files in Modeling_Files" />
     <MESSAGE value="Updated to fix issues" />
     <MESSAGE value="Weighted Tweedie" />
-    <option name="LAST_COMMIT_MESSAGE" value="Weighted Tweedie" />
+    <MESSAGE value="Updated Tweedie to calculate % with less than 5% error" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated Tweedie to calculate % with less than 5% error" />
   </component>
 </project>
