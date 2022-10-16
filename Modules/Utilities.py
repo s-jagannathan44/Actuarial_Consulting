@@ -158,9 +158,9 @@ def load_predict(my_model, data):
 
 
 def motor_third_party_transform(freq):
-    freq = freq.drop(['IDpol', 'VehBrand', 'Region'], axis=1)
-    columns = ["Area", "ClaimNb", "Exposure", "VehPower", "VehAge", "DrivAge", "BonusMalus",
-               "VehGas", "Density", 'GroupID']
+    freq = freq.drop(['VehBrand', 'Region'], axis=1)
+    columns = ["ClaimNb", "Exposure", "Area", "VehPower", "VehAge", "DrivAge", "BonusMalus",
+               "VehGas", "Density", 'Claim', 'GroupID']
 
     freq['VehGas'] = freq['VehGas'].apply(lambda x: 0.5 if x == "'Regular'" else -0.5)
     area_pipe = Pipeline([
@@ -181,7 +181,7 @@ def motor_third_party_transform(freq):
 
     temp = ct.transform(area_transform)
     full_columns = ["VehPower", "VehAge", "DrivAge", "BonusMalus", "Density", "Area", "ClaimNb", "Exposure",
-                    "VehGas", "GroupID"]
+                    "VehGas", "Claim", "GroupID"]
     return pd.DataFrame(temp, columns=full_columns)
 
 
