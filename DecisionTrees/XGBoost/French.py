@@ -1,7 +1,7 @@
 import math
 from matplotlib import pyplot
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import GroupShuffleSplit
+from sklearn.model_selection import GroupShuffleSplit, GridSearchCV
 from xgboost import XGBRegressor, plot_importance
 import Modules.Utilities as Ut
 import pandas as pd
@@ -71,16 +71,28 @@ def write_output(actual_val, pred_val):
     frame['Predicted'] = pred_val
     frame["Error"] = abs(frame["Actual"] - frame["Predicted"])
     frame["%ageError"] = frame["Error"] / frame["Actual"]
-    frame["Below%% "] = frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]
-    print(frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0])
+    frame["Below5% "] = frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]
+    print((frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]) * 100)
     frame.to_csv("Output\\Output.csv")
 
 
+def gridsearch(rgr):
+    param_grid = \
+        {
+            'max_depth': [5, 6]
+        }
+    model = GridSearchCV(rgr, param_grid, cv=10, scoring="neg_mean_absolute_error", refit=True, verbose=3, n_jobs=-1)
+    model.fit(X_train, y_train)
+    print(model.best_params_)
+    return model.best_estimator_
+
+
 X_train, y_train, X_test, y_test = read_transform()
-rgr = XGBRegressor(objective='reg:gamma', seed=42, eval_metric='mae', max_depth=5,
-                   learning_rate=0.1, n_estimators=300)
-rgr.fit(X_train, y_train)
-plot_importance(rgr)
-pyplot.show()
-y_pred = predict(X_test, y_test, rgr)
+estimator = XGBRegressor(objective='reg:gamma', seed=42, eval_metric='mae', max_depth=6,
+                         learning_rate=0.1, n_estimators=300)
+# estimator.fit(X_train, y_train )
+estimator_ = gridsearch(estimator)
+plot_importance(estimator_)
+y_pred = predict(X_test, y_test, estimator_)
 write_output(y_test, y_pred)
+pyplot.show()

@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Credit Card fraud classification models">
-      <change afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/French.py" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="French Motor third party regression model">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Modules/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Modules/Utilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/CART/SeverityRegressionTree.sav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/GBM/SeverityBoostedTree.sav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/French.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/French.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,13 +84,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00028" summary="Final Code for FMT using Poisson">
-      <created>1662209054631</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1662209054631</updated>
     </task>
     <task id="LOCAL-00029" summary="Final Code for FMT using Poisson">
       <created>1662209275621</created>
@@ -427,7 +421,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665837620115</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <task id="LOCAL-00077" summary="French Motor third party regression model">
+      <created>1665903773528</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1665903773528</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,7 +455,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Baseline code that runs on full file and uses GridSearch ." />
     <MESSAGE value="Baseline Rt model" />
     <MESSAGE value="Made changes so as to generate baseline MAE data" />
     <MESSAGE value="Added GBM Code" />
@@ -479,6 +479,7 @@
     <MESSAGE value="Weighted Tweedie" />
     <MESSAGE value="Updated Tweedie to calculate % with less than 5% error" />
     <MESSAGE value="Credit Card fraud classification models" />
-    <option name="LAST_COMMIT_MESSAGE" value="Credit Card fraud classification models" />
+    <MESSAGE value="French Motor third party regression model" />
+    <option name="LAST_COMMIT_MESSAGE" value="French Motor third party regression model" />
   </component>
 </project>
