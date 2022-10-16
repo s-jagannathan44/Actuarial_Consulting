@@ -38,6 +38,7 @@ def read_transform():
     df['Exposure'] = df['Exposure'].apply(lambda x: 1 if x > 1 else x)
     df_freq_ml = Ut.motor_third_party_transform(df)
     df_freq_ml = df_freq_ml[df_freq_ml["Claim"] > 0]
+
     df_freq_ml["Target"] = df_freq_ml['Claim'] / df_freq_ml['ClaimNb']
     splitter = GroupShuffleSplit(test_size=0.2, n_splits=2, random_state=999)
     split = splitter.split(df_freq_ml, groups=df_freq_ml['GroupID'])
@@ -71,7 +72,7 @@ def write_output(actual_val, pred_val):
     frame['Predicted'] = pred_val
     frame["Error"] = abs(frame["Actual"] - frame["Predicted"])
     frame["%ageError"] = frame["Error"] / frame["Actual"]
-    frame["Below5% "] = frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]
+    frame["Below5%"] = frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]
     print((frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]) * 100)
     frame.to_csv("Output\\Output.csv")
 
@@ -79,7 +80,7 @@ def write_output(actual_val, pred_val):
 def gridsearch(rgr):
     param_grid = \
         {
-            'max_depth': [5, 6]
+          'gamma': [0.8]
         }
     model = GridSearchCV(rgr, param_grid, cv=10, scoring="neg_mean_absolute_error", refit=True, verbose=3, n_jobs=-1)
     model.fit(X_train, y_train)
@@ -88,10 +89,10 @@ def gridsearch(rgr):
 
 
 X_train, y_train, X_test, y_test = read_transform()
-estimator = XGBRegressor(objective='reg:gamma', seed=42, eval_metric='mae', max_depth=6,
-                         learning_rate=0.1, n_estimators=300)
-# estimator.fit(X_train, y_train )
-estimator_ = gridsearch(estimator)
+estimator_ = XGBRegressor(objective='reg:gamma', seed=42, eval_metric='mae', max_depth=6,
+                          gamma=0.8, learning_rate=0.15, n_estimators=300, colsample_bytree=0.9)
+estimator_.fit(X_train, y_train)
+# estimator_ = gridsearch(estimator_)
 plot_importance(estimator_)
 y_pred = predict(X_test, y_test, estimator_)
 write_output(y_test, y_pred)
