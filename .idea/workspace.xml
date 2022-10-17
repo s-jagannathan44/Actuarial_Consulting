@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added gridsearch">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Tuned all the hyper parameters">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/French.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/French.py" afterDir="false" />
     </list>
@@ -82,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00030" summary="Added code for Histograms and Severity">
-      <created>1662370409300</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1662370409302</updated>
     </task>
     <task id="LOCAL-00031" summary="Made Changes to Predict">
       <created>1662374472159</created>
@@ -426,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665910324504</updated>
     </task>
-    <option name="localTasksCounter" value="79" />
+    <task id="LOCAL-00079" summary="Tuned all the hyper parameters">
+      <created>1665919181614</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1665919181616</updated>
+    </task>
+    <option name="localTasksCounter" value="80" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Made changes so as to generate baseline MAE data" />
     <MESSAGE value="Added GBM Code" />
     <MESSAGE value="Added Code which Groups the Claims , Calculates the exposure and the merges the Exposures back into the ungrouped Claims" />
     <MESSAGE value="Added weights" />
@@ -478,6 +477,7 @@
     <MESSAGE value="Credit Card fraud classification models" />
     <MESSAGE value="French Motor third party regression model" />
     <MESSAGE value="Added gridsearch" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added gridsearch" />
+    <MESSAGE value="Tuned all the hyper parameters" />
+    <option name="LAST_COMMIT_MESSAGE" value="Tuned all the hyper parameters" />
   </component>
 </project>

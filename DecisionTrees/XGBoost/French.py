@@ -1,5 +1,7 @@
 import math
 from matplotlib import pyplot
+from numpy import sort
+from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import GroupShuffleSplit, GridSearchCV
 from xgboost import XGBRegressor, plot_importance
@@ -27,6 +29,23 @@ def describe():
         insight.to_csv(csv_file_name)
     df_freq.describe(percentiles=[0.25, 0.5, 0.75, 0.85, 0.9, 0.98, 1]).to_csv("Output\\Columns\\desc.csv")
     df_freq.corr().to_csv("Output\\Columns\\corr.csv")
+
+
+def select_features():
+    thresholds = sort(estimator_.feature_importances_)
+    for thresh in thresholds:
+        # select features using threshold
+        selection = SelectFromModel(estimator_, threshold=thresh, prefit=True)
+        select_X_train = selection.transform(X_train)
+        # train model
+        selection_model = XGBRegressor(objective='reg:gamma', seed=42, eval_metric='mae', max_depth=6,
+                                       gamma=0.8, learning_rate=0.15, n_estimators=300, colsample_bytree=0.9)
+        selection_model.fit(select_X_train, y_train)
+        # eval model
+        select_X_test = selection.transform(X_test)
+        predictions = selection_model.predict(select_X_test)
+        print("Thresh=%.3f, n=%d, Accuracy: " % (thresh, select_X_train.shape[1]))
+        write_output(y_test, predictions)
 
 
 def read_transform():
@@ -72,15 +91,15 @@ def write_output(actual_val, pred_val):
     frame['Predicted'] = pred_val
     frame["Error"] = abs(frame["Actual"] - frame["Predicted"])
     frame["%ageError"] = frame["Error"] / frame["Actual"]
-    frame["Below5%"] = frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]
-    print((frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]) * 100)
-    frame.to_csv("Output\\Output.csv")
+    frame["Below5%"] = round(frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0], ndigits=2)
+    print(round((frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]) * 100, ndigits=2))
+    # frame.to_csv("Output\\Output.csv")
 
 
 def gridsearch(rgr):
     param_grid = \
         {
-          'gamma': [0.8]
+            'gamma': [0.8]
         }
     model = GridSearchCV(rgr, param_grid, cv=10, scoring="neg_mean_absolute_error", refit=True, verbose=3, n_jobs=-1)
     model.fit(X_train, y_train)
@@ -96,4 +115,5 @@ estimator_.fit(X_train, y_train)
 plot_importance(estimator_)
 y_pred = predict(X_test, y_test, estimator_)
 write_output(y_test, y_pred)
-pyplot.show()
+# pyplot.show()
+select_features()
