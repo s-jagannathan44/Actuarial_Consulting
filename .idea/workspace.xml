@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Tuned all the hyper parameters">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added the SelectFromModel functionality which allows for selecting features based on importance">
+      <change afterPath="$PROJECT_DIR$/Images/Confusion.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/French.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/French.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrequencyModeling/Insurance.csv" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,13 +84,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00031" summary="Made Changes to Predict">
-      <created>1662374472159</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1662374472159</updated>
     </task>
     <task id="LOCAL-00032" summary="Added Line Chart and Modified Histogram">
       <created>1662382426311</created>
@@ -426,7 +421,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665919181616</updated>
     </task>
-    <option name="localTasksCounter" value="80" />
+    <task id="LOCAL-00080" summary="Added the SelectFromModel functionality which allows for selecting features based on importance">
+      <created>1665977829257</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1665977829257</updated>
+    </task>
+    <option name="localTasksCounter" value="81" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +455,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Added GBM Code" />
     <MESSAGE value="Added Code which Groups the Claims , Calculates the exposure and the merges the Exposures back into the ungrouped Claims" />
     <MESSAGE value="Added weights" />
     <MESSAGE value="With exposure but without weights" />
@@ -478,6 +479,7 @@
     <MESSAGE value="French Motor third party regression model" />
     <MESSAGE value="Added gridsearch" />
     <MESSAGE value="Tuned all the hyper parameters" />
-    <option name="LAST_COMMIT_MESSAGE" value="Tuned all the hyper parameters" />
+    <MESSAGE value="Added the SelectFromModel functionality which allows for selecting features based on importance" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added the SelectFromModel functionality which allows for selecting features based on importance" />
   </component>
 </project>
