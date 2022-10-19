@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Add ADASYN to fix class imbalance">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Working model on Car and Travel Data">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" afterDir="false" />
     </list>
@@ -82,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00034" summary="Yet another frequency model from &#10;https://github.com/Priya2216/Insurance_Claim_Prediction-Neural-Network/blob/main/Insurance_prediction.ipynb">
-      <created>1662527544211</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1662527544211</updated>
     </task>
     <task id="LOCAL-00035" summary="Baseline code for Freq &amp; Severity">
       <created>1662637664177</created>
@@ -426,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666151938054</updated>
     </task>
-    <option name="localTasksCounter" value="83" />
+    <task id="LOCAL-00083" summary="Working model on Car and Travel Data">
+      <created>1666157632297</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1666157632299</updated>
+    </task>
+    <option name="localTasksCounter" value="84" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Added weights" />
     <MESSAGE value="With exposure but without weights" />
     <MESSAGE value="Baseline weight model" />
     <MESSAGE value="Moved ExperimentalFiles to main" />
@@ -478,6 +477,7 @@
     <MESSAGE value="Tuned all the hyper parameters" />
     <MESSAGE value="Added the SelectFromModel functionality which allows for selecting features based on importance" />
     <MESSAGE value="Add ADASYN to fix class imbalance" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add ADASYN to fix class imbalance" />
+    <MESSAGE value="Working model on Car and Travel Data" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working model on Car and Travel Data" />
   </component>
 </project>

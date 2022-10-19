@@ -13,8 +13,8 @@ from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold, c
 from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
 from xgboost import XGBClassifier, plot_importance
 
-ordinal_columns = ["Agency Type", "Distribution Channel"]
-ohe_columns = ["Agency", "Product Name", "Destination"]
+ordinal_columns = ["GenderMainDriver", "PaymentMethod"]
+ohe_columns = ["MaritalMainDriver", "Make", "Use", "PaymentFrequency"]
 
 
 def data_analysis(df=None):
@@ -46,16 +46,16 @@ def get_transformer():
     ordinal_tuple = ("ordinal", OrdinalEncoder(), ordinal_columns)
     ohe_tuple = ("ohe", OneHotEncoder(), ohe_columns)
     transformer_ = ColumnTransformer(
-        [("passthrough_n", "passthrough", ["Age", "Commission"]),
+        [("passthrough_n", "passthrough", ["VehicleValue"]),
          ordinal_tuple, ohe_tuple], remainder='drop')
     return transformer_
 
 
-df_ = pd.read_csv("Output\\travel.csv")
+df_ = pd.read_csv("Output\\WeightedPolicy.csv")
 transformer = get_transformer()
 
-X = df_.drop('Class', axis=1)
-y = df_["Class"]
+X = df_.drop('Actual', axis=1)
+y = df_["Actual"]
 
 X = transformer.fit_transform(X)
 sm = ADASYN()
