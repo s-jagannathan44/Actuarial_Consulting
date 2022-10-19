@@ -10,10 +10,19 @@ from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import precision_recall_curve, precision_score, recall_score, \
     ConfusionMatrixDisplay, f1_score
 from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold, cross_val_score
-from sklearn.preprocessing import OrdinalEncoder, KBinsDiscretizer
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
 from xgboost import XGBClassifier, plot_importance
 
-ordinal_columns = ["gender", "area", "veh_body"]
+ordinal_columns = ["Agency Type", "Distribution Channel"]
+ohe_columns = ["Agency", "Product Name", "Destination"]
+
+
+def data_analysis(df=None):
+    for c in df.columns:
+        csv_file_name = "Output\\Columns\\" + c.replace("/", "_") + ".csv"
+        insight = df[c].value_counts()
+        insight.to_csv(csv_file_name)
+    df.describe(percentiles=[0.25, 0.5, 0.75, 0.85, 0.9, 0.98, 1]).to_csv("Output\\Columns\\desc.csv")
 
 
 def select_features():
@@ -35,27 +44,30 @@ def select_features():
 
 def get_transformer():
     ordinal_tuple = ("ordinal", OrdinalEncoder(), ordinal_columns)
+    ohe_tuple = ("ohe", OneHotEncoder(), ohe_columns)
     transformer_ = ColumnTransformer(
-        [("passthrough_n", "passthrough", ["veh_value", "veh_age", "agecat"]),
-         ordinal_tuple], remainder='drop')
+        [("passthrough_n", "passthrough", ["Age", "Commission"]),
+         ordinal_tuple, ohe_tuple], remainder='drop')
     return transformer_
 
 
-df = pd.read_csv("Output\\car.csv")
-
+df_ = pd.read_csv("Output\\travel.csv")
 transformer = get_transformer()
 
-X = df.drop('clm', axis=1)
-y = df["clm"]
+X = df_.drop('Class', axis=1)
+y = df_["Class"]
 
 X = transformer.fit_transform(X)
 sm = ADASYN()
 X, y = sm.fit_resample(X, y)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=25)
+
+
 # define model
 model = XGBClassifier(scale_pos_weight=Counter(y_train)[0] / Counter(y_train)[1])
 model.fit(X_train, y_train)
+
 predictions = model.predict(X_test)
 np.savetxt("Output\\output.csv", predictions, delimiter=",")
 np.savetxt("Output\\y_test.csv", y_test, delimiter=",")
@@ -84,5 +96,5 @@ scores = cross_val_score(model, X, y, scoring='f1', cv=cv, n_jobs=-1, verbose=Tr
 # summarize performance
 print('Mean f1: %.5f' % mean(scores))
 # plot_importance(model)
+# select_features()
 plt.show()
-select_features()
