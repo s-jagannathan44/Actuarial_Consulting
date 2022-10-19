@@ -1,6 +1,6 @@
 # Generate and plot a synthetic imbalanced classification dataset
 from collections import Counter
-
+from imblearn.over_sampling import ADASYN
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -13,7 +13,7 @@ from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold, c
 from sklearn.preprocessing import OrdinalEncoder, KBinsDiscretizer
 from xgboost import XGBClassifier, plot_importance
 
-ordinal_columns = ["GenderMainDriver", "MaritalMainDriver", "Use", "PaymentMethod", "PaymentFrequency"]
+ordinal_columns = ["gender", "area", "veh_body"]
 
 
 def select_features():
@@ -30,24 +30,28 @@ def select_features():
         y_pred = selection_model.predict(select_X_test)
         predictions_ = [round(value, ndigits=2) for value in y_pred]
         f1_ = f1_score(y_test, predictions_)
-        print("Thresh=%.3f, n=%d, F1 score: %.2f%%" % (thresh, select_X_train.shape[1], f1_))
+        print("Thresh=%.3f, n=%d, F1 score: %.2f" % (thresh, select_X_train.shape[1], f1_))
 
 
 def get_transformer():
     ordinal_tuple = ("ordinal", OrdinalEncoder(), ordinal_columns)
     transformer_ = ColumnTransformer(
-        [("binned_VehicleValue", KBinsDiscretizer(n_bins=10, encode='ordinal', strategy='uniform'), ["VehicleValue"]),
+        [("passthrough_n", "passthrough", ["veh_value", "veh_age", "agecat"]),
          ordinal_tuple], remainder='drop')
     return transformer_
 
 
-df = pd.read_csv("Output\\WeightedPolicy.csv")
+df = pd.read_csv("Output\\car.csv")
 
 transformer = get_transformer()
 
-X = df.drop('Actual', axis=1)
-y = df["Actual"]
+X = df.drop('clm', axis=1)
+y = df["clm"]
+
 X = transformer.fit_transform(X)
+sm = ADASYN()
+X, y = sm.fit_resample(X, y)
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=25)
 # define model
 model = XGBClassifier(scale_pos_weight=Counter(y_train)[0] / Counter(y_train)[1])
@@ -80,5 +84,5 @@ scores = cross_val_score(model, X, y, scoring='f1', cv=cv, n_jobs=-1, verbose=Tr
 # summarize performance
 print('Mean f1: %.5f' % mean(scores))
 # plot_importance(model)
-# plt.show()
+plt.show()
 select_features()
