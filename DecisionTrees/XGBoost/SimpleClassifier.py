@@ -1,33 +1,18 @@
 # Generate and plot a synthetic imbalanced classification dataset
 from collections import Counter
-import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from matplotlib import pyplot as plt
 from numpy import mean, sort
 from sklearn.feature_selection import SelectFromModel
-from sklearn.metrics import precision_recall_curve, precision_score, recall_score, \
+from sklearn.metrics import precision_score, recall_score, \
     ConfusionMatrixDisplay, f1_score
 from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold, GridSearchCV
-from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
+from sklearn.preprocessing import OrdinalEncoder
 from xgboost import XGBClassifier
 
-ordinal_columns = ["Sex", "AccidentArea", "Fault", "VehicleCategory", "PoliceReportFiled", "WitnessPresent",
+ordinal_columns = ["Sex", "Fault", "VehicleCategory", "PoliceReportFiled", "WitnessPresent",
                    "AgentType", "BasePolicy"]
-ohe_columns = ["MaritalStatus",  "VehiclePrice", "NumberOfCars", "AgeOfVehicle"]
-
-
-def get_columns():
-    global ord_col_size, ohe_col_size
-    encoder = transformer.named_transformers_['onehot_categorical']
-    columns = encoder.get_feature_names_out()
-    ohe_col_size = columns.size
-    encoder = transformer.named_transformers_['ordinal']
-    ord_columns = encoder.get_feature_names_out()
-    columns = np.append(columns, ord_columns)
-    columns = np.append(columns, "VehicleValue")
-    ord_col_size = ord_columns.size
-    return columns
 
 
 def data_analysis(df=None):
@@ -55,35 +40,18 @@ def select_features():
         print("Thresh=%.3f, n=%d, F1 score: %.2f" % (thresh, select_X_train.shape[1], f1_))
 
 
-def write_output():
-    ordinal_array = X_test[:, 1:ord_col_size + 1].toarray()
-    passthrough = pd.DataFrame(X_test[:, :1].toarray(), columns=["VehicleValue"])
-    one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_test[:, ord_col_size + 1:])
-    ordinal = transformer.named_transformers_['ordinal'].inverse_transform(ordinal_array)
-    one_frame = pd.DataFrame(one_hot, columns=ohe_columns)
-    ordinal_frame = pd.DataFrame(ordinal, columns=ordinal_columns)
-
-    # axis 0 is vertical and axis 1 is horizontal
-    frame = pd.concat([passthrough, ordinal_frame], axis=1)
-    frame = pd.concat([frame, one_frame], axis=1)
-    frame["Actual"] = y_test.to_list()
-    frame['Predicted'] = y_pred
-    frame.to_csv("Output\\Output.csv")
-
-
 def get_transformer():
     ordinal_tuple = ("ordinal", OrdinalEncoder(), ordinal_columns)
-    ohe_tuple = ("onehot_categorical", OneHotEncoder(), ohe_columns)
     transformer_ = ColumnTransformer(
         [("passthrough_n", "passthrough", ["Age", "Deductible"]),
-         ordinal_tuple, ohe_tuple], remainder='drop')
+         ordinal_tuple], remainder='drop')
     return transformer_
 
 
 def gridsearch(rgr):
     param_grid = \
         {
-          'scale_pos_weight': [1, 5, 10, 15, 20]
+
         }
     model = GridSearchCV(rgr, param_grid, cv=10, scoring="f1", refit=True, verbose=3, n_jobs=-1)
     model.fit(X_train, y_train)
@@ -105,17 +73,10 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_sta
 # define model
 estimator_ = XGBClassifier(objective='binary:logistic', seed=42, base_score=0.05,
                            max_depth=3, n_estimators=200, colsample_bytree=0.8,
-                           scale_pos_weight=10)
+                           reg_lambda=10, scale_pos_weight=10)
 estimator_.fit(X_train, y_train)
 # estimator_ = gridsearch(estimator_)
 y_pred = estimator_.predict(X_test)
-
-precision, recall, thresholds = precision_recall_curve(y_test, y_pred)
-plt.plot(recall, precision, linestyle='--')
-plt.xlabel('Recall')
-plt.ylabel('Precision')
-
-# calculate precision-recall AUC
 
 f1 = round(f1_score(y_test, y_pred), ndigits=3)
 precision = round(precision_score(y_test, y_pred), ndigits=3)
@@ -131,11 +92,9 @@ ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
 cv = RepeatedStratifiedKFold(n_splits=3, n_repeats=5, random_state=1)
 
 # evaluate model
-scores = 0  # cross_val_score(model, X_test, y_test, scoring='f1', cv=cv, n_jobs=-1, verbose=True)
+scores = 0  # cross_val_score(estimator_, X_test, y_test, scoring='f1', cv=cv, n_jobs=-1, verbose=True)
 # summarize performance
 print('Mean f1: %.5f' % mean(scores))
 # plot_importance(model)
 # select_features()
 plt.show()
-# get_columns()
-# write_output()
