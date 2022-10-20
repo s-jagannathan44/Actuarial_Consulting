@@ -1,5 +1,4 @@
 # Generate and plot a synthetic imbalanced classification dataset
-from collections import Counter
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from matplotlib import pyplot as plt
@@ -9,10 +8,9 @@ from sklearn.metrics import precision_score, recall_score, \
     ConfusionMatrixDisplay, f1_score
 from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold, GridSearchCV
 from sklearn.preprocessing import OrdinalEncoder
-from xgboost import XGBClassifier
+from xgboost import XGBClassifier, plot_importance
 
-ordinal_columns = ["Sex", "Fault", "VehicleCategory", "PoliceReportFiled", "WitnessPresent",
-                   "AgentType", "BasePolicy"]
+ordinal_columns = ["Fault", "VehicleCategory", "PoliceReportFiled", "BasePolicy"]
 
 
 def data_analysis(df=None):
@@ -30,14 +28,16 @@ def select_features():
         selection = SelectFromModel(estimator_, threshold=thresh, prefit=True)
         select_X_train = selection.transform(X_train)
         # train model
-        selection_model = XGBClassifier(scale_pos_weight=Counter(y_train)[0] / Counter(y_train)[1])
+        selection_model = XGBClassifier(objective='binary:logistic', seed=42, base_score=0.05,
+                                        max_depth=3, n_estimators=200, colsample_bytree=0.8,
+                                        reg_lambda=10, scale_pos_weight=10)
         selection_model.fit(select_X_train, y_train)
         # eval model
         select_X_test = selection.transform(X_test)
         y_pred_ = selection_model.predict(select_X_test)
-        predictions = [round(value, ndigits=2) for value in y_pred_]
+        predictions = [round(value, ndigits=3) for value in y_pred_]
         f1_ = f1_score(y_test, predictions)
-        print("Thresh=%.3f, n=%d, F1 score: %.2f" % (thresh, select_X_train.shape[1], f1_))
+        print("Thresh=%.3f, n=%d, F1 score: %.3f" % (thresh, select_X_train.shape[1], f1_))
 
 
 def get_transformer():
@@ -95,6 +95,10 @@ cv = RepeatedStratifiedKFold(n_splits=3, n_repeats=5, random_state=1)
 scores = 0  # cross_val_score(estimator_, X_test, y_test, scoring='f1', cv=cv, n_jobs=-1, verbose=True)
 # summarize performance
 print('Mean f1: %.5f' % mean(scores))
-# plot_importance(model)
-# select_features()
+plot_importance(estimator_)
+(pd.Series(estimator_.feature_importances_, index=["Age", "Deductible",  "Fault", "VehicleCategory",
+                                                   "PoliceReportFiled",  "BasePolicy"])
+   .nlargest(10)
+   .plot(kind='barh'))
+select_features()
 plt.show()
