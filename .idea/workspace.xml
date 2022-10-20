@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Working model on UK Policy Data">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added code to write to file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" afterDir="false" />
     </list>
@@ -82,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00036" summary="Baseline code for Frequency using SGD and ScatterPlot">
-      <created>1663241622473</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1663241622473</updated>
     </task>
     <task id="LOCAL-00037" summary="Integrated ScatterPlot Code into Main File so scatter plot is generated everytime model is run">
       <created>1663244191568</created>
@@ -426,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666167762799</updated>
     </task>
-    <option name="localTasksCounter" value="85" />
+    <task id="LOCAL-00085" summary="Added code to write to file">
+      <created>1666181247799</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1666181247799</updated>
+    </task>
+    <option name="localTasksCounter" value="86" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Baseline weight model" />
     <MESSAGE value="Moved ExperimentalFiles to main" />
     <MESSAGE value="Images" />
     <MESSAGE value="Code that runs on 24 columns" />
@@ -478,6 +477,7 @@
     <MESSAGE value="Add ADASYN to fix class imbalance" />
     <MESSAGE value="Working model on Car and Travel Data" />
     <MESSAGE value="Working model on UK Policy Data" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working model on UK Policy Data" />
+    <MESSAGE value="Added code to write to file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added code to write to file" />
   </component>
 </project>

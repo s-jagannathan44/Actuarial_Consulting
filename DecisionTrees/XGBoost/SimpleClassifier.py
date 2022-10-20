@@ -1,6 +1,5 @@
 # Generate and plot a synthetic imbalanced classification dataset
 from collections import Counter
-from imblearn.over_sampling import ADASYN
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -9,12 +8,13 @@ from numpy import mean, sort
 from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import precision_recall_curve, precision_score, recall_score, \
     ConfusionMatrixDisplay, f1_score
-from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold, cross_val_score
+from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold, GridSearchCV
 from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
-from xgboost import XGBClassifier, plot_importance
+from xgboost import XGBClassifier
 
-ordinal_columns = ["GenderMainDriver", "PaymentMethod"]
-ohe_columns = ["MaritalMainDriver", "Make", "Use", "PaymentFrequency"]
+ordinal_columns = ["Sex", "AccidentArea", "Fault", "VehicleCategory", "PoliceReportFiled", "WitnessPresent",
+                   "AgentType", "BasePolicy"]
+ohe_columns = ["MaritalStatus",  "VehiclePrice", "NumberOfCars", "AgeOfVehicle"]
 
 
 def get_columns():
@@ -39,10 +39,10 @@ def data_analysis(df=None):
 
 
 def select_features():
-    threshold = sort(model.feature_importances_)
+    threshold = sort(estimator_.feature_importances_)
     for thresh in threshold:
         # select features using threshold
-        selection = SelectFromModel(model, threshold=thresh, prefit=True)
+        selection = SelectFromModel(estimator_, threshold=thresh, prefit=True)
         select_X_train = selection.transform(X_train)
         # train model
         selection_model = XGBClassifier(scale_pos_weight=Counter(y_train)[0] / Counter(y_train)[1])
@@ -56,9 +56,9 @@ def select_features():
 
 
 def write_output():
-    ordinal_array = X_test[:, 1:ord_col_size+1].toarray()
+    ordinal_array = X_test[:, 1:ord_col_size + 1].toarray()
     passthrough = pd.DataFrame(X_test[:, :1].toarray(), columns=["VehicleValue"])
-    one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_test[:, ord_col_size+1:])
+    one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_test[:, ord_col_size + 1:])
     ordinal = transformer.named_transformers_['ordinal'].inverse_transform(ordinal_array)
     one_frame = pd.DataFrame(one_hot, columns=ohe_columns)
     ordinal_frame = pd.DataFrame(ordinal, columns=ordinal_columns)
@@ -75,29 +75,40 @@ def get_transformer():
     ordinal_tuple = ("ordinal", OrdinalEncoder(), ordinal_columns)
     ohe_tuple = ("onehot_categorical", OneHotEncoder(), ohe_columns)
     transformer_ = ColumnTransformer(
-        [("passthrough_n", "passthrough", ["VehicleValue"]),
+        [("passthrough_n", "passthrough", ["Age", "Deductible"]),
          ordinal_tuple, ohe_tuple], remainder='drop')
     return transformer_
 
 
+def gridsearch(rgr):
+    param_grid = \
+        {
+          'scale_pos_weight': [1, 5, 10, 15, 20]
+        }
+    model = GridSearchCV(rgr, param_grid, cv=10, scoring="f1", refit=True, verbose=3, n_jobs=-1)
+    model.fit(X_train, y_train)
+    print(model.best_params_)
+    return model.best_estimator_
+
+
 ord_col_size = ohe_col_size = 0
-df_ = pd.read_csv("Output\\WeightedPolicy.csv")
+df_ = pd.read_csv("Output\\fraud_oracle.csv")
 transformer = get_transformer()
 
-X = df_.drop('Actual', axis=1)
-y = df_["Actual"]
+X = df_.drop('FraudFound_P', axis=1)
+y = df_["FraudFound_P"]
 
 X = transformer.fit_transform(X)
-sm = ADASYN(sampling_strategy="all")
-# X, y = sm.fit_resample(X, y)
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=25)
-X_train, y_train = sm.fit_resample(X_train, y_train)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=25)
 
 # define model
-model = XGBClassifier(scale_pos_weight=Counter(y_train)[0] / Counter(y_train)[1])
-model.fit(X_train, y_train)
-
-y_pred = model.predict(X_test)
+estimator_ = XGBClassifier(objective='binary:logistic', seed=42, base_score=0.05,
+                           max_depth=3, n_estimators=200, colsample_bytree=0.8,
+                           scale_pos_weight=10)
+estimator_.fit(X_train, y_train)
+# estimator_ = gridsearch(estimator_)
+y_pred = estimator_.predict(X_test)
 
 precision, recall, thresholds = precision_recall_curve(y_test, y_pred)
 plt.plot(recall, precision, linestyle='--')
@@ -106,9 +117,9 @@ plt.ylabel('Precision')
 
 # calculate precision-recall AUC
 
-f1 = f1_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
+f1 = round(f1_score(y_test, y_pred), ndigits=3)
+precision = round(precision_score(y_test, y_pred), ndigits=3)
+recall = round(recall_score(y_test, y_pred), ndigits=3)
 
 print("Model F1 : ", f1)
 print('Precision on testing set:', precision)
@@ -126,5 +137,5 @@ print('Mean f1: %.5f' % mean(scores))
 # plot_importance(model)
 # select_features()
 plt.show()
-get_columns()
-write_output()
+# get_columns()
+# write_output()
