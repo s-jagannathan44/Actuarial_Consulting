@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Demo Code for using SelectKBest method of feature selection">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="UK Data 96 % accuracy 1.5% recall">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" afterDir="false" />
     </list>
@@ -82,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00042" summary="Initial Commit of DecisionTreeClassifier using scikit">
-      <created>1663738621121</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
-      <option name="project" value="LOCAL" />
-      <updated>1663738621121</updated>
     </task>
     <task id="LOCAL-00043" summary="First change to incorporate oversampling">
       <created>1663760588913</created>
@@ -426,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666593014905</updated>
     </task>
-    <option name="localTasksCounter" value="91" />
+    <task id="LOCAL-00091" summary="UK Data 96 % accuracy 1.5% recall">
+      <created>1666602994719</created>
+      <option name="number" value="00091" />
+      <option name="presentableId" value="LOCAL-00091" />
+      <option name="project" value="LOCAL" />
+      <updated>1666602994719</updated>
+    </task>
+    <option name="localTasksCounter" value="92" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="wrote code for modeling 24 columns" />
     <MESSAGE value="moved it out ." />
     <MESSAGE value="XGBoost Vs GLM comparison 24 columns" />
     <MESSAGE value="XGBoost Vs GLM comparison for Data.xls" />
@@ -478,6 +477,7 @@
     <MESSAGE value="Implemented Feature Selection  &#10;68% recall and 75% accuracy" />
     <MESSAGE value="Improved Feature Selection  &#10;68% recall and 76% accuracy" />
     <MESSAGE value="Demo Code for using SelectKBest method of feature selection" />
-    <option name="LAST_COMMIT_MESSAGE" value="Demo Code for using SelectKBest method of feature selection" />
+    <MESSAGE value="UK Data 96 % accuracy 1.5% recall" />
+    <option name="LAST_COMMIT_MESSAGE" value="UK Data 96 % accuracy 1.5% recall" />
   </component>
 </project>
