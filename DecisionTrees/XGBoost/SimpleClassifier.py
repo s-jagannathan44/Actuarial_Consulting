@@ -8,6 +8,8 @@ from sklearn.metrics import precision_score, recall_score, \
 from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold, GridSearchCV
 from Modules import Utilities as Ut
 from xgboost import XGBClassifier
+from imblearn.over_sampling import ADASYN
+
 
 # Make and Payment_frequency to go under One hot encoding
 passthrough_list = ["NumberOfDrivers", "VoluntaryExcess",
@@ -73,13 +75,15 @@ X = Ut.impute_missing_values(X, "AgeYoungestAdditionalDriver")
 X = Ut.impute_missing_values(X, "GenderYoungestAdditionalDriver")
 transformer = Ut.transform(passthrough_list, to_bin_list, ordinal_list)
 X = transformer.fit_transform(X)
-
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=25)
+
+sm = ADASYN()
+X_train, y_train = sm.fit_resample(X_train, y_train)
 
 # define model
 estimator_ = XGBClassifier(objective='binary:logistic', seed=42, base_score=0.05,
                            learning_rate=0.01, max_depth=7, n_estimators=500, colsample_bytree=0.7,
-                           gamma=3, reg_alpha=10, reg_lambda=10, scale_pos_weight=35)
+                           gamma=3, reg_alpha=10, reg_lambda=10, scale_pos_weight=45)
 estimator_.fit(X_train, y_train)
 # estimator_ = gridsearch(estimator_)
 y_pred = estimator_.predict(X_test)
