@@ -10,11 +10,14 @@ from Modules import Utilities as Ut
 from xgboost import XGBClassifier
 
 # Make and Payment_frequency to go under One hot encoding
-passthrough_list = ["AnalysisPeriod"]
-ordinal_list = ["GenderMainDriver", "GenderYoungestDriver",
-                "Use", "PaymentMethod", "BonusMalusProtection"]
-to_bin_list = [['AgeMainDriver', 4, 'uniform'],
-               ['VehicleAge', 2, 'uniform'],
+passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
+                    "NumberOfPastConvictions"]
+ordinal_list = ["GenderMainDriver", "MaritalMainDriver",
+                "Use", "PaymentMethod", "BonusMalusProtection",
+                "GenderYoungestAdditionalDriver", "VehFuel1"]
+to_bin_list = [['AgeMainDriver', 4, 'uniform'], ['AgeYoungestDriver', 4, 'uniform'],
+               ['AgeYoungestAdditionalDriver', 2, 'uniform'], ['VehicleAge', 2, 'uniform'],
+               ['VehicleValue', 10, 'uniform'], ['VehicleMileage', 4, 'uniform'],
                ['BonusMalusYears', 4, 'quantile'], ['PolicyTenure', 3, 'quantile']]
 
 
@@ -64,6 +67,8 @@ df_ = df_[df_["PaymentMethod"] != "Other"]
 
 X = df_.drop('Claim Count', axis=1)
 y = df_["Claim Count"]
+X = Ut.impute_missing_values(X, "AgeYoungestAdditionalDriver")
+X = Ut.impute_missing_values(X, "GenderYoungestAdditionalDriver")
 transformer = Ut.transform(passthrough_list, to_bin_list, ordinal_list)
 X = transformer.fit_transform(X)
 
@@ -97,11 +102,15 @@ scores = 0  # cross_val_score(estimator_, X_test, y_test, scoring='f1', cv=cv, n
 print('Mean f1: %.5f' % mean(scores))
 # plot_importance(estimator_)
 
-(pd.Series(estimator_.feature_importances_, index=["AnalysisPeriod", "AgeMainDriver",
-                                                   'VehicleAge', 'BonusMalusYears',
-                                                   'PolicyTenure', "GenderMainDriver", "GenderYoungestDriver",
-                                                   "Use", "PaymentMethod", "BonusMalusProtection"])
- .nlargest(10)
+(pd.Series(estimator_.feature_importances_, index=[
+    "AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
+    "NumberOfPastConvictions",
+    "AgeMainDriver", 'AgeYoungestDriver', 'AgeYoungestAdditionalDriver',
+    'VehicleAge', 'VehicleValue', 'VehicleMileage', 'BonusMalusYears',
+    'PolicyTenure', "GenderMainDriver",
+    "MaritalMainDriver", "Use", "PaymentMethod", "BonusMalusProtection",
+    "GenderYoungestAdditionalDriver", "VehFuel1"])
+ .nlargest(19)
  .plot(kind='barh'))
 select_features()
 plt.show()
