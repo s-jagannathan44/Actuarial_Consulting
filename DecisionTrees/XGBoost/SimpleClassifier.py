@@ -10,9 +10,9 @@ from Modules import Utilities as Ut
 from xgboost import XGBClassifier
 
 # Make and Payment_frequency to go under One hot encoding
-passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
+passthrough_list = ["NumberOfDrivers", "VoluntaryExcess",
                     "NumberOfPastConvictions"]
-ordinal_list = ["GenderMainDriver", "MaritalMainDriver",
+ordinal_list = ["AnalysisPeriod", "GenderMainDriver", "MaritalMainDriver",
                 "Use", "PaymentMethod", "BonusMalusProtection",
                 "GenderYoungestAdditionalDriver", "VehFuel1"]
 to_bin_list = [['AgeMainDriver', 4, 'uniform'], ['AgeYoungestDriver', 4, 'uniform'],
@@ -38,7 +38,7 @@ def select_features():
         # train model
         selection_model = XGBClassifier(objective='binary:logistic', seed=42, base_score=0.05,
                                         learning_rate=0.01, max_depth=7, n_estimators=500, colsample_bytree=0.7,
-                                        gamma=3, reg_alpha=10, reg_lambda=0.5, scale_pos_weight=35)
+                                        gamma=3, reg_alpha=10, reg_lambda=10, scale_pos_weight=35)
         selection_model.fit(select_X_train, y_train)
         # eval model
         select_X_test = selection.transform(X_test)
@@ -64,6 +64,8 @@ ord_col_size = ohe_col_size = 0
 df_ = pd.read_csv("Output\\Policies.csv")
 df_ = df_[df_["Use"] != "Business Use - Class 1"]
 df_ = df_[df_["PaymentMethod"] != "Other"]
+df_ = df_[df_["NumberOfDrivers"] != 5]
+
 
 X = df_.drop('Claim Count', axis=1)
 y = df_["Claim Count"]
