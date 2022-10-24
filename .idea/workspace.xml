@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Improved Feature Selection  &#10;68% recall and 76% accuracy">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Demo Code for using SelectKBest method of feature selection">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00041" summary="Frequency code with Binary Classification and Scatter plot . Please refer to previous check in for Frequency code with Regression and Scatter Plot">
-      <created>1663331956436</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1663331956436</updated>
     </task>
     <task id="LOCAL-00042" summary="Initial Commit of DecisionTreeClassifier using scikit">
       <created>1663738621121</created>
@@ -425,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666592230960</updated>
     </task>
-    <option name="localTasksCounter" value="90" />
+    <task id="LOCAL-00090" summary="Demo Code for using SelectKBest method of feature selection">
+      <created>1666593014905</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1666593014905</updated>
+    </task>
+    <option name="localTasksCounter" value="91" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -452,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="wrote code for modeling Data.xls using  XGBoost" />
     <MESSAGE value="wrote code for modeling 24 columns" />
     <MESSAGE value="moved it out ." />
     <MESSAGE value="XGBoost Vs GLM comparison 24 columns" />
@@ -477,6 +477,7 @@
     <MESSAGE value="Better model for insurance fraud . &#10;71% recall and 74% accuracy" />
     <MESSAGE value="Implemented Feature Selection  &#10;68% recall and 75% accuracy" />
     <MESSAGE value="Improved Feature Selection  &#10;68% recall and 76% accuracy" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improved Feature Selection  &#10;68% recall and 76% accuracy" />
+    <MESSAGE value="Demo Code for using SelectKBest method of feature selection" />
+    <option name="LAST_COMMIT_MESSAGE" value="Demo Code for using SelectKBest method of feature selection" />
   </component>
 </project>

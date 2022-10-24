@@ -1,17 +1,24 @@
 # Generate and plot a synthetic imbalanced classification dataset
 import pandas as pd
-from sklearn.compose import ColumnTransformer
 from matplotlib import pyplot as plt
 from numpy import mean, sort
 from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import precision_score, recall_score, \
     ConfusionMatrixDisplay, f1_score
 from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold, GridSearchCV
-from sklearn.preprocessing import OrdinalEncoder
+from Modules import Utilities as Ut
 from xgboost import XGBClassifier
 
-ordinal_columns = ["Sex", "AccidentArea", "Fault", "VehicleCategory", "PoliceReportFiled", "WitnessPresent",
-                   "AgentType", "BasePolicy"]
+# Make and Payment_frequency to go under One hot encoding
+passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess", "NumberOfPastClaims",
+                    "NumberOfPastConvictions", "ClaimLastYr"]
+ordinal_list = ["GenderMainDriver", "GenderYoungestDriver", "MaritalMainDriver",
+                "Use", "PaymentMethod", "BonusMalusProtection",
+                "GenderYoungestAdditionalDriver", "VehFuel1"]
+to_bin_list = [['AgeMainDriver', 4, 'uniform'], ['AgeYoungestDriver', 4, 'uniform'],
+               ['AgeYoungestAdditionalDriver', 2, 'uniform'], ['VehicleAge', 2, 'uniform'],
+               ['VehicleValue', 10, 'uniform'], ['VehicleMileage', 4, 'uniform'],
+               ['BonusMalusYears', 4, 'quantile'], ['PolicyTenure', 3, 'quantile']]
 
 
 def data_analysis(df=None):
@@ -41,14 +48,6 @@ def select_features():
         print("Thresh=%.3f, n=%d, F1 score: %.3f" % (thresh, select_X_train.shape[1], f1_))
 
 
-def get_transformer():
-    ordinal_tuple = ("ordinal", OrdinalEncoder(), ordinal_columns)
-    transformer_ = ColumnTransformer(
-        [("passthrough_n", "passthrough", ["Age", "Deductible"]),
-         ordinal_tuple], remainder='drop')
-    return transformer_
-
-
 def gridsearch(rgr):
     param_grid = \
         {
@@ -60,12 +59,20 @@ def gridsearch(rgr):
     return model.best_estimator_
 
 
+# -------------------- CODE STARTS HERE ---------------------------------------
 ord_col_size = ohe_col_size = 0
-df_ = pd.read_csv("Output\\fraud_oracle.csv")
-transformer = get_transformer()
+df_ = pd.read_csv("Output\\Policies.csv")
+df_ = df_[df_["MaritalMainDriver"] != "Partnership"]
+df_ = df_[df_["Use"] != "Business Use - Class 1"]
+df_ = df_[df_["PaymentMethod"] != "Other"]
 
-X = df_.drop('FraudFound_P', axis=1)
-y = df_["FraudFound_P"]
+X = df_.drop('Claim Count', axis=1)
+y = df_["Claim Count"]
+X = Ut.impute_missing_values(X, "AgeYoungestAdditionalDriver")
+X = Ut.impute_missing_values(X, "GenderYoungestAdditionalDriver")
+
+transformer = Ut.transform(passthrough_list, to_bin_list, ordinal_list)
+
 
 X = transformer.fit_transform(X)
 
@@ -98,11 +105,15 @@ scores = 0  # cross_val_score(estimator_, X_test, y_test, scoring='f1', cv=cv, n
 # summarize performance
 print('Mean f1: %.5f' % mean(scores))
 # plot_importance(estimator_)
-(pd.Series(estimator_.feature_importances_, index=["Age", "Deductible", "Sex", "AccidentArea",
-                                                   "Fault", "VehicleCategory",
-                                                   "PoliceReportFiled", "WitnessPresent",
-                                                   "AgentType", "BasePolicy"])
-   .nlargest(10)
+
+(pd.Series(estimator_.feature_importances_, index=["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
+                                                   "NumberOfPastClaims", "NumberOfPastConvictions", "ClaimLastYr",
+                                                   "AgeMainDriver", 'AgeYoungestDriver', 'AgeYoungestAdditionalDriver',
+                                                   'VehicleAge', 'VehicleValue', 'VehicleMileage', 'BonusMalusYears',
+                                                   'PolicyTenure', "GenderMainDriver", "GenderYoungestDriver",
+                                                   "MaritalMainDriver", "Use", "PaymentMethod", "BonusMalusProtection",
+                                                   "GenderYoungestAdditionalDriver", "VehFuel1"])
+   .nlargest(20)
    .plot(kind='barh'))
 select_features()
 plt.show()
