@@ -8,9 +8,10 @@ from sklearn.metrics import precision_score, recall_score, \
     ConfusionMatrixDisplay, f1_score
 from sklearn.model_selection import train_test_split, RepeatedStratifiedKFold, GridSearchCV
 from sklearn.preprocessing import OrdinalEncoder
-from xgboost import XGBClassifier, plot_importance
+from xgboost import XGBClassifier
 
-ordinal_columns = ["Fault", "VehicleCategory", "PoliceReportFiled", "BasePolicy"]
+ordinal_columns = ["Sex", "AccidentArea", "Fault", "VehicleCategory", "PoliceReportFiled", "WitnessPresent",
+                   "AgentType", "BasePolicy"]
 
 
 def data_analysis(df=None):
@@ -88,6 +89,7 @@ print('Recall on testing set:', recall)
 
 # plotting the confusion-matrix
 ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
+plt.show()
 # define evaluation procedure
 cv = RepeatedStratifiedKFold(n_splits=3, n_repeats=5, random_state=1)
 
@@ -95,9 +97,11 @@ cv = RepeatedStratifiedKFold(n_splits=3, n_repeats=5, random_state=1)
 scores = 0  # cross_val_score(estimator_, X_test, y_test, scoring='f1', cv=cv, n_jobs=-1, verbose=True)
 # summarize performance
 print('Mean f1: %.5f' % mean(scores))
-plot_importance(estimator_)
-(pd.Series(estimator_.feature_importances_, index=["Age", "Deductible",  "Fault", "VehicleCategory",
-                                                   "PoliceReportFiled",  "BasePolicy"])
+# plot_importance(estimator_)
+(pd.Series(estimator_.feature_importances_, index=["Age", "Deductible", "Sex", "AccidentArea",
+                                                   "Fault", "VehicleCategory",
+                                                   "PoliceReportFiled", "WitnessPresent",
+                                                   "AgentType", "BasePolicy"])
    .nlargest(10)
    .plot(kind='barh'))
 select_features()
