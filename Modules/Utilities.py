@@ -134,7 +134,7 @@ def transform(pass_list, bin_list, categorical_list):
     for p in pass_list:
         counter = counter + 1
         name = passthrough + str(counter)
-        my_tuple = (name, passthrough, [p])
+        my_tuple = (name, MinMaxScaler(), [p])
         my_list.insert(index, my_tuple)
         index = index + 1
     counter = 0
