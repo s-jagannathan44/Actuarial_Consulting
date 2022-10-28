@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import joblib
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OrdinalEncoder, KBinsDiscretizer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import PoissonRegressor
@@ -19,11 +19,17 @@ from sklearn.linear_model import PoissonRegressor
 def build_model():
     linear_model_preprocessor = ColumnTransformer(
         [
+            ("passthrough_1", "passthrough", ["AnalysisPeriod"]),
             (
                 "onehot_categorical",
-                OneHotEncoder(),
-                ["VehicleValue","GenderMainDriver", "MaritalMainDriver", "Make", "Use", "PaymentMethod", "PaymentFrequency"],
+                OrdinalEncoder(),
+                ["GenderMainDriver", "GenderYoungestDriver",
+                 "Use", "PaymentMethod", "BonusMalusProtection"],
             ),
+            ("binned_2", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["AgeMainDriver"]),
+            ("binned_9", KBinsDiscretizer(n_bins=2, encode='ordinal', strategy='quantile'), ["VehicleAge"]),
+            ("binned_15", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["BonusMalusYears"]),
+            ("binned_19", KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='quantile'), ["PolicyTenure"]),
         ],
         remainder='drop'
     )
@@ -34,7 +40,7 @@ def build_model():
         ]
     )
     poisson_glm.fit(
-        df_train, df_train["Freq_Act"])
+        df_train, df_train["Claim Count"])
     joblib.dump(poisson_glm, "Frequency.sav")
     return poisson_glm
 
@@ -45,11 +51,10 @@ def execute_model(poisson_model, dataframe):
     dataframe.to_csv("CSV\\df_test.csv")
 
 
-df = pd.read_csv("Insurance.csv")
+df = pd.read_csv("CSV\\Frequency.csv")
 for col in df.columns:
     if "Unnamed" in col:
         df.drop(col, axis=1, inplace=True)
-df.set_index("PolicyReference", inplace=True, drop=True)
 print(df.shape)
 
 # %%

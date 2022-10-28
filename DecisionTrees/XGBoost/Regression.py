@@ -1,89 +1,89 @@
 import numpy as np
 import pandas as pd
-from sklearn.compose import ColumnTransformer
-from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
+from matplotlib import pyplot as plt
+from numpy import sort
+from sklearn.feature_selection import SelectFromModel
+# from sklearn.metrics import get_scorer_names
+from sklearn.model_selection import train_test_split, GridSearchCV
 from xgboost import XGBRegressor
+import Modules.Utilities as Ut
 
-ordinal_columns = ["TP Pool / Non TP Pool", "FY", "Loss Type"]
-ohe_columns = ["Segment 1", "Make", "Product Type 1", "RTO State - RTO State"]
+# Make and Payment_frequency to go under One hot encoding
+passthrough_list = ["AnalysisPeriod"]
+ordinal_list = ["GenderMainDriver", "GenderYoungestDriver",
+                "Use", "PaymentMethod", "BonusMalusProtection"]
+to_bin_list = [
 
-
-def get_columns():
-    global ord_col_size, ohe_col_size
-    encoder = transformer.named_transformers_['onehot_categorical']
-    columns = encoder.get_feature_names_out()
-    ohe_col_size = columns.size
-    encoder = transformer.named_transformers_['ordinal']
-    ord_columns = encoder.get_feature_names_out()
-    columns = np.append(columns, ord_columns)
-    ord_col_size = ord_columns.size
-    return columns
+               ['BonusMalusYears', 4, 'quantile'], ['PolicyTenure', 3, 'quantile']]
 
 
-def get_transformer():
-    ordinal_tuple = ("ordinal", OrdinalEncoder(), ordinal_columns)
-    transformer_ = ColumnTransformer(
-        [("passthrough_numeric", "passthrough", ["Exposure"]), ordinal_tuple,
-         ("onehot_categorical", OneHotEncoder(sparse=False), ohe_columns)],
-        remainder='drop')
-    return transformer_
+def data_analysis():
+    for c in df.columns:
+        csv_file_name = "Output\\Columns\\" + c.replace("/", "_") + ".csv"
+        insight = df[c].value_counts()
+        insight.to_csv(csv_file_name)
+    df.describe(percentiles=[0.25, 0.5, 0.75, 0.85, 0.9, 0.98, 1]).to_csv("Output\\Columns\\desc.csv")
 
 
-def write_output(X_val, actual_val, pred_val):
-    one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_val[:, ord_col_size:])
-    ordinal = transformer.named_transformers_['ordinal'].inverse_transform(X_val[:, :ord_col_size])
-    one_frame = pd.DataFrame(one_hot, columns=ohe_columns)
-    ordinal_frame = pd.DataFrame(ordinal, columns=ordinal_columns)
+def select_features():
+    thresholds = sort(rgr.feature_importances_)
+    for thresh in thresholds:
+        # select features using threshold
+        selection = SelectFromModel(rgr, threshold=thresh, prefit=True)
+        select_X_train = selection.transform(X_train)
+        # train model
+        selection_model = XGBRegressor(objective='count:poisson', seed=42, n_estimators=300, max_depth=7,
+                                       learning_rate=0.1, colsample_bytree=0.6)
+        selection_model.fit(select_X_train, y_train)
+        # eval model
+        select_X_test = selection.transform(X_test)
+        predictions = selection_model.predict(select_X_test)
+        print("Thresh=%.3f, n=%d, Accuracy: " % (thresh, select_X_train.shape[1]))
+        write_output(y_test, predictions)
 
-    # axis 0 is vertical and axis 1 is horizontal
-    frame = pd.concat([one_frame, ordinal_frame], axis=1)
-    frame["Actual"] = actual_val.to_list()
-    frame['Predicted'] = pred_val
-    frame["Exposure"] = test_exposure
-    frame.to_csv("Output\\Output.csv")
+
+def write_output(actual_val, pred_val):
+    actual = np.sum(actual_val)
+    predicted = np.sum(pred_val)
+    error = 1 - (predicted / actual)
+    print("error", float(error) * 100)
+    print("predicted", float(predicted))
 
 
-def predict(X_val, y_val, estimator):
-    # We will predict the output  here
-    y_pred_ = estimator.predict(X_val)
+def gridsearch(estimator):
+    param_grid = \
+        {
 
-    mean_baseline = y_val.mean()
-    y_pred_base = [mean_baseline] * len(y_val)
-    mae_base = mean_absolute_error(y_val, y_pred_base)
-    print(f'Mean Baseline: {mean_baseline:.1f} ')
-    print(f'Baseline mean absolute error: {mae_base}')
-
-    print('predicted mean', y_pred_.mean())
-    mae_model = mean_absolute_error(y_val, y_pred_)
-    print(f'Model mean absolute error: {mae_model}')
-    return y_pred_
+        }
+    model = GridSearchCV(estimator, param_grid, cv=10, scoring="neg_mean_poisson_deviance", refit=True,
+                         verbose=3, n_jobs=-1)
+    model.fit(X_train, y_train)
+    print(model.best_params_)
+    return model.best_estimator_
 
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 ord_col_size = ohe_col_size = 0
-df = pd.read_csv("Output\\Commercial - WeightedInput.csv")
-df.drop(df[(df['Actual'] < 1000)].index, inplace=True)
-df.drop(df[(df['Actual'] > 2000000)].index, inplace=True)
+# print(get_scorer_names())
+df = pd.read_csv("Output\\Frequency.csv")
+X = df.drop('Claim Count', axis=1)
+y = df["Claim Count"]
 
-transformer = get_transformer()
-
-X = df.drop('Actual', axis=1)
-y = df["Actual"]
+transformer = Ut.transform(passthrough_list, to_bin_list, ordinal_list)
 X = transformer.fit_transform(X)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=40)
-rgr = XGBRegressor(objective='reg:gamma', seed=42, eval_metric='mae', max_depth=5,
-                   learning_rate=0.1, n_estimators=300)
-flat_arr = X_train[:, :1]
-exposure = np.reshape(flat_arr, np.shape(X_train)[0])
-X_train = X_train[:, 1:]
-test_exposure = np.reshape(X_test[:, :1], np.shape(X_test)[0])
-X_test = X_test[:, 1:]
-param_dict = {'sample_weight': exposure, 'verbose': True}
+rgr = XGBRegressor(objective='count:poisson', seed=42, n_estimators=300, max_depth=7, learning_rate=0.1,
+                   colsample_bytree=0.6)
+# rgr = gridsearch(rgr)
+rgr.fit(X_train, y_train)
+y_pred = rgr.predict(X_test)
 
-rgr.fit(X_train, y_train, **param_dict)
-y_pred = predict(X_test, y_test, rgr)
-get_columns()
-write_output(X_test, y_test, y_pred)
+(pd.Series(rgr.feature_importances_, index=["AnalysisPeriod",
+                                            'BonusMalusYears',
+                                            'PolicyTenure', "GenderMainDriver", "GenderYoungestDriver",
+                                            "Use", "PaymentMethod", "BonusMalusProtection"])
+ .nlargest(10)
+ .plot(kind='barh'))
+select_features()
+plt.show()
