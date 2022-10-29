@@ -1,11 +1,17 @@
 import pandas as pd
-
-col_list = ["AnalysisPeriod", "AgeMainDriver",
-            'VehicleAge', 'BonusMalusYears',
+import Modules.Utilities as Ut
+col_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
+            "NumberOfPastClaims", "NumberOfPastConvictions", "ClaimLastYr",
+            "AgeMainDriver", 'AgeYoungestDriver', 'AgeYoungestAdditionalDriver',
+            'VehicleAge', 'VehicleValue', 'VehicleMileage', 'BonusMalusYears',
             'PolicyTenure', "GenderMainDriver", "GenderYoungestDriver",
-            "Use", "PaymentMethod", "BonusMalusProtection"]
+            "MaritalMainDriver", "Use", "PaymentMethod", "BonusMalusProtection",
+            "GenderYoungestAdditionalDriver", "VehFuel1"]
 full_list = col_list + ['Claim Count']
 freq = pd.read_csv("Output\\Policies.csv")
+freq = Ut.impute_missing_values(freq, "AgeYoungestAdditionalDriver")
+freq = Ut.impute_missing_values(freq, "GenderYoungestAdditionalDriver")
+
 freq = freq[full_list]
 df_freq = freq[col_list]
 

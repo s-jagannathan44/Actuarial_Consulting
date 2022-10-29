@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-# from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 from numpy import sort
 from sklearn.feature_selection import SelectFromModel
 # from sklearn.metrics import get_scorer_names
@@ -9,12 +9,15 @@ from xgboost import XGBRegressor
 import Modules.Utilities as Ut
 
 # Make and Payment_frequency to go under One hot encoding
-passthrough_list = ["AnalysisPeriod"]
-ordinal_list = ["GenderMainDriver", "GenderYoungestDriver",
-                "Use", "PaymentMethod", "BonusMalusProtection"]
-to_bin_list = [
-
-    ['BonusMalusYears', 4, 'quantile'], ['PolicyTenure', 3, 'quantile']]
+passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
+                    "NumberOfPastConvictions"]
+ordinal_list = ["GenderMainDriver", "GenderYoungestDriver", "MaritalMainDriver",
+                "Use", "PaymentMethod",
+                "GenderYoungestAdditionalDriver"]
+to_bin_list = [['AgeMainDriver', 4, 'uniform'], ['AgeYoungestDriver', 4, 'uniform'],
+               ['AgeYoungestAdditionalDriver', 2, 'uniform'], ['VehicleAge', 2, 'uniform'],
+               ['VehicleValue', 10, 'uniform'], ['VehicleMileage', 4, 'uniform'],
+               ['BonusMalusYears', 4, 'quantile'], ['PolicyTenure', 3, 'quantile']]
 
 
 def data_analysis():
@@ -101,7 +104,7 @@ def gridsearch(estimator):
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 # print(get_scorer_names())
-df = pd.read_csv("Output\\Frequency.csv")
+df = pd.read_csv("Output\\pivot2.csv")
 X = df.drop('Claim Count', axis=1)
 y = df["Claim Count"]
 
@@ -116,13 +119,15 @@ rgr.fit(X_train, y_train)
 y_pred = rgr.predict(X_test)
 column_dict = get_columns()
 write_output(X_test, y_test, y_pred)
-'''
-(pd.Series(rgr.feature_importances_, index=["AnalysisPeriod",
-                                            'BonusMalusYears',
+
+(pd.Series(rgr.feature_importances_, index=["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
+                                            "NumberOfPastConvictions",
+                                            "AgeMainDriver", 'AgeYoungestDriver', 'AgeYoungestAdditionalDriver',
+                                            'VehicleAge', 'VehicleValue', 'VehicleMileage', 'BonusMalusYears',
                                             'PolicyTenure', "GenderMainDriver", "GenderYoungestDriver",
-                                            "Use", "PaymentMethod", "BonusMalusProtection"])
- .nlargest(10)
+                                            "MaritalMainDriver", "Use", "PaymentMethod",
+                                            "GenderYoungestAdditionalDriver"])
+ .nlargest(18)
  .plot(kind='barh'))
 select_features()
 plt.show()
-'''
