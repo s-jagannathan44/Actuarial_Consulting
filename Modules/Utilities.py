@@ -125,7 +125,7 @@ def impute_missing_values(dataframe, column_name):
     return dataframe
 
 
-def transform(pass_list, bin_list, categorical_list):
+def transform(scaler_list, bin_list, categorical_list, pass_list=None):
     counter = 0
     index = 0
     my_list = list()
@@ -134,7 +134,14 @@ def transform(pass_list, bin_list, categorical_list):
     for p in pass_list:
         counter = counter + 1
         name = passthrough + str(counter)
-        my_tuple = (name, MinMaxScaler(), [p])
+        my_tuple = (name, passthrough, [p])
+        my_list.insert(index, my_tuple)
+        index = index + 1
+    counter = 0
+    for s in scaler_list:
+        counter = counter + 1
+        name = "scaler_" + str(counter)
+        my_tuple = (name, MinMaxScaler(), [s])
         my_list.insert(index, my_tuple)
         index = index + 1
     counter = 0
@@ -145,7 +152,7 @@ def transform(pass_list, bin_list, categorical_list):
         my_list.insert(index, my_tuple)
         index = index + 1
 
-    my_tuple = ("onehot_categorical", OrdinalEncoder(), categorical_list)
+    my_tuple = ("ordinal_categorical", OrdinalEncoder(), categorical_list)
     my_list.insert(index, my_tuple)
     ct = ColumnTransformer(my_list, remainder="drop")
     return ct

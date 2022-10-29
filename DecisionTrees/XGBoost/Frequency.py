@@ -9,8 +9,9 @@ from xgboost import XGBRegressor
 import Modules.Utilities as Ut
 
 # Make and Payment_frequency to go under One hot encoding
-passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
-                    "NumberOfPastConvictions"]
+pass_list = ["Exposure"]
+scaler_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
+               "NumberOfPastConvictions"]
 ordinal_list = ["GenderMainDriver", "GenderYoungestDriver", "MaritalMainDriver",
                 "Use", "PaymentMethod",
                 "GenderYoungestAdditionalDriver"]
@@ -78,7 +79,7 @@ def write_output(X_val, actual_val, pred_val):
     frame = pd.concat(res, axis=1)
     frame["Actual"] = actual_val.to_list()
     frame['Predicted'] = pred_val
-    # frame["Exposure"] = test_exposure
+    frame["Exposure"] = test_exposure
     frame.to_csv("Output\\Output.csv")
 
 
@@ -108,14 +109,21 @@ df = pd.read_csv("Output\\pivot2.csv")
 X = df.drop('Claim Count', axis=1)
 y = df["Claim Count"]
 
-transformer = Ut.transform(passthrough_list, to_bin_list, ordinal_list)
+transformer = Ut.transform(scaler_list, to_bin_list, ordinal_list, pass_list)
 X = transformer.fit_transform(X)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=40)
 rgr = XGBRegressor(objective='count:poisson', seed=42, n_estimators=300, max_depth=7, learning_rate=0.1,
                    colsample_bytree=0.6)
 # rgr = gridsearch(rgr)
-rgr.fit(X_train, y_train)
+flat_arr = X_train[:, :1]
+exposure = np.reshape(flat_arr, np.shape(X_train)[0])
+X_train = X_train[:, 1:]
+test_exposure = np.reshape(X_test[:, :1], np.shape(X_test)[0])
+X_test = X_test[:, 1:]
+param_dict = {'sample_weight': exposure, 'verbose': True}
+
+rgr.fit(X_train, y_train, **param_dict)
 y_pred = rgr.predict(X_test)
 column_dict = get_columns()
 write_output(X_test, y_test, y_pred)
