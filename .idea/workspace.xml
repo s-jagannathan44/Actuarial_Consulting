@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added code to write to file &#10;Also sent Frequency code in to Frequency.py">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Final model with 18 columns">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/Frequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/Frequency.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExperimentalFiles/CalculateFrequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/ExperimentalFiles/CalculateFrequency.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -83,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00051" summary="Baseline Rt model">
-      <created>1664165100557</created>
-      <option name="number" value="00051" />
-      <option name="presentableId" value="LOCAL-00051" />
-      <option name="project" value="LOCAL" />
-      <updated>1664165100557</updated>
     </task>
     <task id="LOCAL-00052" summary="Made changes so as to generate baseline MAE data">
       <created>1664187950760</created>
@@ -427,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666950014820</updated>
     </task>
-    <option name="localTasksCounter" value="100" />
+    <task id="LOCAL-00100" summary="Final model with 18 columns">
+      <created>1667036914902</created>
+      <option name="number" value="00100" />
+      <option name="presentableId" value="LOCAL-00100" />
+      <option name="project" value="LOCAL" />
+      <updated>1667036914902</updated>
+    </task>
+    <option name="localTasksCounter" value="101" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Weighted Tweedie" />
     <MESSAGE value="Updated Tweedie to calculate % with less than 5% error" />
     <MESSAGE value="Credit Card fraud classification models" />
     <MESSAGE value="French Motor third party regression model" />
@@ -479,6 +477,7 @@
     <MESSAGE value="Added File to calculate Frequencies which can be predicted using regression instead of classification" />
     <MESSAGE value="Created XGBoost Model to calculate Frequencies using regression instead of classification" />
     <MESSAGE value="Added code to write to file &#10;Also sent Frequency code in to Frequency.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added code to write to file &#10;Also sent Frequency code in to Frequency.py" />
+    <MESSAGE value="Final model with 18 columns" />
+    <option name="LAST_COMMIT_MESSAGE" value="Final model with 18 columns" />
   </component>
 </project>

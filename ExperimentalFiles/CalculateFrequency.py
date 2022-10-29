@@ -7,7 +7,7 @@ col_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
             'PolicyTenure', "GenderMainDriver", "GenderYoungestDriver",
             "MaritalMainDriver", "Use", "PaymentMethod", "BonusMalusProtection",
             "GenderYoungestAdditionalDriver", "VehFuel1"]
-full_list = col_list + ['Claim Count']
+full_list = col_list + ['Claim Count'] + ['Exposure']
 freq = pd.read_csv("Output\\Policies.csv")
 freq = Ut.impute_missing_values(freq, "AgeYoungestAdditionalDriver")
 freq = Ut.impute_missing_values(freq, "GenderYoungestAdditionalDriver")
