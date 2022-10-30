@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Frequency and exposure calculations for 22 columns in one file">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added Exposure as Weights">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/Frequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/Frequency.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Modules/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Modules/Utilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExperimentalFiles/CalculateExposure.py" beforeDir="false" afterPath="$PROJECT_DIR$/ExperimentalFiles/CalculateExposure.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Modeling_Files/XGBoost/Frequency.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Modeling_Files/XGBoost/Frequency.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00053" summary="Added GBM Code">
-      <created>1664188015690</created>
-      <option name="number" value="00053" />
-      <option name="presentableId" value="LOCAL-00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1664188015690</updated>
     </task>
     <task id="LOCAL-00054" summary="Added Code which Groups the Claims , Calculates the exposure and the merges the Exposures back into the ungrouped Claims">
       <created>1664249484074</created>
@@ -427,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667041452241</updated>
     </task>
-    <option name="localTasksCounter" value="102" />
+    <task id="LOCAL-00102" summary="Added Exposure as Weights">
+      <created>1667044454184</created>
+      <option name="number" value="00102" />
+      <option name="presentableId" value="LOCAL-00102" />
+      <option name="project" value="LOCAL" />
+      <updated>1667044454184</updated>
+    </task>
+    <option name="localTasksCounter" value="103" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,7 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Credit Card fraud classification models" />
     <MESSAGE value="French Motor third party regression model" />
     <MESSAGE value="Added gridsearch" />
     <MESSAGE value="Tuned all the hyper parameters" />
@@ -479,6 +478,7 @@
     <MESSAGE value="Added code to write to file &#10;Also sent Frequency code in to Frequency.py" />
     <MESSAGE value="Final model with 18 columns" />
     <MESSAGE value="Frequency and exposure calculations for 22 columns in one file" />
-    <option name="LAST_COMMIT_MESSAGE" value="Frequency and exposure calculations for 22 columns in one file" />
+    <MESSAGE value="Added Exposure as Weights" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Exposure as Weights" />
   </component>
 </project>
