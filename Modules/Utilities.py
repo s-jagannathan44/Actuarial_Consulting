@@ -131,13 +131,14 @@ def transform(scaler_list, bin_list, categorical_list, pass_list=None):
     my_list = list()
     passthrough = "passthrough"
 
-    for p in pass_list:
-        counter = counter + 1
-        name = passthrough + str(counter)
-        my_tuple = (name, passthrough, [p])
-        my_list.insert(index, my_tuple)
-        index = index + 1
-    counter = 0
+    if pass_list is not None:
+        for p in pass_list:
+            counter = counter + 1
+            name = passthrough + str(counter)
+            my_tuple = (name, passthrough, [p])
+            my_list.insert(index, my_tuple)
+            index = index + 1
+        counter = 0
     for s in scaler_list:
         counter = counter + 1
         name = "scaler_" + str(counter)
