@@ -1,19 +1,99 @@
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
+from numpy import sort
+from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split, GridSearchCV
 from Modules import Utilities as Ut
 from xgboost import XGBRegressor
 
-passthrough_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess", "NumberOfPastClaims",
-                    "NumberOfPastConvictions", "ClaimLastYr"]
-ordinal_list = ["GenderMainDriver", "GenderYoungestDriver", "MaritalMainDriver",
-                "Use", "PaymentMethod",  "BonusMalusProtection",
+passthrough_list = ["Exposure"]
+scaler_list = ["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess", "NumberOfPastClaims",
+               "NumberOfPastConvictions", "ClaimLastYr"]
+ordinal_list = ["GenderMainDriver", "GenderYoungestDriver",
+                "Use", "PaymentMethod", "BonusMalusProtection",
                 "GenderYoungestAdditionalDriver", "VehFuel1"]
 to_bin_list = [['AgeMainDriver', 4, 'uniform'], ['AgeYoungestDriver', 4, 'uniform'],
                ['AgeYoungestAdditionalDriver', 2, 'uniform'], ['VehicleAge', 2, 'uniform'],
                ['VehicleValue', 10, 'uniform'], ['VehicleMileage', 4, 'uniform'],
                ['BonusMalusYears', 4, 'quantile'], ['PolicyTenure', 3, 'quantile']]
+
+
+def data_analysis():
+    for c in sev.columns:
+        csv_file_name = "Output\\Columns\\" + c.replace("/", "_") + ".csv"
+        insight = sev[c].value_counts()
+        insight.to_csv(csv_file_name)
+    sev.describe(percentiles=[0.25, 0.5, 0.75, 0.85, 0.9, 0.98, 1]).to_csv("Output\\Columns\\desc.csv")
+
+
+def predict_output(actual_val, pred_val):
+    frame = pd.DataFrame()
+    frame["Actual"] = actual_val.to_list()
+    frame['Predicted'] = pred_val
+    frame["Error"] = abs(frame["Actual"] - frame["Predicted"])
+    frame["%ageError"] = frame["Error"] / frame["Actual"]
+    frame["Below5%"] = round(frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0], ndigits=2)
+    print(round((frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]) * 100, ndigits=2))
+
+
+def select_features():
+    thresholds = sort(rgr.feature_importances_)
+    for thresh in thresholds:
+        # select features using threshold
+        selection = SelectFromModel(rgr, threshold=thresh, prefit=True)
+        select_X_train = selection.transform(X_train)
+        # train model
+        selection_model = XGBRegressor(objective='reg:gamma', seed=42, eval_metric='gamma-deviance',
+                                       n_estimators=100, max_depth=3, learning_rate=0.1, colsample_bytree=0.6)
+        selection_model.fit(select_X_train, y_train)
+        # eval model
+        select_X_test = selection.transform(X_test)
+        predictions = selection_model.predict(select_X_test)
+        print("Thresh=%.3f, n=%d, Accuracy: " % (thresh, select_X_train.shape[1]))
+        predict_output(y_test, predictions)
+
+
+def get_columns():
+    columns = {}
+    for encoder in transformer.named_transformers_:
+        if type(transformer.named_transformers_[encoder]) != str:
+            item = [(encoder, transformer.named_transformers_[encoder].get_feature_names_out().size)]
+            columns.update(item)
+    return columns
+
+
+def write_output(X_value, actual_val, pred_val):
+    frame_list = []
+    res = []
+    length = 0
+    index = 0
+    for item in column_dict:
+        encoder = transformer.named_transformers_[item]
+        size = column_dict[item]
+        length = length + size
+        if length == size:
+            col = encoder.inverse_transform(X_value[:, :length])
+        else:
+            col = encoder.inverse_transform(X_value[:, index:length])
+        frame = pd.DataFrame(col, columns=encoder.get_feature_names_out())
+        frame_list.append(frame)
+        index = length
+
+    for frame in frame_list:
+        res.append(frame)
+
+    # axis 0 is rows and axis 1 is columns
+    frame = pd.concat(res, axis=1)
+    frame["Actual"] = actual_val.to_list()
+    frame['Predicted'] = pred_val
+    frame["Exposure"] = test_exposure
+    frame["Error"] = abs(frame["Actual"] - frame["Predicted"])
+    frame["%ageError"] = frame["Error"] / frame["Actual"]
+    frame["Below5%"] = round(frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0], ndigits=2)
+    print(round((frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0]) * 100, ndigits=2))
+    frame.to_csv("Output\\Output.csv")
 
 
 def return_best_model(estimator):
@@ -28,30 +108,18 @@ def return_best_model(estimator):
     # print(f'r2 score: {r2_base}')
     # defining parameter range
     param_grid = {
-        'max_depth': [2, 3, 4, 5, 6, 7, 8],
-        'learning_rate': [0.1, 0.2, 0.3, 0.4, 0.5],
-        'n_estimators': [100, 200, 300, 500],
-        'early_stopping_rounds': [10],
-        'eval_metric': ['mae']
+        'max_depth': [3, 4, 5, 6, 7, 8, 9],
+        'learning_rate': [0.01, 0.05, 0.1, 0.2, 0.3],
+        'n_estimators': [100, 300, 500],
+        'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1]
     }
-    param_dict = {'eval_set': [(X_val, y_val)], 'verbose': True}
-    xgb_reg = GridSearchCV(estimator, param_grid, cv=5, refit=True, verbose=3, n_jobs=-1)
+    param_dict = {'eval_set': [(X_val, y_val)], 'verbose': True, 'sample_weight': exposure}
+    xgb_reg = GridSearchCV(estimator, param_grid, error_score="raise", scoring='neg_mean_gamma_deviance',
+                           cv=10, refit=True, verbose=3, n_jobs=-1)
     xgb_reg.fit(X_train, y_train, **param_dict)
     # print best parameter after tuning
     print(xgb_reg.best_params_, xgb_reg.best_score_)
     return xgb_reg.best_estimator_
-
-
-def get_columns():
-    global ord_col_size, ohe_col_size
-    encoder = transformer.named_transformers_['onehot_categorical']
-    columns = encoder.get_feature_names_out()
-    ohe_col_size = columns.size
-    encoder = transformer.named_transformers_['ordinal']
-    ord_columns = encoder.get_feature_names_out()
-    columns = np.append(columns, ord_columns)
-    ord_col_size = ord_columns.size
-    return columns
 
 
 def predict(X_value, y_value, estimator):
@@ -65,26 +133,44 @@ def predict(X_value, y_value, estimator):
 
 
 # -------------------- CODE STARTS HERE ---------------------------------------
-ord_col_size = ohe_col_size = 0
+# print(get_scorer_names())
 sev = pd.read_csv('Output\\Severity.csv')
-
 sev = sev[sev["Actual"] > 0]
+sev["Actual"] = sev["Actual"].clip(upper=7500)
 X = sev.drop("Actual", axis=1)
 y = sev["Actual"]
 
-transformer = Ut.transform(passthrough_list, to_bin_list, ordinal_list)
+transformer = Ut.transform(scaler_list, to_bin_list, ordinal_list, passthrough_list)
 X = transformer.fit_transform(X)
 
-rgr = XGBRegressor(objective='reg:gamma', seed=42)
+rgr = XGBRegressor(objective='reg:gamma', seed=42, eval_metric='gamma-deviance', n_estimators=100,
+                   max_depth=3, learning_rate=0.1, colsample_bytree=0.6)
 
 X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
 X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
-
-model = return_best_model(rgr)
+flat_arr = X_train[:, :1]
+exposure = np.reshape(flat_arr, np.shape(X_train)[0])
+X_train = X_train[:, 1:]
+test_exposure = np.reshape(X_test[:, :1], np.shape(X_test)[0])
+X_test = X_test[:, 1:]
+X_val = X_val[:, 1:]
+params_dict = {'sample_weight': exposure, 'verbose': True}
+rgr.fit(X_train, y_train, **params_dict)
+# rgr = return_best_model(rgr)
 # rgr.save_model('Output\\model.json')
 # rgr.load_model('Output\\model.json')
-y_pred = predict(X_test, y_test, model)
-Output = pd.DataFrame(columns=['Actual_XGB', 'Predicted_XGB'])
-Output["Actual_XGB"] = y_test
-Output["Predicted_XGB"] = y_pred
-Output.to_csv("Output\\Output.csv")
+y_pred = predict(X_test, y_test, rgr)
+column_dict = get_columns()
+write_output(X_test, y_test, y_pred)
+
+(pd.Series(rgr.feature_importances_, index=["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
+                                            "NumberOfPastClaims", "NumberOfPastConvictions", "ClaimLastYr",
+                                            "AgeMainDriver", 'AgeYoungestDriver', 'AgeYoungestAdditionalDriver',
+                                            'VehicleAge', 'VehicleValue', 'VehicleMileage', 'BonusMalusYears',
+                                            'PolicyTenure', "GenderMainDriver", "GenderYoungestDriver",
+                                            "Use", "PaymentMethod", "BonusMalusProtection",
+                                            "GenderYoungestAdditionalDriver", "VehFuel1"])
+ .nlargest(21)
+ .plot(kind='barh'))
+select_features()
+plt.show()
