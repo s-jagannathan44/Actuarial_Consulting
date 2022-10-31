@@ -1,101 +1,168 @@
 import numpy as np
 import pandas as pd
-from sklearn.compose import ColumnTransformer
+from matplotlib import pyplot as plt
+from numpy import sort
+from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
+from sklearn.model_selection import train_test_split, GridSearchCV
+from Modules import Utilities as Ut
 from xgboost import XGBRegressor
 
-ordinal_columns = ["GenderMainDriver"]
-ohe_columns = ["MaritalMainDriver", "Make", "Use", "PaymentMethod", "PaymentFrequency"]
+passthrough_list = ["Exposure"]
+scaler_list = ["NumberOfDrivers"]
+ordinal_list = ["Use"]
+to_bin_list = [['AgeMainDriver', 4, 'uniform'], ['AgeYoungestDriver', 4, 'uniform'],
+               ['AgeYoungestAdditionalDriver', 2, 'uniform'], ['VehicleAge', 2, 'uniform'],
+               ['VehicleValue', 10, 'uniform'], ['PolicyTenure', 3, 'quantile']]
+
+
+def data_analysis():
+    for c in sev.columns:
+        csv_file_name = "Output\\Columns\\" + c.replace("/", "_") + ".csv"
+        insight = sev[c].value_counts()
+        insight.to_csv(csv_file_name)
+    sev.describe(percentiles=[0.25, 0.5, 0.75, 0.85, 0.9, 0.98, 1]).to_csv("Output\\Columns\\desc.csv")
+
+
+def select_features():
+    thresholds = sort(rgr.feature_importances_)
+    for thresh in thresholds:
+        # select features using threshold
+        selection = SelectFromModel(rgr, threshold=thresh, prefit=True)
+        select_X_train = selection.transform(X_train)
+        # train model
+        selection_model = XGBRegressor(objective='reg:tweedie', seed=42, eval_metric='tweedie-nloglik@1.2',
+                                       n_estimators=100, max_depth=3, learning_rate=0.1, colsample_bytree=0.6,
+                                       tweedie_variance_power=1.9)
+        param_dict = {'sample_weight': exposure, 'verbose': True}
+        selection_model.fit(select_X_train, y_train, **param_dict)
+        # eval model
+        select_X_test = selection.transform(X_test)
+        predictions = selection_model.predict(select_X_test)
+        print("Thresh=%.3f, n=%d, Accuracy: " % (thresh, select_X_train.shape[1]))
+        predict_output(y_test, predictions)
+
+
+def predict_output(actual_val, pred_val):
+    actual = np.sum(actual_val)
+    predicted = np.sum(pred_val)
+    error = 1 - (predicted / actual)
+    print("error", round(float(error) * 100, ndigits=2))
 
 
 def get_columns():
-    global ord_col_size, ohe_col_size
-    encoder = transformer.named_transformers_['onehot_categorical']
-    columns = encoder.get_feature_names_out()
-    ohe_col_size = columns.size
-    encoder = transformer.named_transformers_['ordinal']
-    ord_columns = encoder.get_feature_names_out()
-    columns = np.append(columns, ord_columns)
-    ord_col_size = ord_columns.size
+    columns = {}
+    for encoder in transformer.named_transformers_:
+        if type(transformer.named_transformers_[encoder]) != str:
+            item = [(encoder, transformer.named_transformers_[encoder].get_feature_names_out().size)]
+            columns.update(item)
     return columns
 
 
-def get_transformer():
-    ordinal_tuple = ("ordinal", OrdinalEncoder(), ordinal_columns)
-    transformer_ = ColumnTransformer(
-        [("passthrough_numeric", "passthrough", ["Exposure"]), ordinal_tuple,
-         ("onehot_categorical", OneHotEncoder(sparse=False), ohe_columns)],
-        remainder='drop')
-    return transformer_
+def write_output(X_value, actual_val, pred_val):
+    frame_list = []
+    res = []
+    length = 0
+    index = 0
+    for item in column_dict:
+        encoder = transformer.named_transformers_[item]
+        size = column_dict[item]
+        length = length + size
+        if length == size:
+            col = encoder.inverse_transform(X_value[:, :length])
+        else:
+            col = encoder.inverse_transform(X_value[:, index:length])
+        frame = pd.DataFrame(col, columns=encoder.get_feature_names_out())
+        frame_list.append(frame)
+        index = length
 
+    for frame in frame_list:
+        res.append(frame)
 
-def write_output(X_val, actual_val, pred_val):
-    one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_val[:, ord_col_size:])
-    ordinal = transformer.named_transformers_['ordinal'].inverse_transform(X_val[:, :ord_col_size])
-    one_frame = pd.DataFrame(one_hot, columns=ohe_columns)
-    ordinal_frame = pd.DataFrame(ordinal, columns=ordinal_columns)
-
-    # axis 0 is vertical and axis 1 is horizontal
-    frame = pd.concat([one_frame, ordinal_frame], axis=1)
+    # axis 0 is rows and axis 1 is columns
+    frame = pd.concat(res, axis=1)
     frame["Actual"] = actual_val.to_list()
     frame['Predicted'] = pred_val
     frame["Exposure"] = test_exposure
-    frame["Error"] = abs(frame["Actual"] - frame["Predicted"])
     frame.to_csv("Output\\Output.csv")
 
 
-def predict(X_val, y_val, estimator):
-    # We will predict the output  here
-    y_pred_ = estimator.predict(X_val)
+def return_best_model(estimator):
+    # get the mean baseline because this is a regression problem
+    # with regression, the baseline can be as simple as the mean.
+    mean_baseline = y_test.mean()
+    y_pred_base = [mean_baseline] * len(y_test)
 
-    mean_baseline = y_val.mean()
-    y_pred_base = [mean_baseline] * len(y_val)
-    mae_base = mean_absolute_error(y_val, y_pred_base)
+    mae_base = mean_absolute_error(y_test, y_pred_base)
     print(f'Mean Baseline: {mean_baseline:.1f} ')
     print(f'Baseline mean absolute error: {mae_base}')
+    # print(f'r2 score: {r2_base}')
+    # defining parameter range
+    param_grid = {
+        'max_depth': [3, 4, 5, 6, 7, 8, 9],
+        'learning_rate': [0.01, 0.05, 0.1, 0.2, 0.3],
+        'n_estimators': [100, 300, 500],
+        'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1]
+    }
+    param_dict = {'eval_set': [(X_val, y_val)], 'verbose': True, 'sample_weight': exposure}
+    xgb_reg = GridSearchCV(estimator, param_grid, error_score="raise",
+                           cv=10, refit=True, verbose=3, n_jobs=-1)
+    xgb_reg.fit(X_train, y_train, **param_dict)
+    # print best parameter after tuning
+    print(xgb_reg.best_params_, xgb_reg.best_score_)
+    return xgb_reg.best_estimator_
 
+
+def predict(X_value, y_value, estimator):
+    # We will predict the output  here
+    y_pred_ = estimator.predict(X_value)
+    print('Actual mean', y_value.mean())
     print('predicted mean', y_pred_.mean())
-    mae_model = mean_absolute_error(y_val, y_pred_)
+    mae_model = mean_absolute_error(y_value, y_pred_)
     print(f'Model mean absolute error: {mae_model}')
     return y_pred_
 
 
 # -------------------- CODE STARTS HERE ---------------------------------------
-ord_col_size = ohe_col_size = 0
-df = pd.read_csv("Output\\WeightedPolicy.csv")
+# print(get_scorer_names())
+sev = pd.read_csv('Output\\Severity.csv')
 
-transformer = get_transformer()
+sev["Actual"] = sev["Actual"].clip(upper=7500)
+X = sev.drop("Actual", axis=1)
+y = sev["Actual"]
 
-X = df.drop('Actual', axis=1)
-y = df["Actual"]
+transformer = Ut.transform(scaler_list, to_bin_list, ordinal_list, passthrough_list)
 X = transformer.fit_transform(X)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=40)
-''' 
-'learning_rate': 0.01,'gamma':1.5,'max_depth': 2, 'subsample':0.6, 'reg_alpha': 0,'reg_lambda':1,'min_child_weight':5, 
-'n_estimators':2000,'tweedie_variance_power':1.6}
-'''
+rgr = XGBRegressor(objective='reg:tweedie', seed=42, eval_metric='tweedie-nloglik@1.2', n_estimators=100,
+                   max_depth=3, learning_rate=0.1, colsample_bytree=0.6, tweedie_variance_power=1.9)
 
-rgr = XGBRegressor(objective='reg:tweedie', seed=42, eval_metric='tweedie-nloglik@1.2', max_depth=5,
-                   learning_rate=0.1, n_estimators=300, tweedie_variance_power=1.9)
-
+X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
+X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
 flat_arr = X_train[:, :1]
 exposure = np.reshape(flat_arr, np.shape(X_train)[0])
 X_train = X_train[:, 1:]
 test_exposure = np.reshape(X_test[:, :1], np.shape(X_test)[0])
 X_test = X_test[:, 1:]
-param_dict = {'sample_weight': exposure, 'verbose': True}
-
-rgr.fit(X_train, y_train, **param_dict)
+X_val = X_val[:, 1:]
+params_dict = {'sample_weight': exposure, 'verbose': True}
+rgr.fit(X_train, y_train, **params_dict)
+# rgr = return_best_model(rgr)
+# rgr.save_model('Output\\model.json')
+# rgr.load_model('Output\\model.json')
 y_pred = predict(X_test, y_test, rgr)
-get_columns()
+column_dict = get_columns()
+predict_output(y_test, y_pred)
 write_output(X_test, y_test, y_pred)
 
-df = pd.read_csv("Output\\Output.csv")
-df = df[df["Actual"] > 0]
-df["%ageError"] = df["Error"] / df["Actual"]
-df["Below%% "] = df[df["%ageError"] < 0.05].shape[0] / df.shape[0]
-df.to_csv("Output\\WithError.csv")
-print(df[df["%ageError"] < 0.05].shape[0] / df.shape[0])
+(pd.Series(rgr.feature_importances_, index=["AnalysisPeriod", "NumberOfDrivers", "VoluntaryExcess",
+                                            "NumberOfPastClaims", "NumberOfPastConvictions", "ClaimLastYr",
+                                            "AgeMainDriver", 'AgeYoungestDriver', 'AgeYoungestAdditionalDriver',
+                                            'VehicleAge', 'VehicleValue', 'VehicleMileage', 'BonusMalusYears',
+                                            'PolicyTenure', "GenderMainDriver", "GenderYoungestDriver",
+                                            "MaritalMainDriver", "Use", "PaymentMethod", "BonusMalusProtection",
+                                            "GenderYoungestAdditionalDriver", "VehFuel1"])
+ .nlargest(22)
+ .plot(kind='barh'))
+select_features()
+plt.show()
