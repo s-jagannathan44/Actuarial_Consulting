@@ -166,3 +166,13 @@ write_output(X_test, y_test, y_pred)
  .plot(kind='barh'))
 select_features()
 plt.show()
+'''
+Code to write single variable 
+encoder = transformer.named_transformers_["scaler_1"]
+frame = pd.DataFrame()
+frame["Nod"] = pd.Series(np.reshape(encoder.inverse_transform(X_test), np.shape(X_test)[0]))
+frame["Actual"] = y_test.to_list()
+frame['Predicted'] = y_pred
+frame["Exposure"] = test_exposure
+frame.to_csv("Output\\Output.csv")
+'''
