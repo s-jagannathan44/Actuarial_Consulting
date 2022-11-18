@@ -2,29 +2,27 @@ import pandas
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.preprocessing import OrdinalEncoder
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.model_selection import train_test_split
 
 #  Part 1 read study and transform the file
-df = pd.read_csv("Output\\Input_3.csv")
+df = pd.read_csv("Output\\PolicyTree.csv")
 
 for c in df.columns:
     print(df[c].name, df[c].unique())
-X = df.drop('Claim', axis=1)
+X = df.drop('Response', axis=1)
 columns = X.columns
-y = df["Claim"]
+y = df["Response"]
 transformer = ColumnTransformer(
     [
+
         (
-            "onehot_categorical",
-            OneHotEncoder(),
-            ["MaritalMainDriver",  "DrivingRestriction"],
-        ),
-(
             "ordinal",
             OrdinalEncoder(),
-            ["GenderMainDriver",  "VehFuel1"],
+            ["GenderMainDriver", "MaritalMainDriver", "DrivingRestriction", "Use", "BonusMalusProtection",
+             "VehFuel1", "PaymentMethod", "PaymentFrequency"],
+
         ),
     ],
     remainder='drop'
@@ -48,15 +46,17 @@ plt.show()
 
 y_pred = clf_dt.predict_proba(X_test)
 
-one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_test[:, :9])
-ordinal = transformer.named_transformers_['ordinal'].inverse_transform(X_test[:, 9:])
-one_frame = pandas.DataFrame(one_hot, columns=["MaritalMainDriver",  "DrivingRestriction"])
-ordinal_frame = pandas.DataFrame(ordinal, columns=["GenderMainDriver",  "VehFuel1"])
+# one_hot = transformer.named_transformers_['onehot_categorical'].inverse_transform(X_test[:, :9])
+ordinal = transformer.named_transformers_['ordinal'].inverse_transform(X_test)
+# one_frame = pandas.DataFrame(one_hot, columns=["MaritalMainDriver", "DrivingRestriction"])
+ordinal_frame = pandas.DataFrame(ordinal, columns=["GenderMainDriver", "MaritalMainDriver",
+                                                   "DrivingRestriction", "Use", "BonusMalusProtection",
+                                                   "VehFuel1", "PaymentMethod", "PaymentFrequency"])
+
 
 # axis 0 is vertical and axis 1 is horizontal
-output = pd.concat([one_frame, ordinal_frame], axis=1)
+# output = pd.concat([one_frame, ordinal_frame], axis=1)
 
-frame = pandas.DataFrame(output.copy(), columns=columns)
-frame["Claim"] = y_test.to_list()
+frame = pandas.DataFrame(ordinal_frame.copy(), columns=columns)
 frame['Predicted'] = y_pred[:, 1:]
 frame.to_csv("Output\\Output.csv")

@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Improved Tweedie Model">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added Code to write single variable">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/Tweedie.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/Tweedie.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/CART/DecisionTreeClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/CART/DecisionTreeClassifier.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00059" summary="Moved ExperimentalFiles to main">
-      <created>1664441305833</created>
-      <option name="number" value="00059" />
-      <option name="presentableId" value="LOCAL-00059" />
-      <option name="project" value="LOCAL" />
-      <updated>1664441305833</updated>
     </task>
     <task id="LOCAL-00060" summary="Images">
       <created>1664593370373</created>
@@ -426,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667215301683</updated>
     </task>
-    <option name="localTasksCounter" value="108" />
+    <task id="LOCAL-00108" summary="Added Code to write single variable">
+      <created>1668497819740</created>
+      <option name="number" value="00108" />
+      <option name="presentableId" value="LOCAL-00108" />
+      <option name="project" value="LOCAL" />
+      <updated>1668497819740</updated>
+    </task>
+    <option name="localTasksCounter" value="109" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Working model on Car and Travel Data" />
     <MESSAGE value="Working model on UK Policy Data" />
     <MESSAGE value="Added code to write to file" />
     <MESSAGE value="Best model for insurance fraud . &#10;60% recall and 78% accuracy" />
@@ -478,6 +478,7 @@
     <MESSAGE value="Severity Code" />
     <MESSAGE value="Improved Severity Model by a third from 7% to 9.33% with 21 columns" />
     <MESSAGE value="Improved Tweedie Model" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improved Tweedie Model" />
+    <MESSAGE value="Added Code to write single variable" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Code to write single variable" />
   </component>
 </project>
