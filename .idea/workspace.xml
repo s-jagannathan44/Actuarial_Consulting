@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added Code to write single variable">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Wrote Models which use predict_proba">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/CART/DecisionTreeClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/CART/DecisionTreeClassifier.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,21 +43,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Python Backups/Python/VolumeControl via HandTracking&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "last_opened_file_path": "D:/Python Backups/Python/VolumeControl via HandTracking",
+    "settings.editor.selected.configurable": "advanced.settings"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Python&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Python"
     ]
   }
-}</component>
+}]]></component>
   <component name="Push.Settings">
     <option name="SHOW_DETAILS_PANEL" value="false" />
   </component>
@@ -83,20 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00060" summary="Images">
-      <created>1664593370373</created>
-      <option name="number" value="00060" />
-      <option name="presentableId" value="LOCAL-00060" />
-      <option name="project" value="LOCAL" />
-      <updated>1664593370373</updated>
-    </task>
-    <task id="LOCAL-00061" summary="Images">
-      <created>1664593428982</created>
-      <option name="number" value="00061" />
-      <option name="presentableId" value="LOCAL-00061" />
-      <option name="project" value="LOCAL" />
-      <updated>1664593428982</updated>
     </task>
     <task id="LOCAL-00062" summary="Code that runs on 24 columns">
       <created>1665114310344</created>
@@ -427,7 +412,21 @@
       <option name="project" value="LOCAL" />
       <updated>1668497819740</updated>
     </task>
-    <option name="localTasksCounter" value="109" />
+    <task id="LOCAL-00109" summary="Wrote Models which use predict_proba">
+      <created>1668778080036</created>
+      <option name="number" value="00109" />
+      <option name="presentableId" value="LOCAL-00109" />
+      <option name="project" value="LOCAL" />
+      <updated>1668778080036</updated>
+    </task>
+    <task id="LOCAL-00110" summary="Changed previous model to use predict_proba">
+      <created>1668860353438</created>
+      <option name="number" value="00110" />
+      <option name="presentableId" value="LOCAL-00110" />
+      <option name="project" value="LOCAL" />
+      <updated>1668860353438</updated>
+    </task>
+    <option name="localTasksCounter" value="111" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,8 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Working model on UK Policy Data" />
-    <MESSAGE value="Added code to write to file" />
     <MESSAGE value="Best model for insurance fraud . &#10;60% recall and 78% accuracy" />
     <MESSAGE value="Better model for insurance fraud . &#10;71% recall and 74% accuracy" />
     <MESSAGE value="Implemented Feature Selection  &#10;68% recall and 75% accuracy" />
@@ -479,6 +476,8 @@
     <MESSAGE value="Improved Severity Model by a third from 7% to 9.33% with 21 columns" />
     <MESSAGE value="Improved Tweedie Model" />
     <MESSAGE value="Added Code to write single variable" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Code to write single variable" />
+    <MESSAGE value="Wrote Models which use predict_proba" />
+    <MESSAGE value="Changed previous model to use predict_proba" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed previous model to use predict_proba" />
   </component>
 </project>
