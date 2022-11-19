@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Wrote Models which use predict_proba">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Modified existing model to use predict_proba">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Changed_previous_model_to_use_predict_proba.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Changed_previous_model_to_use_predict_proba/shelved.patch" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,21 +43,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "D:/Python Backups/Python/VolumeControl via HandTracking",
-    "settings.editor.selected.configurable": "advanced.settings"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Python Backups/Python/VolumeControl via HandTracking&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Python"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="Push.Settings">
     <option name="SHOW_DETAILS_PANEL" value="false" />
   </component>
@@ -82,20 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00062" summary="Code that runs on 24 columns">
-      <created>1665114310344</created>
-      <option name="number" value="00062" />
-      <option name="presentableId" value="LOCAL-00062" />
-      <option name="project" value="LOCAL" />
-      <updated>1665114310345</updated>
-    </task>
-    <task id="LOCAL-00063" summary="Simple XgBoost and Xgboost with Gridsearch &amp; weights">
-      <created>1665199378858</created>
-      <option name="number" value="00063" />
-      <option name="presentableId" value="LOCAL-00063" />
-      <option name="project" value="LOCAL" />
-      <updated>1665199378858</updated>
     </task>
     <task id="LOCAL-00064" summary="wrote code for modeling Data.xls using  XGBoost">
       <created>1665387797798</created>
@@ -426,7 +412,21 @@
       <option name="project" value="LOCAL" />
       <updated>1668860353438</updated>
     </task>
-    <option name="localTasksCounter" value="111" />
+    <task id="LOCAL-00111" summary="Modified existing model to use predict_proba">
+      <created>1668863803177</created>
+      <option name="number" value="00111" />
+      <option name="presentableId" value="LOCAL-00111" />
+      <option name="project" value="LOCAL" />
+      <updated>1668863803177</updated>
+    </task>
+    <task id="LOCAL-00112" summary="Modified existing model to use predict_proba">
+      <created>1668863924664</created>
+      <option name="number" value="00112" />
+      <option name="presentableId" value="LOCAL-00112" />
+      <option name="project" value="LOCAL" />
+      <updated>1668863924664</updated>
+    </task>
+    <option name="localTasksCounter" value="113" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Best model for insurance fraud . &#10;60% recall and 78% accuracy" />
     <MESSAGE value="Better model for insurance fraud . &#10;71% recall and 74% accuracy" />
     <MESSAGE value="Implemented Feature Selection  &#10;68% recall and 75% accuracy" />
     <MESSAGE value="Improved Feature Selection  &#10;68% recall and 76% accuracy" />
@@ -478,6 +477,7 @@
     <MESSAGE value="Added Code to write single variable" />
     <MESSAGE value="Wrote Models which use predict_proba" />
     <MESSAGE value="Changed previous model to use predict_proba" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed previous model to use predict_proba" />
+    <MESSAGE value="Modified existing model to use predict_proba" />
+    <option name="LAST_COMMIT_MESSAGE" value="Modified existing model to use predict_proba" />
   </component>
 </project>
