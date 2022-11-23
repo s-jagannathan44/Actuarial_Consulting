@@ -4,9 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Modified existing model to use predict_proba">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added file which creates simulated data and runs working classification model">
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Changed_previous_model_to_use_predict_proba.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Changed_previous_model_to_use_predict_proba/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/Classification/Input30k.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/Classification/Insurance.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/Freq_Sev/Frequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepLearning/Freq_Sev/Frequency.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrequencyModeling/Frequency.sav" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,13 +87,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00064" summary="wrote code for modeling Data.xls using  XGBoost">
-      <created>1665387797798</created>
-      <option name="number" value="00064" />
-      <option name="presentableId" value="LOCAL-00064" />
-      <option name="project" value="LOCAL" />
-      <updated>1665387797800</updated>
     </task>
     <task id="LOCAL-00065" summary="wrote code for modeling 24 columns">
       <created>1665407018470</created>
@@ -426,7 +424,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668863924664</updated>
     </task>
-    <option name="localTasksCounter" value="113" />
+    <task id="LOCAL-00113" summary="Added file which creates simulated data and runs working classification model">
+      <created>1669074618443</created>
+      <option name="number" value="00113" />
+      <option name="presentableId" value="LOCAL-00113" />
+      <option name="project" value="LOCAL" />
+      <updated>1669074618443</updated>
+    </task>
+    <option name="localTasksCounter" value="114" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +458,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Better model for insurance fraud . &#10;71% recall and 74% accuracy" />
     <MESSAGE value="Implemented Feature Selection  &#10;68% recall and 75% accuracy" />
     <MESSAGE value="Improved Feature Selection  &#10;68% recall and 76% accuracy" />
     <MESSAGE value="Demo Code for using SelectKBest method of feature selection" />
@@ -478,6 +482,7 @@
     <MESSAGE value="Wrote Models which use predict_proba" />
     <MESSAGE value="Changed previous model to use predict_proba" />
     <MESSAGE value="Modified existing model to use predict_proba" />
-    <option name="LAST_COMMIT_MESSAGE" value="Modified existing model to use predict_proba" />
+    <MESSAGE value="Added file which creates simulated data and runs working classification model" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added file which creates simulated data and runs working classification model" />
   </component>
 </project>
