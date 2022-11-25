@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Moved Baseline files to separate directory">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Fraud Model updated to use Predict_proba">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/SimpleClassifier.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/French.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/French.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepLearning/Classification/InsuranceClassifcation.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepLearning/Classification/InsuranceClassifcation.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00067" summary="XGBoost Vs GLM comparison 24 columns">
-      <created>1665494904952</created>
-      <option name="number" value="00067" />
-      <option name="presentableId" value="LOCAL-00067" />
-      <option name="project" value="LOCAL" />
-      <updated>1665494904952</updated>
     </task>
     <task id="LOCAL-00068" summary="XGBoost Vs GLM comparison for Data.xls">
       <created>1665547145624</created>
@@ -426,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669189559324</updated>
     </task>
-    <option name="localTasksCounter" value="116" />
+    <task id="LOCAL-00116" summary="Fraud Model updated to use Predict_proba">
+      <created>1669202161549</created>
+      <option name="number" value="00116" />
+      <option name="presentableId" value="LOCAL-00116" />
+      <option name="project" value="LOCAL" />
+      <updated>1669202161549</updated>
+    </task>
+    <option name="localTasksCounter" value="117" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Demo Code for using SelectKBest method of feature selection" />
     <MESSAGE value="UK Data 96 % accuracy 1.5% recall" />
     <MESSAGE value="UK Data 41 % accuracy 67.5 % recall" />
     <MESSAGE value="UK Data 51 % accuracy 57.5 % recall . &#10;19 columns." />
@@ -478,6 +478,7 @@
     <MESSAGE value="Added file which creates simulated data and runs working classification model" />
     <MESSAGE value="Neural Network classification model updated" />
     <MESSAGE value="Moved Baseline files to separate directory" />
-    <option name="LAST_COMMIT_MESSAGE" value="Moved Baseline files to separate directory" />
+    <MESSAGE value="Fraud Model updated to use Predict_proba" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fraud Model updated to use Predict_proba" />
   </component>
 </project>
