@@ -1,10 +1,37 @@
+import numpy as np
 import pandas as pd
+# from matplotlib import pyplot as plt
+from numpy import sort
+from sklearn.feature_selection import SelectFromModel
 from sklearn.model_selection import train_test_split
+# from sklearn.tree import DecisionTreeClassifier, plot_tree
 from xgboost import XGBClassifier
 from Modules import Utilities as Ut
 
 ordinal_list = ["NAME_CONTRACT_TYPE", "CODE_GENDER", "FLAG_OWN_CAR", "FLAG_OWN_REALTY", "NAME_INCOME_TYPE",
-                "NAME_EDUCATION_TYPE", "NAME_FAMILY_STATUS", "NAME_HOUSING_TYPE", "OCCUPATION_TYPE"]
+                "NAME_EDUCATION_TYPE", "OCCUPATION_TYPE", "NAME_FAMILY_STATUS", "NAME_HOUSING_TYPE",
+                "REGION_RATING_CLIENT"]
+scaler_list = ["AMT_INCOME_TOTAL", "AMT_CREDIT", "CNT_CHILDREN", "REGION_POPULATION_RELATIVE",
+               "DAYS_BIRTH", "DAYS_EMPLOYED"]
+
+
+def select_features():
+    threshold = sort(estimator_.feature_importances_)
+    for thresh in threshold:
+        # select features using threshold
+        selection = SelectFromModel(estimator_, threshold=thresh, prefit=True)
+        select_X_train = selection.transform(X_train)
+        # train model
+        selection_model = XGBClassifier()
+        selection_model.fit(select_X_train, y_train)
+        # eval model
+        select_X_test = selection.transform(X_test)
+        y_pred_ = selection_model.predict_proba(select_X_test)
+        predicted = np.sum(y_pred_[:, 1:])
+        actual = np.sum(y_test)
+        error = 1 - (predicted / actual)
+        print(predicted)
+        print("Thresh=%.3f, n=%d, F1 score: %.3f" % (thresh, select_X_train.shape[1], float(error) * 100))
 
 
 def data_analysis():
@@ -18,28 +45,29 @@ def data_analysis():
 
 def data_modification():
     df = pd.read_csv('Output\\Credit.csv')
-    df = df.replace({'NAME_FAMILY_STATUS': {'Widow': 'Married', 'Seperated': 'Married'}})
-    df.loc[df['NAME_HOUSING_TYPE'] != 'House / apartment', 'NAME_HOUSING_TYPE'] = 'Others'
-    df = df.replace({'OCCUPATION_TYPE': {'IT staff': 'High skill tech staff', 'HR staff': 'High skill tech staff',
-                                         'Realty agents': 'High skill tech staff',
-                                         'Secretaries': 'High skill tech staff',
-                                         'Medicine staff': 'High skill tech staff',
-                                         'Private service staff': 'High skill tech staff',
-                                         }})
-    df = df.replace({'OCCUPATION_TYPE': {'Waiters/barmen staff': 'Drivers', 'Cooking staff': 'Drivers',
-                                         'Cleaning staff': 'Drivers', 'Security staff': 'Drivers',
-                                         }})
-    df = df.replace({'OCCUPATION_TYPE': {'Low-skill Laborers': ''}})
-    df.to_csv("Output\\credit_input.csv")
-
-
-def data_level2_modification():
-    df = pd.read_csv('Output\\credit_input.csv')
     df = df.replace({'NAME_FAMILY_STATUS': {'Civil marriage': 'Single / not married'}})
     df = df.replace({'NAME_INCOME_TYPE': {'State servant': 'Pensioner'}})
-    df = df.replace({'OCCUPATION_TYPE': {'Managers': 'Core staff', 'High skill tech staff': 'Core staff'}})
-    df = df.replace({'OCCUPATION_TYPE': {'Drivers': 'Laborers'}})
-    df.to_csv("Output\\credit_data.csv")
+    df = df.replace({'NAME_HOUSING_TYPE': {'Co-op apartment': 'House / apartment'}})
+    df = df.replace({'OCCUPATION_TYPE': {'IT staff': 'Core staff', 'HR staff': 'Core staff',
+                                         'Managers': 'Core staff',
+                                         'High skill tech staff': 'Core staff'
+                                         }})
+    df = df.replace({'OCCUPATION_TYPE': {'Cooking staff': 'Laborers', 'Security staff': 'Laborers'}})
+    df = df.replace({'OCCUPATION_TYPE': {'Waiters/barmen staff': 'Drivers'}})
+    df = df.replace({'OCCUPATION_TYPE': {'Medicine staff': 'Private service staff',
+                                         'Secretaries': 'Private service staff'}})
+    df = df.replace({'OCCUPATION_TYPE': {'Cleaning staff': 'Sales staff', }})
+
+    df["AMT_INCOME_TOTAL"] = df["AMT_INCOME_TOTAL"].clip(upper=420000)
+    df["AMT_INCOME_TOTAL"] = df["AMT_INCOME_TOTAL"].clip(lower=55000)
+    df["AMT_CREDIT"] = df["AMT_CREDIT"].clip(upper=2000000)
+    df["AMT_CREDIT"] = df["AMT_CREDIT"].clip(lower=100000)
+    df["AMT_ANNUITY"] = df["AMT_ANNUITY"].clip(lower=65000)
+    df["AMT_ANNUITY"] = df["AMT_ANNUITY"].clip(upper=6500)
+    df["CNT_CHILDREN"] = df["CNT_CHILDREN"].clip(upper=2)
+    df["REGION_POPULATION_RELATIVE"] = df["REGION_POPULATION_RELATIVE"].clip(lower=.002)
+
+    return df
 
 
 def get_columns():
@@ -78,25 +106,42 @@ def write_output(X_value, actual_val, pred_val):
     frame.to_csv("Output\\Output.csv")
 
 
-df_ = pd.read_csv('Output\\credit_data.csv')
-df_["AMT_INCOME_TOTAL"] = df_["AMT_INCOME_TOTAL"].clip(upper=420000)
-df_["AMT_INCOME_TOTAL"] = df_["AMT_INCOME_TOTAL"].clip(lower=55000)
-df_["AMT_CREDIT"] = df_["AMT_CREDIT"].clip(upper=2000000)
-df_["AMT_CREDIT"] = df_["AMT_CREDIT"].clip(lower=100000)
-df_["AMT_ANNUITY"] = df_["AMT_ANNUITY"].clip(lower=65000)
-df_["AMT_ANNUITY"] = df_["AMT_ANNUITY"].clip(upper=6500)
-
+df_ = data_modification()
+# df_.to_csv("Output\\Df.csv")
+# how does one get a 378 - 96 split for occupation type
 X = df_.drop('TARGET', axis=1)
 y = df_["TARGET"]
-transformer = Ut.transform(["AMT_INCOME_TOTAL", "AMT_CREDIT", "AMT_ANNUITY"], [], ordinal_list)
+transformer = Ut.transform(scaler_list, [], ordinal_list)
 X = transformer.fit_transform(X)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=25)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=X[:, 6:9], random_state=25)
 
 # define model
 estimator_ = XGBClassifier()
 estimator_.fit(X_train, y_train)
+
 # estimator_ = gridsearch(estimator_)
 y_pred = estimator_.predict_proba(X_test)
 column_dict = get_columns()
 write_output(X_test, y_test, y_pred[:, 1:])
+
+'''
+(pd.Series(estimator_.feature_importances_, index=["AMT_INCOME_TOTAL", "AMT_CREDIT", "AMT_ANNUITY", "CNT_CHILDREN",
+                                                   "REGION_POPULATION_RELATIVE", "DAYS_BIRTH", "DAYS_EMPLOYED",
+                                                   "NAME_CONTRACT_TYPE", "CODE_GENDER", "FLAG_OWN_CAR",
+                                                   "FLAG_OWN_REALTY", "NAME_INCOME_TYPE",
+                                                   "NAME_EDUCATION_TYPE", "NAME_FAMILY_STATUS", "NAME_HOUSING_TYPE",
+                                                   "OCCUPATION_TYPE", "REGION_RATING_CLIENT"])
+ .nlargest(17)
+ .plot(kind='barh'))
+select_features()
+plt.show()
+'''
+'''
+estimator_ = DecisionTreeClassifier(random_state=42, max_depth=3)
+estimator_ = estimator_.fit(X_train, y_train)
+# We will plot the tree here
+plt.figure(fig size=(15, 7.5))
+plot_tree(estimator_, filled=True, rounded=True, class_names=["No Default", "Default"])
+plt.show()
+'''
