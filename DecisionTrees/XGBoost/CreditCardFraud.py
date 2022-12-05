@@ -107,6 +107,7 @@ def write_output(X_value, actual_val, pred_val):
 
 
 df_ = data_modification()
+df_ = Ut.impute_missing_values(df_, "OCCUPATION_TYPE")
 # df_.to_csv("Output\\Df.csv")
 # how does one get a 378 - 96 split for occupation type
 X = df_.drop('TARGET', axis=1)
@@ -114,7 +115,7 @@ y = df_["TARGET"]
 transformer = Ut.transform(scaler_list, [], ordinal_list)
 X = transformer.fit_transform(X)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=X[:, 6:9], random_state=25)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=X[:, 12:14], random_state=25)
 
 # define model
 estimator_ = XGBClassifier()
