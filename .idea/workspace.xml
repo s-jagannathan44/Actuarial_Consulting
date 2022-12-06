@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Credit Card default">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%">
+      <change afterPath="$PROJECT_DIR$/UnsupervisedLearning/IsolationForest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DecisionTrees/XGBoost/CreditCardFraud.py" beforeDir="false" afterPath="$PROJECT_DIR$/DecisionTrees/XGBoost/CreditCardFraud.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,20 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00070" summary="Added Weights and created Random forest model for Data.xls">
-      <created>1665576323577</created>
-      <option name="number" value="00070" />
-      <option name="presentableId" value="LOCAL-00070" />
-      <option name="project" value="LOCAL" />
-      <updated>1665576323577</updated>
-    </task>
-    <task id="LOCAL-00071" summary="deleted redundant files">
-      <created>1665626488199</created>
-      <option name="number" value="00071" />
-      <option name="presentableId" value="LOCAL-00071" />
-      <option name="project" value="LOCAL" />
-      <updated>1665626488200</updated>
     </task>
     <task id="LOCAL-00072" summary="reorganised files in Modeling_Files">
       <created>1665630687709</created>
@@ -426,7 +412,21 @@
       <option name="project" value="LOCAL" />
       <updated>1669686892130</updated>
     </task>
-    <option name="localTasksCounter" value="119" />
+    <task id="LOCAL-00119" summary="Added code to select features based on feature importanct">
+      <created>1669859470024</created>
+      <option name="number" value="00119" />
+      <option name="presentableId" value="LOCAL-00119" />
+      <option name="project" value="LOCAL" />
+      <updated>1669859470024</updated>
+    </task>
+    <task id="LOCAL-00120" summary="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%">
+      <created>1670209928727</created>
+      <option name="number" value="00120" />
+      <option name="presentableId" value="LOCAL-00120" />
+      <option name="project" value="LOCAL" />
+      <updated>1670209928727</updated>
+    </task>
+    <option name="localTasksCounter" value="121" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,8 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="UK Data 51 % accuracy 57.5 % recall . &#10;19 columns." />
-    <MESSAGE value="UK Data 50 % accuracy 61 % recall . &#10;19 columns." />
     <MESSAGE value="UK Data 9.5 % accuracy 95 % recall . &#10;19 columns." />
     <MESSAGE value="UK Data Changed passthrough to MinMax scaler to get 96% recall  &#10;19 columns." />
     <MESSAGE value="Added File to calculate Frequencies which can be predicted using regression instead of classification" />
@@ -478,6 +476,8 @@
     <MESSAGE value="Fraud Model updated to use Predict_proba" />
     <MESSAGE value="French Motor  Model updated to use Predict_proba" />
     <MESSAGE value="Credit Card default" />
-    <option name="LAST_COMMIT_MESSAGE" value="Credit Card default" />
+    <MESSAGE value="Added code to select features based on feature importanct" />
+    <MESSAGE value="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%" />
+    <option name="LAST_COMMIT_MESSAGE" value="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%" />
   </component>
 </project>
