@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%">
-      <change afterPath="$PROJECT_DIR$/UnsupervisedLearning/IsolationForest.py" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Implemented Unsupervised learning using AutoEncoder">
+      <change afterPath="$PROJECT_DIR$/ExperimentalFiles/DisplayMap.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,7 +50,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/Python Backups/Python/VolumeControl via HandTracking&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   },
   &quot;keyToStringList&quot;: {
     &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
@@ -82,20 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00072" summary="reorganised files in Modeling_Files">
-      <created>1665630687709</created>
-      <option name="number" value="00072" />
-      <option name="presentableId" value="LOCAL-00072" />
-      <option name="project" value="LOCAL" />
-      <updated>1665630687709</updated>
-    </task>
-    <task id="LOCAL-00073" summary="Updated to fix issues">
-      <created>1665713987660</created>
-      <option name="number" value="00073" />
-      <option name="presentableId" value="LOCAL-00073" />
-      <option name="project" value="LOCAL" />
-      <updated>1665713987660</updated>
     </task>
     <task id="LOCAL-00074" summary="Weighted Tweedie">
       <created>1665721847353</created>
@@ -426,7 +412,21 @@
       <option name="project" value="LOCAL" />
       <updated>1670209928727</updated>
     </task>
-    <option name="localTasksCounter" value="121" />
+    <task id="LOCAL-00121" summary="Implemented Unsupervised learning using IsolationForest">
+      <created>1670316007405</created>
+      <option name="number" value="00121" />
+      <option name="presentableId" value="LOCAL-00121" />
+      <option name="project" value="LOCAL" />
+      <updated>1670316007405</updated>
+    </task>
+    <task id="LOCAL-00122" summary="Implemented Unsupervised learning using AutoEncoder">
+      <created>1670405821048</created>
+      <option name="number" value="00122" />
+      <option name="presentableId" value="LOCAL-00122" />
+      <option name="project" value="LOCAL" />
+      <updated>1670405821048</updated>
+    </task>
+    <option name="localTasksCounter" value="123" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,8 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="UK Data 9.5 % accuracy 95 % recall . &#10;19 columns." />
-    <MESSAGE value="UK Data Changed passthrough to MinMax scaler to get 96% recall  &#10;19 columns." />
     <MESSAGE value="Added File to calculate Frequencies which can be predicted using regression instead of classification" />
     <MESSAGE value="Created XGBoost Model to calculate Frequencies using regression instead of classification" />
     <MESSAGE value="Added code to write to file &#10;Also sent Frequency code in to Frequency.py" />
@@ -478,6 +476,8 @@
     <MESSAGE value="Credit Card default" />
     <MESSAGE value="Added code to select features based on feature importanct" />
     <MESSAGE value="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%" />
-    <option name="LAST_COMMIT_MESSAGE" value="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%" />
+    <MESSAGE value="Implemented Unsupervised learning using IsolationForest" />
+    <MESSAGE value="Implemented Unsupervised learning using AutoEncoder" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented Unsupervised learning using AutoEncoder" />
   </component>
 </project>
