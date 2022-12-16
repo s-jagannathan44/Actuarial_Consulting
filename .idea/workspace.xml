@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Implemented functionality to plot lat long on map">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Unsupervised learning via KMeans classification">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" beforeDir="false" afterPath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00075" summary="Updated Tweedie to calculate % with less than 5% error">
-      <created>1665744322063</created>
-      <option name="number" value="00075" />
-      <option name="presentableId" value="LOCAL-00075" />
-      <option name="project" value="LOCAL" />
-      <updated>1665744322063</updated>
     </task>
     <task id="LOCAL-00076" summary="Credit Card fraud classification models">
       <created>1665837620115</created>
@@ -425,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1671015106074</updated>
     </task>
-    <option name="localTasksCounter" value="124" />
+    <task id="LOCAL-00124" summary="Unsupervised learning via KMeans classification">
+      <created>1671174681372</created>
+      <option name="number" value="00124" />
+      <option name="presentableId" value="LOCAL-00124" />
+      <option name="project" value="LOCAL" />
+      <updated>1671174681372</updated>
+    </task>
+    <option name="localTasksCounter" value="125" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -452,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Created XGBoost Model to calculate Frequencies using regression instead of classification" />
     <MESSAGE value="Added code to write to file &#10;Also sent Frequency code in to Frequency.py" />
     <MESSAGE value="Final model with 18 columns" />
     <MESSAGE value="Frequency and exposure calculations for 22 columns in one file" />
@@ -477,6 +477,7 @@
     <MESSAGE value="Implemented Unsupervised learning using IsolationForest" />
     <MESSAGE value="Implemented Unsupervised learning using AutoEncoder" />
     <MESSAGE value="Implemented functionality to plot lat long on map" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented functionality to plot lat long on map" />
+    <MESSAGE value="Unsupervised learning via KMeans classification" />
+    <option name="LAST_COMMIT_MESSAGE" value="Unsupervised learning via KMeans classification" />
   </component>
 </project>

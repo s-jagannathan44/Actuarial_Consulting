@@ -36,7 +36,7 @@ def read_transform():
 
 
 df_ = pd.read_csv("Output\\v5.csv")
-
+df_ = df_[df_["deviceID"] != 14]
 # Plot the data
 plt.figure(figsize=(6, 6))
 plt.scatter(df_.iloc[:, 4], df_.iloc[:, 5])
@@ -51,7 +51,7 @@ plt.title('Visualization of raw data')
 X_std = StandardScaler().fit_transform(df_.drop(["timeStamp", "Interval"], axis=1))
 # X_std = df_.drop("timeStamp", axis=1)
 # Run local implementation of kmeans
-km = Km(n_clusters=5, max_iter=100)
+km = Km(n_clusters=4, max_iter=100)
 km.fit(X_std)
 centroids = km.cluster_centers_
 df_["Cluster"] = km.labels_
