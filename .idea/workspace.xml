@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Implemented Unsupervised learning using AutoEncoder">
-      <change afterPath="$PROJECT_DIR$/ExperimentalFiles/DisplayMap.py" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Implemented functionality to plot lat long on map">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -82,13 +81,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00074" summary="Weighted Tweedie">
-      <created>1665721847353</created>
-      <option name="number" value="00074" />
-      <option name="presentableId" value="LOCAL-00074" />
-      <option name="project" value="LOCAL" />
-      <updated>1665721847353</updated>
     </task>
     <task id="LOCAL-00075" summary="Updated Tweedie to calculate % with less than 5% error">
       <created>1665744322063</created>
@@ -426,7 +418,14 @@
       <option name="project" value="LOCAL" />
       <updated>1670405821048</updated>
     </task>
-    <option name="localTasksCounter" value="123" />
+    <task id="LOCAL-00123" summary="Implemented functionality to plot lat long on map">
+      <created>1671015106074</created>
+      <option name="number" value="00123" />
+      <option name="presentableId" value="LOCAL-00123" />
+      <option name="project" value="LOCAL" />
+      <updated>1671015106074</updated>
+    </task>
+    <option name="localTasksCounter" value="124" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +452,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Added File to calculate Frequencies which can be predicted using regression instead of classification" />
     <MESSAGE value="Created XGBoost Model to calculate Frequencies using regression instead of classification" />
     <MESSAGE value="Added code to write to file &#10;Also sent Frequency code in to Frequency.py" />
     <MESSAGE value="Final model with 18 columns" />
@@ -478,6 +476,7 @@
     <MESSAGE value="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%" />
     <MESSAGE value="Implemented Unsupervised learning using IsolationForest" />
     <MESSAGE value="Implemented Unsupervised learning using AutoEncoder" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented Unsupervised learning using AutoEncoder" />
+    <MESSAGE value="Implemented functionality to plot lat long on map" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented functionality to plot lat long on map" />
   </component>
 </project>
