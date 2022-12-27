@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Unsupervised learning via KMeans classification">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Data and Excel files for telematics">
+      <change afterPath="$PROJECT_DIR$/Modeling_Files/telematics/GroupedByDevice.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Modeling_Files/telematics/GroupedByTraffic.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Modeling_Files/telematics/RandomSampling1.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Modeling_Files/telematics/RandomSampling2.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" beforeDir="false" afterPath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" afterDir="false" />
     </list>
@@ -82,20 +86,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00076" summary="Credit Card fraud classification models">
-      <created>1665837620115</created>
-      <option name="number" value="00076" />
-      <option name="presentableId" value="LOCAL-00076" />
-      <option name="project" value="LOCAL" />
-      <updated>1665837620115</updated>
-    </task>
-    <task id="LOCAL-00077" summary="French Motor third party regression model">
-      <created>1665903773528</created>
-      <option name="number" value="00077" />
-      <option name="presentableId" value="LOCAL-00077" />
-      <option name="project" value="LOCAL" />
-      <updated>1665903773528</updated>
     </task>
     <task id="LOCAL-00078" summary="Added gridsearch">
       <created>1665910324504</created>
@@ -426,7 +416,21 @@
       <option name="project" value="LOCAL" />
       <updated>1671174681372</updated>
     </task>
-    <option name="localTasksCounter" value="125" />
+    <task id="LOCAL-00125" summary="Unsupervised learning via KMeans classification">
+      <created>1671188472193</created>
+      <option name="number" value="00125" />
+      <option name="presentableId" value="LOCAL-00125" />
+      <option name="project" value="LOCAL" />
+      <updated>1671188472193</updated>
+    </task>
+    <task id="LOCAL-00126" summary="Data and Excel files for telematics">
+      <created>1671188746890</created>
+      <option name="number" value="00126" />
+      <option name="presentableId" value="LOCAL-00126" />
+      <option name="project" value="LOCAL" />
+      <updated>1671188746890</updated>
+    </task>
+    <option name="localTasksCounter" value="127" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +457,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Added code to write to file &#10;Also sent Frequency code in to Frequency.py" />
     <MESSAGE value="Final model with 18 columns" />
     <MESSAGE value="Frequency and exposure calculations for 22 columns in one file" />
     <MESSAGE value="Added Exposure as Weights" />
@@ -478,6 +481,7 @@
     <MESSAGE value="Implemented Unsupervised learning using AutoEncoder" />
     <MESSAGE value="Implemented functionality to plot lat long on map" />
     <MESSAGE value="Unsupervised learning via KMeans classification" />
-    <option name="LAST_COMMIT_MESSAGE" value="Unsupervised learning via KMeans classification" />
+    <MESSAGE value="Data and Excel files for telematics" />
+    <option name="LAST_COMMIT_MESSAGE" value="Data and Excel files for telematics" />
   </component>
 </project>
