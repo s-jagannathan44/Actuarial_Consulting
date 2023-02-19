@@ -3,40 +3,20 @@ import matplotlib.pyplot as plt
 from kneed import KneeLocator
 from sklearn.cluster import KMeans as Km
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import silhouette_score
-from sklearn.decomposition import PCA
-from sklearn.pipeline import Pipeline
+from sklearn.metrics import silhouette_score, davies_bouldin_score
 
 
-def score_PCA():
-    for n in range(1, 8):
-        # This set the number of components for pca,
-        # but leaves other steps unchanged
-        pipe["preprocessor"]["pca"].n_components = n
-        pipe.fit(df_)
-
-        silhouette_coef = silhouette_score(
-            pipe["preprocessor"].transform(df_),
-            pipe["clusterer"]["kmeans"].labels_,
-        )
-        # Add metrics to their lists
-        sil_scores.append(silhouette_coef)
-    plt.style.use("fivethirtyeight")
-    plt.figure(figsize=(6, 6))
-    plt.plot(
-        range(1, 8),
-        sil_scores,
-        c="#008fd5",
-        label="Silhouette Coefficient",
-    )
-    plt.xlabel("n_components")
-    plt.legend()
-    plt.title("Clustering Performance as a Function of n_components")
-    plt.tight_layout()
-    plt.show()
+def cluster_data():
+    # Run local implementation of k means
+    km = Km(n_clusters=n_clusters, max_iter=100, init='k-means++')
+    labels = km.fit_predict(X_std)
+    print(silhouette_score(X_std, labels))
+    print(davies_bouldin_score(X_std, labels))
+    df["Cluster"] = km.labels_
+    df.to_csv("Output\\clustered.csv")
 
 
-def elbow_method(X_std):
+def elbow_method():
     list_k = list(range(2, 10))
     for k in list_k:
         km = Km(n_clusters=k)
@@ -51,24 +31,36 @@ def elbow_method(X_std):
     return KneeLocator(range(2, 10), sse, curve="convex", direction="decreasing").elbow
 
 
+def process_data():
+    df["TripEndDateTIme"] = pd.to_datetime(df['TripEndDateTIme'])
+    df["TripStartDateTIme"] = pd.to_datetime(df['TripStartDateTIme'])
+    df["Duration"] = df["TripEndDateTIme"] - df["TripStartDateTIme"]
+    for index in range(len(df)):
+        dayOfWeek.append(pd.Timestamp(df["TripStartDateTIme"].iloc[index]).dayofweek)
+        duration.append(pd.Timedelta(df["Duration"].iloc[index]).total_seconds() / 3600)
+
+    df["Distance"] = df["OdometerEnd"] - df["OdometerStart"]
+    df["DayOfWeek"] = dayOfWeek
+    df["TripDuration"] = duration
+    df.drop(df.columns.difference(columns), axis=1, inplace=True)
+
+    # Standardize the data
+    return MinMaxScaler().fit_transform(df)
+
+
 # -------------------- CODE STARTS HERE ---------------------------------------
 sse = []
 sil_scores = []
 davies_score = []
-df_ = pd.read_csv("Output\\FinalData.csv")
-n_clusters = elbow_method(MinMaxScaler().fit_transform(df_))
-# Create Pipelines
-preprocessor = Pipeline([("scaler", MinMaxScaler()), ("pca", PCA(n_components=1, random_state=42)), ])
-clusterer = Pipeline([(
-    "kmeans",
-    Km(n_clusters=n_clusters, init="k-means++", n_init=50, max_iter=500, random_state=42, ),
-)])
-pipe = Pipeline([("preprocessor", preprocessor), ("clusterer", clusterer)])
-score_PCA()
-pipe.fit(df_)
-preprocessed_data = pipe["preprocessor"].transform(df_)
-print(n_clusters)
-predicted_labels = pipe["clusterer"]["kmeans"].labels_
-df_["Cluster"] = predicted_labels
-df_.to_csv("Output\\clustered.csv")
-print(silhouette_score(preprocessed_data, predicted_labels))
+dayOfWeek = []
+duration = []
+columns = ["id", "Trip_id", "AvgSpeed", "HarshBreaks", "InstancesAbove120KMPH", "InstancesAbove80KMPH", "MaxSpeed",
+           "SuddenTurns", "RashAccelerations", "Distance", "TripDuration", "DayOfWeek"]
+df = pd.read_csv("Output\\processedTelematics.csv")
+
+X_std = process_data()
+
+# Determine number of clusters using silhouette_score and  davies_bouldin_score
+n_clusters = elbow_method()
+cluster_data()
+plt.show()
