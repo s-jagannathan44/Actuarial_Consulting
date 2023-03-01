@@ -56,11 +56,13 @@ dayOfWeek = []
 duration = []
 columns = ["id", "Trip_id", "AvgSpeed", "HarshBreaks", "InstancesAbove120KMPH", "InstancesAbove80KMPH", "MaxSpeed",
            "SuddenTurns", "RashAccelerations", "Distance", "TripDuration", "DayOfWeek"]
-df = pd.read_csv("Output\\processedTelematics.csv")
+df = pd.read_csv("Output\\Weekend.csv")
 
-X_std = process_data()
-
+# X_std = process_data()
+X_std = MinMaxScaler().fit_transform(df)
 # Determine number of clusters using silhouette_score and  davies_bouldin_score
-n_clusters = elbow_method()
+# n_clusters = elbow_method()
+# if n_clusters is None:
+n_clusters = 5
 cluster_data()
 plt.show()

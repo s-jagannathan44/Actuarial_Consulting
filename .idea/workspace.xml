@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added charts and graphs required for EDA">
-      <change afterPath="$PROJECT_DIR$/Project/Tweedie_XGB.py" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added new file in  project folder">
+      <change afterPath="$PROJECT_DIR$/Project/Utilities.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExperimentalFiles/CalculateExposure.py" beforeDir="false" afterPath="$PROJECT_DIR$/ExperimentalFiles/CalculateExposure.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExperimentalFiles/CalculateFrequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/ExperimentalFiles/CalculateFrequency.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/Tweedie_GLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Tweedie_GLM.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" beforeDir="false" afterPath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -86,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00089" summary="Improved Feature Selection  &#10;68% recall and 76% accuracy">
-      <created>1666592230960</created>
-      <option name="number" value="00089" />
-      <option name="presentableId" value="LOCAL-00089" />
-      <option name="project" value="LOCAL" />
-      <updated>1666592230960</updated>
     </task>
     <task id="LOCAL-00090" summary="Demo Code for using SelectKBest method of feature selection">
       <created>1666593014905</created>
@@ -430,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1677210119515</updated>
     </task>
-    <option name="localTasksCounter" value="138" />
+    <task id="LOCAL-00138" summary="Added new file in  project folder">
+      <created>1677293256420</created>
+      <option name="number" value="00138" />
+      <option name="presentableId" value="LOCAL-00138" />
+      <option name="project" value="LOCAL" />
+      <updated>1677293256420</updated>
+    </task>
+    <option name="localTasksCounter" value="139" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -457,7 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Modified existing model to use predict_proba" />
     <MESSAGE value="Added file which creates simulated data and runs working classification model" />
     <MESSAGE value="Neural Network classification model updated" />
     <MESSAGE value="Moved Baseline files to separate directory" />
@@ -482,6 +478,7 @@
     <MESSAGE value="This file uses ReverseGeoLocation  to get address from Lat Long" />
     <MESSAGE value="Modified the code to use Binomial from Statsmodel instead of Poisson" />
     <MESSAGE value="Added charts and graphs required for EDA" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added charts and graphs required for EDA" />
+    <MESSAGE value="Added new file in  project folder" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added new file in  project folder" />
   </component>
 </project>
