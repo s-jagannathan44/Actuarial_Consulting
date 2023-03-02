@@ -2,13 +2,10 @@ import pandas as pd
 
 
 def extract_policies():
-    df = pd.read_csv("Output\\2W Policy Data JAN 232W_Policy.csv", encoding='windows-1252')
+    df = pd.read_csv("Output\\2W_Policy.csv", encoding='windows-1252')
 
-    PolicyNos = ["P0018100004/4102/106939", "P0018100006/4102/107427", "P0018200014/4102/104137",
-                 "P0019100004/4112/100310", "P0019200014/4113/102481", "P0019200014/4113/103884",
-                 "P0019200014/4113/105999", "P0019200014/4113/106096", "P0019200014/4113/106773",
-                 "P0019400007/4113/102284", "P0019400007/4113/104110", "P0019400023/4113/103014",
-                 "P0020400020/4113/106471"]
+    PolicyNos = ["P0017300002/4102/103012", "P0019200005/4113/101756", "P0019400039/4112/100314",
+                 "P0020100004/4113/117071", "P0021200014/4113/132491"]
     Grouped = pd.DataFrame(columns=df.columns)
     for PolicyNo in PolicyNos:
         rows = df[df["Policy No"] == PolicyNo]
@@ -99,4 +96,29 @@ def process_policies():
     df.to_csv("Output\\Final.csv")
 
 
-process_policies()
+def merge_dataframes():
+    # Create DataFrame1
+    dataFrame1 = pd.DataFrame(
+        {
+            "Key": ["1", "2", "3", "4"],
+            "Col2": [10, 30, 40, 50],
+            "Col3": [2, 5, 7, 9]
+        },
+    )
+
+    print(dataFrame1)
+
+    # Create DataFrame2
+    dataFrame2 = pd.DataFrame(
+        {
+            "Col1": [100],
+            "Col7": [200],
+            "Key": ["1"]
+        },
+    )
+
+    print(dataFrame2)
+
+    dataFrame3 = pd.merge(dataFrame2, dataFrame1, on='Key', how="right")
+
+    print(dataFrame3)

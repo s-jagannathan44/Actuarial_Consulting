@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added new file in  project folder">
-      <change afterPath="$PROJECT_DIR$/Project/Utilities.py" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added new files in  project folder">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" beforeDir="false" afterPath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Project/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Utilities.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00090" summary="Demo Code for using SelectKBest method of feature selection">
-      <created>1666593014905</created>
-      <option name="number" value="00090" />
-      <option name="presentableId" value="LOCAL-00090" />
-      <option name="project" value="LOCAL" />
-      <updated>1666593014905</updated>
     </task>
     <task id="LOCAL-00091" summary="UK Data 96 % accuracy 1.5% recall">
       <created>1666602994719</created>
@@ -427,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1677293256420</updated>
     </task>
-    <option name="localTasksCounter" value="139" />
+    <task id="LOCAL-00139" summary="Added new files in  project folder">
+      <created>1677666292421</created>
+      <option name="number" value="00139" />
+      <option name="presentableId" value="LOCAL-00139" />
+      <option name="project" value="LOCAL" />
+      <updated>1677666292421</updated>
+    </task>
+    <option name="localTasksCounter" value="140" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Added file which creates simulated data and runs working classification model" />
     <MESSAGE value="Neural Network classification model updated" />
     <MESSAGE value="Moved Baseline files to separate directory" />
     <MESSAGE value="Fraud Model updated to use Predict_proba" />
@@ -479,6 +477,7 @@
     <MESSAGE value="Modified the code to use Binomial from Statsmodel instead of Poisson" />
     <MESSAGE value="Added charts and graphs required for EDA" />
     <MESSAGE value="Added new file in  project folder" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added new file in  project folder" />
+    <MESSAGE value="Added new files in  project folder" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added new files in  project folder" />
   </component>
 </project>
