@@ -79,7 +79,7 @@ def sum_columns(df):
 def group_policies(df):
     col_list = ["LT_ANNUAL Flag", "Policy No", "CC_desc", "Body Type", "Vehicle Make", "Channel", "RSD New",
                 "RED New", "V AGE BAND", "Vehicle Registration Region", "Registration States", "Cluster",
-                "Zone", "UniqueKey"]
+                "Zone", "UniqueKey", "UY New"]
     # ------------------- df = pd.read_csv("Output\\Make.csv")
     # This line does a pivot table like summation based on the specified columns
     df = df.groupby(col_list).sum()
@@ -183,7 +183,8 @@ def split_csv():
 
 
 def rollup_policies(freq):
-    col_list = ["LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make", "V AGE BAND", "Registration States"]
+    col_list = ["UY New", "LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make", "V AGE BAND",
+                "Registration States", "Zone"]
     full_list = col_list + ['Gross Cost'] + ['Exposure']
 
     freq = freq[full_list]
