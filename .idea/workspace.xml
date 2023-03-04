@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added methods to prepare final CSV">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added UY New and Zone columns">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project/Tweedie_XGB.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Tweedie_XGB.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Utilities.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,21 +43,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/Django",
-    "settings.editor.selected.configurable": "debugger.dataViews.python.type.renderers"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Django&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;debugger.dataViews.python.type.renderers&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Python"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="Push.Settings">
     <option name="SHOW_DETAILS_PANEL" value="false" />
   </component>
@@ -83,20 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00093" summary="UK Data 51 % accuracy 57.5 % recall . &#10;19 columns.">
-      <created>1666631170977</created>
-      <option name="number" value="00093" />
-      <option name="presentableId" value="LOCAL-00093" />
-      <option name="project" value="LOCAL" />
-      <updated>1666631170977</updated>
-    </task>
-    <task id="LOCAL-00094" summary="UK Data 50 % accuracy 61 % recall . &#10;19 columns.">
-      <created>1666632788395</created>
-      <option name="number" value="00094" />
-      <option name="presentableId" value="LOCAL-00094" />
-      <option name="project" value="LOCAL" />
-      <updated>1666632788395</updated>
     </task>
     <task id="LOCAL-00095" summary="UK Data 9.5 % accuracy 95 % recall . &#10;19 columns.">
       <created>1666635257494</created>
@@ -427,7 +412,21 @@
       <option name="project" value="LOCAL" />
       <updated>1677751296834</updated>
     </task>
-    <option name="localTasksCounter" value="142" />
+    <task id="LOCAL-00142" summary="fixed bugs in Claim Gross Cost Calculation">
+      <created>1677905604212</created>
+      <option name="number" value="00142" />
+      <option name="presentableId" value="LOCAL-00142" />
+      <option name="project" value="LOCAL" />
+      <updated>1677905604212</updated>
+    </task>
+    <task id="LOCAL-00143" summary="Added UY New and Zone columns">
+      <created>1677923209228</created>
+      <option name="number" value="00143" />
+      <option name="presentableId" value="LOCAL-00143" />
+      <option name="project" value="LOCAL" />
+      <updated>1677923209228</updated>
+    </task>
+    <option name="localTasksCounter" value="144" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,8 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Fraud Model updated to use Predict_proba" />
-    <MESSAGE value="French Motor  Model updated to use Predict_proba" />
     <MESSAGE value="Credit Card default" />
     <MESSAGE value="Added code to select features based on feature importanct" />
     <MESSAGE value="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%" />
@@ -479,6 +476,19 @@
     <MESSAGE value="Added new files in  project folder" />
     <MESSAGE value="Added method to join 2 dataframes" />
     <MESSAGE value="Added methods to prepare final CSV" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added methods to prepare final CSV" />
+    <MESSAGE value="fixed bugs in Claim Gross Cost Calculation" />
+    <MESSAGE value="Added UY New and Zone columns" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added UY New and Zone columns" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Project/Severity_GLM.py</url>
+          <line>68</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
