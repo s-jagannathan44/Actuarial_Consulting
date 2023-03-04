@@ -10,7 +10,9 @@
 # combine_claim_files combines the outstanding and paid claim files and passes the Gross claim amount
 # per policy to create_csv to be included in the final csv file
 # merge_dataframes has sample code for merging 2 data frames with different columns into 1 via a UniqueKey
-
+# split_csv splits a dataframe into multiple parts and then writes them to file
+# rollup_policies rolls up the policy data as per the columns provided
+import numpy as np
 import pandas as pd
 
 
@@ -32,7 +34,7 @@ def process_paid_claims():
     df["UniqueKey"] = df["Policy No"] + df["UWYear"]
     df = df[df["Paid FY"] != "2022-23"]
     df.drop(columns="Product Code", axis=1, inplace=True)
-    col_list = ["Policy No",  "Type", "NOL Flag", "RSD New", "UniqueKey"]
+    col_list = ["NOL Flag", "RSD New", "UniqueKey"]
     # This line does a pivot table like summation based on the specified columns
     df = df.groupby(col_list).sum()
     df.to_csv("Output\\PaidClaimGrouping.csv")
@@ -43,7 +45,7 @@ def process_outstanding_claims():
     df = df[df["OS AS ON"] == "01-03-2022"]
     df["UniqueKey"] = df["Policy No"] + df["UWYear"]
     df.drop(columns="Product code", axis=1, inplace=True)
-    col_list = ["Policy No", "Type", "NOL Flag", "RSD New", "UniqueKey"]
+    col_list = ["NOL Flag", "RSD New", "UniqueKey"]
     # This line does a pivot table like summation based on the specified columns
     df = df.groupby(col_list).sum()
 
@@ -125,7 +127,7 @@ def combine_claim_files():
     dataFrame2 = dataFrame2[dataFrame2["NOL Flag_Paid"] == "Injury"]
     dataFrame3 = pd.read_csv("Output\\OutstandingClaimGrouping.csv")
     dataFrame3 = dataFrame3[dataFrame3["NOL Flag_OS"] == "Injury"]
-    dataFrame4 = pd.merge(dataFrame2, dataFrame3, on='UniqueKey', how="right")
+    dataFrame4 = pd.merge(dataFrame2, dataFrame3, on='UniqueKey', how="outer")
 
     Gross_List = ["Gross Paid", "Gross  OS"]
     col_to_drop = ["Gross Paid", "Gross Loss Paid", "Gross Expense Paid", "Net Paid", "Unique Claim Count_Paid",
@@ -160,7 +162,82 @@ def merge_dataframes():
     )
 
     print(dataFrame2)
-
+    # This is right outer join and includes all keys from table on right .
+    # To get keys from both tables  use the full outer join [how = outer]
     dataFrame3 = pd.merge(dataFrame2, dataFrame1, on='Key', how="right")
 
     print(dataFrame3)
+
+
+def split_csv():
+    df = pd.DataFrame(
+        {
+            "Key": ["1", "2", "3", "4", "5", "6"],
+            "Col2": [10, 30, 40, 50, 20, 60],
+            "Col3": [2, 5, 7, 9, 1, 3]
+        },
+    )
+    df_split = np.array_split(df, 3)
+    for i in range(0, 3):
+        df_split[i].to_csv(str(i) + ".csv")
+
+
+def rollup_policies(freq):
+    col_list = ["LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make", "V AGE BAND", "Registration States"]
+    full_list = col_list + ['Gross Cost'] + ['Exposure']
+
+    freq = freq[full_list]
+    df_freq = freq[col_list]
+
+    df_freq = df_freq.iloc[df_freq.drop_duplicates().index]
+    df_freq = df_freq.reset_index(drop=True)
+    df_freq['GroupID'] = df_freq.index + 1
+
+    df_freq = pd.merge(freq, df_freq, how='left')
+    df_freq['GroupID'] = df_freq['GroupID'].fillna(method='ffill')
+    df_freq.set_index("GroupID", inplace=True, drop=True)
+    df_freq.to_csv("Output\\pivot.csv")
+
+    freq = pd.read_csv("Output\\pivot.csv")
+    freq = freq.groupby(col_list).sum()
+    return freq
+
+
+# for i in range(0, 10):
+#     df_ = combine_make("D:\\MachineLearning_Files\\Project\\Split_Files\\" + str(i) + ".csv")
+#     df_ = group_policies(df_)
+#     df_ = sum_columns(df_)
+#     df_.to_csv("D:\\MachineLearning_Files\\Project\\Split_Files\\FinalPolicy_" + str(i) + ".csv")
+#     print(i)
+
+# for i in range(0, 10):
+#     policy = pd.read_csv("D:\\MachineLearning_Files\\Project\\Split_Files\\FinalPolicy_" + str(i) + ".csv")
+#     claims = combine_claim_files()
+#     dataFrame4 = pd.merge(claims, policy, on='UniqueKey', how="right")
+#     dataFrame4.set_index("UniqueKey", inplace=True, drop=True)
+#     dataFrame4.to_csv("D:\\MachineLearning_Files\\Project\\Split_Files\\DataFile_" + str(i) + ".csv")
+#     print(i)
+
+# for i in range(0, 10):
+#     policy = pd.read_csv("D:\\MachineLearning_Files\\Project\\Split_Files\\DataFile_" + str(i) + ".csv")
+#     rollup_policies(policy).to_csv("D:\\MachineLearning_Files\\Project\\Split_Files\\Rollup_" + str(i) + ".csv")
+
+# dfs = []
+# for i in range(0, 10):
+#     policy = pd.read_csv("D:\\MachineLearning_Files\\Project\\Split_Files\\Rollup_" + str(i) + ".csv")
+#     dfs.append(policy)
+#     print(i)
+#
+# result = pd.concat(dfs)
+# result.to_csv("Output\\frames.csv")
+
+
+#
+# dfs = []
+# for i in range(0, 10):
+#     policy = pd.read_csv("D:\\MachineLearning_Files\\Project\\Split_Files\\DataFile_" + str(i) + ".csv")
+#     dfs.append(policy)
+#     print(i)
+#
+# result = pd.concat(dfs)
+# result.to_csv("Output\\frames.csv")
