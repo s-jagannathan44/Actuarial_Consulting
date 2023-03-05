@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 from numpy import sort
 from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import mean_absolute_error
@@ -9,11 +9,10 @@ from Modules import Utilities as Ut
 from xgboost import XGBRegressor
 
 passthrough_list = ["Exposure"]
-scaler_list = ["NumberOfDrivers", "NumberOfPastClaims",  "ClaimLastYr"]
-ordinal_list = ["GenderMainDriver", "MaritalMainDriver", "Use", "PaymentMethod", "VehFuel1"]
-to_bin_list = [['AgeMainDriver', 4, 'uniform'],
-               ['VehicleAge', 2, 'uniform'],
-               ['VehicleValue', 10, 'uniform'], ['VehicleMileage', 3, 'quantile']]
+scaler_list = []
+ordinal_list = ["LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make", "V AGE BAND",
+                "Registration States", "UY New", "Zone"]
+to_bin_list = []
 
 
 def data_analysis():
@@ -99,14 +98,14 @@ def return_best_model(estimator):
     # print(f'r2 score: {r2_base}')
     # defining parameter range
     param_grid = {
-        'max_depth': [3, 4, 5, 6, 7, 8, 9],
-        'learning_rate': [0.01, 0.05, 0.1, 0.2, 0.3],
-        'n_estimators': [100, 300, 500],
-        'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1]
+        'max_depth': [3, 5],
+        # 'learning_rate': [0.01, 0.05, 0.1, 0.2],
+        # 'n_estimators': [100, 300, 500],
+        # 'colsample_bytree': [0.8, 0.9, 1]
     }
     param_dict = {'eval_set': [(X_val, y_val)], 'verbose': True, 'sample_weight': exposure}
-    xgb_reg = GridSearchCV(estimator, param_grid, error_score="raise",
-                           cv=10, refit=True, verbose=3, n_jobs=-1)
+    xgb_reg = GridSearchCV(estimator, param_grid,
+                           cv=5, refit=True, verbose=3, n_jobs=-1)
     xgb_reg.fit(X_train, y_train, **param_dict)
     # print best parameter after tuning
     print(xgb_reg.best_params_, xgb_reg.best_score_)
@@ -125,18 +124,20 @@ def predict(X_value, y_value, estimator):
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 # print(get_scorer_names())
-sev = pd.read_csv('Output\\Exposure.csv')
+sev = pd.read_csv('Output\\Death.csv')
+# sev = sev[sev["UY New"] == "2019-20"]
 
-sev["Actual"] = sev["Actual"].clip(upper=7500)
-X = sev.drop("Actual", axis=1)
-y = sev["Actual"]
+sev["Gross Cost"] = sev["Gross Cost"].fillna(0)
+sev["Exposure"] = sev["Exposure"].clip(lower=0)
+X = sev.drop("Gross Cost", axis=1)
+y = sev["Gross Cost"]
 
 transformer = Ut.transform(scaler_list, to_bin_list, ordinal_list, passthrough_list)
 X = transformer.fit_transform(X)
 
-rgr = XGBRegressor(objective='reg:tweedie', seed=42, eval_metric='tweedie-nloglik@1.2', n_estimators=100,
-                   max_depth=3, learning_rate=0.1, colsample_bytree=0.6, tweedie_variance_power=1.9)
-
+# Injury rgr = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.2)
+# Death
+rgr = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.2, max_depth=5)
 X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
 X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
 flat_arr = X_train[:, :1]
