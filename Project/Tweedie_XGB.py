@@ -10,9 +10,9 @@ from xgboost import XGBRegressor
 
 passthrough_list = ["Exposure"]
 scaler_list = []
-ordinal_list = ["LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make", "V AGE BAND",
-                "Registration States", "UY New", "Zone"]
-to_bin_list = []
+ordinal_list = ["LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make",
+                "Registration States", "UY New", "Zone", "Channel", "Cluster", "Vehicle Registration Region"]
+to_bin_list = [["V AGE BAND", 4, 'quantile']]
 
 
 def data_analysis():
@@ -30,9 +30,7 @@ def select_features():
         selection = SelectFromModel(rgr, threshold=thresh, prefit=True)
         select_X_train = selection.transform(X_train)
         # train model
-        selection_model = XGBRegressor(objective='reg:tweedie', seed=42, eval_metric='tweedie-nloglik@1.2',
-                                       n_estimators=100, max_depth=3, learning_rate=0.1, colsample_bytree=0.6,
-                                       tweedie_variance_power=1.9)
+        selection_model = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.5)
         param_dict = {'sample_weight': exposure, 'verbose': True}
         selection_model.fit(select_X_train, y_train, **param_dict)
         # eval model
@@ -98,7 +96,6 @@ def return_best_model(estimator):
     # print(f'r2 score: {r2_base}')
     # defining parameter range
     param_grid = {
-        'max_depth': [3, 5],
         # 'learning_rate': [0.01, 0.05, 0.1, 0.2],
         # 'n_estimators': [100, 300, 500],
         # 'colsample_bytree': [0.8, 0.9, 1]
@@ -124,8 +121,9 @@ def predict(X_value, y_value, estimator):
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 # print(get_scorer_names())
-sev = pd.read_csv('Output\\Death.csv')
+sev = pd.read_csv('Output\\RolledupPolicies.csv')
 # sev = sev[sev["UY New"] == "2019-20"]
+
 
 sev["Gross Cost"] = sev["Gross Cost"].fillna(0)
 sev["Exposure"] = sev["Exposure"].clip(lower=0)
@@ -135,9 +133,10 @@ y = sev["Gross Cost"]
 transformer = Ut.transform(scaler_list, to_bin_list, ordinal_list, passthrough_list)
 X = transformer.fit_transform(X)
 
-# Injury rgr = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.2)
+# Injury
+rgr = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.5, n_estimators=300)
 # Death
-rgr = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.2, max_depth=5)
+# rgr = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.2, max_depth=5)
 X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
 X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
 flat_arr = X_train[:, :1]
@@ -149,20 +148,15 @@ X_val = X_val[:, 1:]
 params_dict = {'sample_weight': exposure, 'verbose': True}
 rgr.fit(X_train, y_train, **params_dict)
 # rgr = return_best_model(rgr)
-# rgr.save_model('Output\\model.json')
-# rgr.load_model('Output\\model.json')
 y_pred = predict(X_test, y_test, rgr)
 column_dict = get_columns()
 predict_output(y_test, y_pred)
 write_output(X_test, y_test, y_pred)
 
-'''
-Code to write single variable 
-encoder = transformer.named_transformers_["scaler_1"]
-frame = pd.DataFrame()
-frame["Nod"] = pd.Series(np.reshape(encoder.inverse_transform(X_test), np.shape(X_test)[0]))
-frame["Actual"] = y_test.to_list()
-frame['Predicted'] = y_pred
-frame["Exposure"] = test_exposure
-frame.to_csv("Output\\Output.csv")
-'''
+# (pd.Series(rgr.feature_importances_, index=["LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make", "V AGE BAND",
+#                                             "Registration States", "UY New", "Zone", "Channel", "Cluster",
+#                                             "Vehicle Registration Region"])
+#  .nlargest(11)
+#  .plot(kind='barh'))
+# select_features()
+# plt.show()

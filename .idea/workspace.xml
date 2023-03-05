@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Add file for death">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Base model for Injury and death">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project/Tweedie_XGB.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Tweedie_XGB.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Project/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Utilities.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00096" summary="UK Data Changed passthrough to MinMax scaler to get 96% recall  &#10;19 columns.">
-      <created>1666682079674</created>
-      <option name="number" value="00096" />
-      <option name="presentableId" value="LOCAL-00096" />
-      <option name="project" value="LOCAL" />
-      <updated>1666682079674</updated>
     </task>
     <task id="LOCAL-00097" summary="Added File to calculate Frequencies which can be predicted using regression instead of classification">
       <created>1666852566981</created>
@@ -426,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1677929869687</updated>
     </task>
-    <option name="localTasksCounter" value="145" />
+    <task id="LOCAL-00145" summary="Base model for Injury and death">
+      <created>1677988526658</created>
+      <option name="number" value="00145" />
+      <option name="presentableId" value="LOCAL-00145" />
+      <option name="project" value="LOCAL" />
+      <updated>1677988526658</updated>
+    </task>
+    <option name="localTasksCounter" value="146" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Added code to select features based on feature importanct" />
     <MESSAGE value="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%" />
     <MESSAGE value="Implemented Unsupervised learning using IsolationForest" />
     <MESSAGE value="Implemented Unsupervised learning using AutoEncoder" />
@@ -478,7 +478,8 @@
     <MESSAGE value="fixed bugs in Claim Gross Cost Calculation" />
     <MESSAGE value="Added UY New and Zone columns" />
     <MESSAGE value="Add file for death" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add file for death" />
+    <MESSAGE value="Base model for Injury and death" />
+    <option name="LAST_COMMIT_MESSAGE" value="Base model for Injury and death" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
