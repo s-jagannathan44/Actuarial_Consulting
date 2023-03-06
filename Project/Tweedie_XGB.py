@@ -11,8 +11,8 @@ from xgboost import XGBRegressor
 passthrough_list = ["Exposure"]
 scaler_list = []
 ordinal_list = ["LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make",
-                "Registration States", "UY New", "Zone", "Channel", "Cluster", "Vehicle Registration Region"]
-to_bin_list = [["V AGE BAND", 4, 'quantile']]
+                "Registration States", "UY New", "Zone", "Cluster", "Vehicle Registration Region"]
+to_bin_list = [["V AGE BAND", 3, 'quantile']]
 
 
 def data_analysis():
@@ -30,7 +30,8 @@ def select_features():
         selection = SelectFromModel(rgr, threshold=thresh, prefit=True)
         select_X_train = selection.transform(X_train)
         # train model
-        selection_model = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.5)
+        selection_model = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.5,
+                                       n_estimators=300, subsample=None)
         param_dict = {'sample_weight': exposure, 'verbose': True}
         selection_model.fit(select_X_train, y_train, **param_dict)
         # eval model
@@ -121,10 +122,7 @@ def predict(X_value, y_value, estimator):
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 # print(get_scorer_names())
-sev = pd.read_csv('Output\\RolledupPolicies.csv')
-# sev = sev[sev["UY New"] == "2019-20"]
-
-
+sev = pd.read_csv('Output\\Death.csv')
 sev["Gross Cost"] = sev["Gross Cost"].fillna(0)
 sev["Exposure"] = sev["Exposure"].clip(lower=0)
 sev["Exposure"] = sev["Exposure"].clip(upper=300)
@@ -134,10 +132,9 @@ y = sev["Gross Cost"]
 transformer = Ut.transform(scaler_list, to_bin_list, ordinal_list, passthrough_list)
 X = transformer.fit_transform(X)
 
-# Injury
-rgr = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.5, n_estimators=300, subsample=None)
 # Death
-# rgr = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.2, max_depth=5)
+rgr = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.5, n_estimators=300, subsample=None)
+
 X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
 X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
 flat_arr = X_train[:, :1]

@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Changed Death file, so it now has 11 columns and 3 lakh rows">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Updated Injury model">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project/Tweedie_XGB.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Tweedie_XGB.py" afterDir="false" />
     </list>
@@ -82,13 +82,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00099" summary="Added code to write to file &#10;Also sent Frequency code in to Frequency.py">
-      <created>1666950014820</created>
-      <option name="number" value="00099" />
-      <option name="presentableId" value="LOCAL-00099" />
-      <option name="project" value="LOCAL" />
-      <updated>1666950014820</updated>
     </task>
     <task id="LOCAL-00100" summary="Final model with 18 columns">
       <created>1667036914902</created>
@@ -426,7 +419,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678066386641</updated>
     </task>
-    <option name="localTasksCounter" value="148" />
+    <task id="LOCAL-00148" summary="Updated Injury model">
+      <created>1678066486697</created>
+      <option name="number" value="00148" />
+      <option name="presentableId" value="LOCAL-00148" />
+      <option name="project" value="LOCAL" />
+      <updated>1678066486697</updated>
+    </task>
+    <option name="localTasksCounter" value="149" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -453,7 +453,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Implemented Unsupervised learning using AutoEncoder" />
     <MESSAGE value="Implemented functionality to plot lat long on map" />
     <MESSAGE value="Unsupervised learning via KMeans classification" />
     <MESSAGE value="Data and Excel files for telematics" />
@@ -478,7 +477,8 @@
     <MESSAGE value="Base model for Injury and death" />
     <MESSAGE value="Changed Injury model, so it now has 11 columns and 3 lakh rows" />
     <MESSAGE value="Changed Death file, so it now has 11 columns and 3 lakh rows" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed Death file, so it now has 11 columns and 3 lakh rows" />
+    <MESSAGE value="Updated Injury model" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated Injury model" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
