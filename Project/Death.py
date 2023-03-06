@@ -120,7 +120,8 @@ def combine_claim_files():
 
 def rollup_policies(freq):
     col_list = ["UY New", "LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make", "V AGE BAND",
-                "Registration States", "Zone"]
+                "Registration States", "Zone", "Channel", "Cluster", "Vehicle Registration Region"]
+
     full_list = col_list + ['Gross Cost'] + ['Exposure']
 
     freq = freq[full_list]
