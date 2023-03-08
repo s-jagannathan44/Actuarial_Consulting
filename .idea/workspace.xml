@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Updated Death  model">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="GLM Gamma / Tweedie Model for Injury">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/Tweedie_GLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Tweedie_GLM.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Project/FrequencyModeling_GLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/FrequencyModeling_GLM.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00101" summary="Frequency and exposure calculations for 22 columns in one file">
-      <created>1667041452241</created>
-      <option name="number" value="00101" />
-      <option name="presentableId" value="LOCAL-00101" />
-      <option name="project" value="LOCAL" />
-      <updated>1667041452241</updated>
     </task>
     <task id="LOCAL-00102" summary="Added Exposure as Weights">
       <created>1667044454184</created>
@@ -427,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678071475563</updated>
     </task>
-    <option name="localTasksCounter" value="150" />
+    <task id="LOCAL-00150" summary="GLM Gamma / Tweedie Model for Injury">
+      <created>1678182138786</created>
+      <option name="number" value="00150" />
+      <option name="presentableId" value="LOCAL-00150" />
+      <option name="project" value="LOCAL" />
+      <updated>1678182138788</updated>
+    </task>
+    <option name="localTasksCounter" value="151" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,7 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Unsupervised learning via KMeans classification" />
     <MESSAGE value="Data and Excel files for telematics" />
     <MESSAGE value="Excel files for telematics where we cluster using city/Highway traffic and by deviced Id" />
     <MESSAGE value="Added silhouette_score, calinski_harabasz_score, davies_bouldin_score" />
@@ -479,7 +478,8 @@
     <MESSAGE value="Changed Death file, so it now has 11 columns and 3 lakh rows" />
     <MESSAGE value="Updated Injury model" />
     <MESSAGE value="Updated Death  model" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated Death  model" />
+    <MESSAGE value="GLM Gamma / Tweedie Model for Injury" />
+    <option name="LAST_COMMIT_MESSAGE" value="GLM Gamma / Tweedie Model for Injury" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

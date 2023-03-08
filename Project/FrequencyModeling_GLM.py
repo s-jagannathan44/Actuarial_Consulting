@@ -1,6 +1,5 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OrdinalEncoder, KBinsDiscretizer
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 import statsmodels.api as sm
@@ -18,8 +17,8 @@ class SMWrapper(BaseEstimator, RegressorMixin):
     def fit(self, X, y):
         if self.fit_intercept:
             X = sm.add_constant(X)
-        # self.model_ = self.model_class(y, X)
-        self.model_ = sm.GLM(y, X, family=sm.families.Binomial())
+        link = sm.families.links.log()
+        self.model_ = sm.GLM(y, X, family=sm.families.Gamma(link))
         self.results_ = self.model_.fit()
         return self
 
@@ -40,28 +39,24 @@ class SMWrapper(BaseEstimator, RegressorMixin):
 def build_model():
     linear_model_preprocessor = ColumnTransformer(
         [
-            ("passthrough_1", "passthrough", ["AnalysisPeriod"]),
+            ("passthrough_numeric", "passthrough", ["CC_desc"]),
+            ("passthrough_numeric1", "passthrough", ["Body Type"]),
             (
                 "onehot_categorical",
-                OrdinalEncoder(),
-                ["GenderMainDriver", "GenderYoungestDriver",
-                 "Use", "PaymentMethod", "BonusMalusProtection"],
+                OneHotEncoder(),
+                ["LT_ANNUAL Flag", "UY_Newer", "Vehicle Make"]
             ),
-            ("binned_2", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["AgeMainDriver"]),
-            ("binned_9", KBinsDiscretizer(n_bins=2, encode='ordinal', strategy='quantile'), ["VehicleAge"]),
-            ("binned_15", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["BonusMalusYears"]),
-            ("binned_19", KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='quantile'), ["PolicyTenure"]),
         ],
         remainder='drop'
     )
     poisson_glm = Pipeline(
         [
             ("preprocessor", linear_model_preprocessor),
-            ("regressor", SMWrapper(sm.families.Binomial)),
+            ("regressor", SMWrapper(sm.families.Gaussian)),
         ]
     )
     poisson_glm.fit(
-        df_train, df_train["Claim Count"])
+        df_train, df_train["Gross Cost"])
     return poisson_glm
 
 
@@ -71,7 +66,7 @@ def execute_model(poisson_model, dataframe):
     dataframe.to_csv("Output\\df_test.csv")
 
 
-df = pd.read_csv("Output\\Policies.csv")
+df = pd.read_csv("Output\\Injury.csv")
 for col in df.columns:
     if "Unnamed" in col:
         df.drop(col, axis=1, inplace=True)
@@ -87,7 +82,8 @@ print(df.shape)
 # on ``X`` via a (scaled) Poisson distribution, and use ``Exposure`` as
 # ``sample_weight``.
 
-df_train, df_test = train_test_split(df, test_size=0.30, random_state=0)
+df_train = df
+df_test = df
 poisson = build_model()
 # drop multiple columns from DataFrame
 # df.drop(df.columns[[0, 1]], axis=1, inplace=True)
