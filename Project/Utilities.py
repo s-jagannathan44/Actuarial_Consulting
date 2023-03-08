@@ -205,6 +205,26 @@ def rollup_policies(freq):
     return freq
 
 
+def combine_state(filename):
+    df = pd.read_csv(filename, encoding='windows-1252')
+    Major_States = ["Tamil Nadu", "Madhya Pradesh", "Kerala", "Karnataka", "Rajasthan", "Odisha", "West Bengal",
+                    "Maharashtra", "Chattisgarh", "Telangana", "Uttar Pradesh", "Gujarat", "Andhra Pradesh",
+                    "Bihar", "Haryana", "Delhi"]
+    list_states = df["Registration States"].unique()
+    OtherStates = []
+
+    for State in list_states:
+        if Major_States.count(State) == 0:
+            OtherStates.append(State)
+    for State in OtherStates:
+        for index in range(len(df)):
+            if index < len(df):
+                if df["Registration States"].iloc[index] == State:
+                    df["Registration States"].iloc[index] = df["Zone"].iloc[index]
+    df.to_csv("Output\\State.csv")
+
+
+
 # for i in range(0, 10):
 #     df_ = combine_make("D:\\MachineLearning_Files\\Project\\Split_Files\\" + str(i) + ".csv")
 #     df_ = group_policies(df_)
