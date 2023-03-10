@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="GLM Gamma / Tweedie Model for Injury">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added method to combine states">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/FrequencyModeling_GLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/FrequencyModeling_GLM.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Project/Tweedie_GLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Tweedie_GLM.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,22 +43,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/Django",
-    "settings.editor.selected.configurable": "debugger.dataViews.python.type.renderers"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Django&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;debugger.dataViews.python.type.renderers&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Python"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="Push.Settings">
     <option name="SHOW_DETAILS_PANEL" value="false" />
   </component>
@@ -83,20 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00102" summary="Added Exposure as Weights">
-      <created>1667044454184</created>
-      <option name="number" value="00102" />
-      <option name="presentableId" value="LOCAL-00102" />
-      <option name="project" value="LOCAL" />
-      <updated>1667044454184</updated>
-    </task>
-    <task id="LOCAL-00103" summary="Modified Code which generates exposure for severity And added Severity &amp; Frequency Xl files with 22 columns">
-      <created>1667130886800</created>
-      <option name="number" value="00103" />
-      <option name="presentableId" value="LOCAL-00103" />
-      <option name="project" value="LOCAL" />
-      <updated>1667130886802</updated>
     </task>
     <task id="LOCAL-00104" summary="Vslookup in Python">
       <created>1667130983870</created>
@@ -427,7 +413,21 @@
       <option name="project" value="LOCAL" />
       <updated>1678182138788</updated>
     </task>
-    <option name="localTasksCounter" value="151" />
+    <task id="LOCAL-00151" summary="Used  Gaussian from Stats model">
+      <created>1678248552925</created>
+      <option name="number" value="00151" />
+      <option name="presentableId" value="LOCAL-00151" />
+      <option name="project" value="LOCAL" />
+      <updated>1678248552925</updated>
+    </task>
+    <task id="LOCAL-00152" summary="Added method to combine states">
+      <created>1678256310983</created>
+      <option name="number" value="00152" />
+      <option name="presentableId" value="LOCAL-00152" />
+      <option name="project" value="LOCAL" />
+      <updated>1678256310983</updated>
+    </task>
+    <option name="localTasksCounter" value="153" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,8 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Data and Excel files for telematics" />
-    <MESSAGE value="Excel files for telematics where we cluster using city/Highway traffic and by deviced Id" />
     <MESSAGE value="Added silhouette_score, calinski_harabasz_score, davies_bouldin_score" />
     <MESSAGE value="Refactored code" />
     <MESSAGE value="Changed code for Autoencoders" />
@@ -479,7 +477,9 @@
     <MESSAGE value="Updated Injury model" />
     <MESSAGE value="Updated Death  model" />
     <MESSAGE value="GLM Gamma / Tweedie Model for Injury" />
-    <option name="LAST_COMMIT_MESSAGE" value="GLM Gamma / Tweedie Model for Injury" />
+    <MESSAGE value="Used  Gaussian from Stats model" />
+    <MESSAGE value="Added method to combine states" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added method to combine states" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
