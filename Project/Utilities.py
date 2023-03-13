@@ -223,6 +223,20 @@ def combine_state(filename):
                     df["Registration States"].iloc[index] = df["Zone"].iloc[index]
     df.to_csv("Output\\State.csv")
 
+# Vehicle Age Code
+# master = pd.read_csv("Output\\Death31k.csv")
+# index = 0
+# for index in range(len(master)):
+#     if index < len(master) - 1:
+#         if master["V AGE BAND"].iloc[index] == "New":
+#             master["V AGE NEW"].iloc[index] = 0
+#         if master["V AGE BAND"].iloc[index] == "1 Years":
+#             master["V AGE NEW"].iloc[index] = 1
+#         if master["V AGE BAND"].iloc[index] != "New" and master["V AGE BAND"].iloc[index] != "1 Years":
+#             master["V AGE NEW"].iloc[index] = 2
+#
+# master.to_csv("Output\\Death31.csv")
+
 
 # UW Year Code
 # df = pd.read_csv("Output\\Death.csv")

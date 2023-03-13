@@ -30,7 +30,7 @@ def build_model():
     )
     gamma_glm.fit(
         df_train, df_train["Gross Cost"])
-    joblib.dump(gamma_glm, "GammaModel.sav")
+    joblib.dump(gamma_glm, "Output\\GammaDeathModel.sav")
     return gamma_glm
 
 
@@ -40,7 +40,7 @@ def execute_model(gamma_model, dataframe):
     dataframe.to_csv("Output\\df_test.csv")
 
 
-df = pd.read_csv("Output\\Injury_Final.csv")
+df = pd.read_csv("Output\\Death_Final.csv")
 for col in df.columns:
     if "Unnamed" in col:
         df.drop(col, axis=1, inplace=True)
@@ -48,7 +48,7 @@ df_train = df
 df_test = df
 
 # glm = build_model()
-glm = joblib.load("Output\\GammaModel.sav")
+glm = joblib.load("Output\\GammaDeathModel.sav")
 execute_model(glm, df_test)
 
 

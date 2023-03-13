@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Final Death and Injury Model">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Check in after making changes to run the saved model on full file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project/Tweedie_GLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Tweedie_GLM.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Utilities.py" afterDir="false" />
@@ -84,13 +84,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00105" summary="Severity Code">
-      <created>1667132502980</created>
-      <option name="number" value="00105" />
-      <option name="presentableId" value="LOCAL-00105" />
-      <option name="project" value="LOCAL" />
-      <updated>1667132502980</updated>
     </task>
     <task id="LOCAL-00106" summary="Improved Severity Model by a third from 7% to 9.33% with 21 columns">
       <created>1667199026497</created>
@@ -428,7 +421,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678440853503</updated>
     </task>
-    <option name="localTasksCounter" value="154" />
+    <task id="LOCAL-00154" summary="Check in after making changes to run the saved model on full file">
+      <created>1678678774052</created>
+      <option name="number" value="00154" />
+      <option name="presentableId" value="LOCAL-00154" />
+      <option name="project" value="LOCAL" />
+      <updated>1678678774052</updated>
+    </task>
+    <option name="localTasksCounter" value="155" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -455,7 +455,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Refactored code" />
     <MESSAGE value="Changed code for Autoencoders" />
     <MESSAGE value="Implemented Pipleline" />
     <MESSAGE value="Implemented PCA Pipline with scoring which shows that we should go back normal clustering as dimensionality reduction provides no benefits when columns are few" />
@@ -480,7 +479,8 @@
     <MESSAGE value="Used  Gaussian from Stats model" />
     <MESSAGE value="Added method to combine states" />
     <MESSAGE value="Final Death and Injury Model" />
-    <option name="LAST_COMMIT_MESSAGE" value="Final Death and Injury Model" />
+    <MESSAGE value="Check in after making changes to run the saved model on full file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Check in after making changes to run the saved model on full file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
