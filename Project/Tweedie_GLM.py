@@ -4,6 +4,7 @@ from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import GammaRegressor
+import joblib
 
 
 def build_model():
@@ -29,6 +30,7 @@ def build_model():
     )
     gamma_glm.fit(
         df_train, df_train["Gross Cost"])
+    joblib.dump(gamma_glm, "GammaModel.sav")
     return gamma_glm
 
 
@@ -38,37 +40,24 @@ def execute_model(gamma_model, dataframe):
     dataframe.to_csv("Output\\df_test.csv")
 
 
-df = pd.read_csv("Output\\Injury_NewApproach.csv")
+df = pd.read_csv("Output\\Injury_Final.csv")
 for col in df.columns:
     if "Unnamed" in col:
         df.drop(col, axis=1, inplace=True)
 df_train = df
 df_test = df
 
-glm = build_model()
+# glm = build_model()
+glm = joblib.load("Output\\GammaModel.sav")
 execute_model(glm, df_test)
 
-# Major_States = ["Tamil Nadu", "Madhya Pradesh", "Kerala", "Karnataka", "Rajasthan", "Odisha", "West Bengal",
-#                 "Maharashtra", "Chattisgarh", "Telangana", "Uttar Pradesh", "Gujarat", "Andhra Pradesh",
-#                 "Bihar", "Haryana", "Delhi"]
-# list_states = df["Registration States"].unique()
-# OtherStates = []
 
-# for State in list_states:
-#     if Major_States.count(State) == 0:
-#         OtherStates.append(State)
-# for State in OtherStates:
-#     for index in range(len(df)):
-#         if index < len(df):
-#             if df["Registration States"].iloc[index] == State:
-#                 df["Registration States"].iloc[index] = df["Zone"].iloc[index]
-# df.to_csv("Output\\State.csv")
-#
+# UW Year Code
 # df = pd.read_csv("Output\\Death.csv")
 # index = 0
 # for index in range(len(df)):
 #     if index < len(df) - 1:
-#         if df["UY_Newer"].iloc[index] != "2012-17":
+#         if df["UY_Newer"].iloc[index] != "2012-18":
 #             df["UY_Newer"].iloc[index] = df["UY New"].iloc[index]
 #
 # df.to_csv("Output\\Death_Modified.csv")

@@ -224,6 +224,17 @@ def combine_state(filename):
     df.to_csv("Output\\State.csv")
 
 
+# UW Year Code
+# df = pd.read_csv("Output\\Death.csv")
+# index = 0
+# for index in range(len(df)):
+#     if index < len(df) - 1:
+#         if df["UY_Newer"].iloc[index] != "2012-18":
+#             df["UY_Newer"].iloc[index] = df["UY New"].iloc[index]
+#
+# df.to_csv("Output\\Death_Modified.csv")
+#
+
 
 # for i in range(0, 10):
 #     df_ = combine_make("D:\\MachineLearning_Files\\Project\\Split_Files\\" + str(i) + ".csv")
@@ -263,3 +274,31 @@ def combine_state(filename):
 #
 # result = pd.concat(dfs)
 # result.to_csv("Output\\frames.csv")
+
+# Code for conditional merging
+
+# master = pd.read_csv("Output\\InjuryMaster.csv")
+#
+# unroll = pd.read_csv("Output\\Injury_Unroll.csv")
+# index = 0
+# for index in range(len(master)):
+#     if index < len(master) - 1:
+#         UY = master["UY_Newer"].iloc[index]
+#         Age = master["Age_New"].iloc[index]
+#         Flag = master["LT_ANNUAL Flag"].iloc[index]
+#         Body_Type = master["Body Type"].iloc[index]
+#         CC = master["CC_New"].iloc[index]
+#         Make = master["Vehicle Make"].iloc[index]
+#         State = master["Registration States"].iloc[index]
+#         Zone = master["Zone"].iloc[index]
+#         cost = unroll.loc[
+#             (unroll['UY New'] == UY) & (unroll['LT_ANNUAL Flag'] == Flag) & (unroll['V AGE NEW'] == Age) &
+#             (unroll['Body Type'] == Body_Type) & (unroll['CC_desc'] == CC) &
+#             (unroll['State_New'].str.contains(State)) & (unroll['Make_New'].str.contains(Make)) &
+#             (unroll['Zone_New'].str.contains(Zone)), 'Output']
+#         cost = np.average(cost)
+#         if cost is not np.nan:
+#             master["Predicted"].iloc[index] = np.average(cost)
+#         else:
+#             master["Predicted"].iloc[index] = 0
+# master.to_csv("Output\\unrolled.csv")
