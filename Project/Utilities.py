@@ -290,7 +290,7 @@ def combine_state(filename):
 # result.to_csv("Output\\frames.csv")
 
 # Code for conditional merging
-master = pd.read_csv("Output\\Project_Final.csv")
+# master = pd.read_csv("Output\\Project_Final.csv")
 
 # unroll = pd.read_csv("Output\\Death_ToMerge.csv")
 # index = 0

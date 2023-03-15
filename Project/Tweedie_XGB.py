@@ -4,15 +4,17 @@ import pandas as pd
 from numpy import sort
 from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import GridSearchCV  # train_test_split
 from Modules import Utilities as Ut
 from xgboost import XGBRegressor
 
 passthrough_list = ["Exposure"]
 scaler_list = []
-ordinal_list = ["LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make",
-                "Registration States", "UY New", "Zone", "Cluster", "Vehicle Registration Region"]
-to_bin_list = [["V AGE BAND", 3, 'quantile']]
+ordinal_list = ["LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make", "V AGE BAND",
+                "Registration States", "UY New", "Zone"]
+# ordinal_list = ["LT_ANNUAL Flag", "UY New", "CC_Make", "Zone_State", "Body Type"]
+# to_bin_list = [['V AGE NEW', 3, 'uniform']]
+to_bin_list = []
 
 
 def data_analysis():
@@ -99,7 +101,7 @@ def return_best_model(estimator):
     param_grid = {
         # 'learning_rate': [0.01, 0.05, 0.1, 0.2],
         # 'n_estimators': [100, 300, 500],
-        # 'colsample_bytree': [0.8, 0.9, 1]
+        #  'colsample_bytree': [0.8, 0.9, 1]
     }
     param_dict = {'eval_set': [(X_val, y_val)], 'verbose': True, 'sample_weight': exposure}
     xgb_reg = GridSearchCV(estimator, param_grid,
@@ -122,30 +124,40 @@ def predict(X_value, y_value, estimator):
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 # print(get_scorer_names())
-sev = pd.read_csv('Output\\Death.csv')
-sev["Gross Cost"] = sev["Gross Cost"].fillna(0)
-sev["Exposure"] = sev["Exposure"].clip(lower=0)
-sev["Exposure"] = sev["Exposure"].clip(upper=300)
-X = sev.drop("Gross Cost", axis=1)
-y = sev["Gross Cost"]
+sev = pd.read_csv('Output\\Injury_Correct.csv')
+X = sev.drop("Loss Cost", axis=1)
+y = sev["Loss Cost"]
 
 transformer = Ut.transform(scaler_list, to_bin_list, ordinal_list, passthrough_list)
 X = transformer.fit_transform(X)
 
-# Death
+# tweedie_variance_power=1.5, n_estimators=300, subsample=None
 rgr = XGBRegressor(objective='reg:tweedie', seed=42, tweedie_variance_power=1.5, n_estimators=300, subsample=None)
+# remove this line
+X_train, X_test_val, y_train, y_test_val, X_val, y_val, exposure = X, X, X, X, X, X, X
+X_test = X
+y_test = y
 
-X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
-X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
-flat_arr = X_train[:, :1]
-exposure = np.reshape(flat_arr, np.shape(X_train)[0])
-X_train = X_train[:, 1:]
+# B----
+# X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
+# X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
+# flat_arr = X_train[:, :1]
+# exposure = np.reshape(flat_arr, np.shape(X_train)[0])
+# X_train = X_train[:, 1:]
+#  E---
+
 test_exposure = np.reshape(X_test[:, :1], np.shape(X_test)[0])
 X_test = X_test[:, 1:]
-X_val = X_val[:, 1:]
-params_dict = {'sample_weight': exposure, 'verbose': True}
-rgr.fit(X_train, y_train, **params_dict)
+
+# B----
+# X_val = X_val[:, 1:]
+# params_dict = {'sample_weight': exposure, 'verbose': True}
+# rgr.fit(X_train, y_train, **params_dict)
+#  E---
+
+# rgr.save_model('Output\\tweedie.json')
 # rgr = return_best_model(rgr)
+rgr.load_model('Output\\tweedie.json')
 y_pred = predict(X_test, y_test, rgr)
 column_dict = get_columns()
 predict_output(y_test, y_pred)
