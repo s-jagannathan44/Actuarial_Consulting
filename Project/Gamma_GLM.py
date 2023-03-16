@@ -15,7 +15,7 @@ def build_model():
             (
                 "onehot_categorical",
                 OneHotEncoder(),
-                ["LT_ANNUAL Flag", "UY New", "CC_Make", "Zone_State", "Body Type"]
+              ["LT_ANNUAL Flag", "UY New", "CC_Make", "Zone_State", "Body Type"]
             ),
         ],
         remainder='drop'
@@ -29,8 +29,8 @@ def build_model():
         ]
     )
     gamma_glm.fit(
-        df_train, df_train["Gross Cost"])
-    joblib.dump(gamma_glm, "Output\\GammaDeathModel.sav")
+        df_train, df_train["Loss Cost"])
+    # joblib.dump(gamma_glm, "Output\\GammaDeathModel.sav")
     return gamma_glm
 
 
@@ -40,15 +40,15 @@ def execute_model(gamma_model, dataframe):
     dataframe.to_csv("Output\\df_test.csv")
 
 
-df = pd.read_csv("Output\\Death_Final.csv")
+df = pd.read_csv("Output\\Agro_GLM.csv")
 for col in df.columns:
     if "Unnamed" in col:
         df.drop(col, axis=1, inplace=True)
 df_train = df
 df_test = df
 
-# glm = build_model()
-glm = joblib.load("Output\\GammaDeathModel.sav")
+glm = build_model()
+# glm = joblib.load("Output\\GammaDeathModel.sav")
 execute_model(glm, df_test)
 
 

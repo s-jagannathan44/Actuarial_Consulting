@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Tweedie check in">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Gamma GLM check in">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/Severity_XGB.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Severity_XGB.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Project/Gamma_GLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Gamma_GLM.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,20 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00109" summary="Wrote Models which use predict_proba">
-      <created>1668778080036</created>
-      <option name="number" value="00109" />
-      <option name="presentableId" value="LOCAL-00109" />
-      <option name="project" value="LOCAL" />
-      <updated>1668778080036</updated>
-    </task>
-    <task id="LOCAL-00110" summary="Changed previous model to use predict_proba">
-      <created>1668860353438</created>
-      <option name="number" value="00110" />
-      <option name="presentableId" value="LOCAL-00110" />
-      <option name="project" value="LOCAL" />
-      <updated>1668860353438</updated>
     </task>
     <task id="LOCAL-00111" summary="Modified existing model to use predict_proba">
       <created>1668863803177</created>
@@ -427,7 +413,21 @@
       <option name="project" value="LOCAL" />
       <updated>1678882950188</updated>
     </task>
-    <option name="localTasksCounter" value="158" />
+    <task id="LOCAL-00158" summary="Gamma check in to use Loss Cost">
+      <created>1678936742415</created>
+      <option name="number" value="00158" />
+      <option name="presentableId" value="LOCAL-00158" />
+      <option name="project" value="LOCAL" />
+      <updated>1678936742415</updated>
+    </task>
+    <task id="LOCAL-00159" summary="Gamma GLM check in">
+      <created>1678936928531</created>
+      <option name="number" value="00159" />
+      <option name="presentableId" value="LOCAL-00159" />
+      <option name="project" value="LOCAL" />
+      <updated>1678936928531</updated>
+    </task>
+    <option name="localTasksCounter" value="160" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,8 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Refactored code so it can be used in production" />
-    <MESSAGE value="Added GLM files for project" />
     <MESSAGE value="This file uses ReverseGeoLocation  to get address from Lat Long" />
     <MESSAGE value="Modified the code to use Binomial from Statsmodel instead of Poisson" />
     <MESSAGE value="Added charts and graphs required for EDA" />
@@ -479,6 +477,8 @@
     <MESSAGE value="Check in after making changes to run the saved Death model on full file" />
     <MESSAGE value="Added code for conditional merging and XGB Gamma Injury model" />
     <MESSAGE value="Tweedie check in" />
-    <option name="LAST_COMMIT_MESSAGE" value="Tweedie check in" />
+    <MESSAGE value="Gamma check in to use Loss Cost" />
+    <MESSAGE value="Gamma GLM check in" />
+    <option name="LAST_COMMIT_MESSAGE" value="Gamma GLM check in" />
   </component>
 </project>
