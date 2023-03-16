@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added code for conditional merging and XGB Gamma Injury model">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Tweedie check in">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/Tweedie_XGB.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Tweedie_XGB.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Utilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Project/Severity_XGB.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Severity_XGB.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00108" summary="Added Code to write single variable">
-      <created>1668497819740</created>
-      <option name="number" value="00108" />
-      <option name="presentableId" value="LOCAL-00108" />
-      <option name="project" value="LOCAL" />
-      <updated>1668497819740</updated>
     </task>
     <task id="LOCAL-00109" summary="Wrote Models which use predict_proba">
       <created>1668778080036</created>
@@ -428,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678845410009</updated>
     </task>
-    <option name="localTasksCounter" value="157" />
+    <task id="LOCAL-00157" summary="Tweedie check in">
+      <created>1678882950188</created>
+      <option name="number" value="00157" />
+      <option name="presentableId" value="LOCAL-00157" />
+      <option name="project" value="LOCAL" />
+      <updated>1678882950188</updated>
+    </task>
+    <option name="localTasksCounter" value="158" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -455,7 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Implemented PCA Pipline with scoring which shows that we should go back normal clustering as dimensionality reduction provides no benefits when columns are few" />
     <MESSAGE value="Refactored code so it can be used in production" />
     <MESSAGE value="Added GLM files for project" />
     <MESSAGE value="This file uses ReverseGeoLocation  to get address from Lat Long" />
@@ -480,6 +478,7 @@
     <MESSAGE value="Check in after making changes to run the saved model on full file" />
     <MESSAGE value="Check in after making changes to run the saved Death model on full file" />
     <MESSAGE value="Added code for conditional merging and XGB Gamma Injury model" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added code for conditional merging and XGB Gamma Injury model" />
+    <MESSAGE value="Tweedie check in" />
+    <option name="LAST_COMMIT_MESSAGE" value="Tweedie check in" />
   </component>
 </project>

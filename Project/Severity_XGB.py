@@ -3,14 +3,15 @@ import pandas as pd
 from numpy import sort
 from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.model_selection import GridSearchCV  # train_test_split
 from Modules import Utilities as Ut
 from xgboost import XGBRegressor
 
 passthrough_list = ["Exposure"]
 scaler_list = []
-ordinal_list = ["LT_ANNUAL Flag", "UY New", "CC_Make", "Zone_State", "Body Type"]
-to_bin_list = [['V AGE NEW', 3, 'uniform']]
+ordinal_list = ["LT_ANNUAL Flag", "CC_desc", "Body Type", "Vehicle Make", "V AGE BAND",
+                "Registration States", "UY New", "Zone"]
+to_bin_list = []
 
 
 def data_analysis():
@@ -87,7 +88,7 @@ def write_output(X_value, actual_val, pred_val):
     frame["Below20%"] = round(frame[frame["%ageError"] < 0.2].shape[0] / frame.shape[0], ndigits=2)
     frame["Below5%"] = round(frame[frame["%ageError"] < 0.05].shape[0] / frame.shape[0], ndigits=2)
     print(round((frame[frame["%ageError"] < 0.2].shape[0] / frame.shape[0]) * 100, ndigits=2))
-    frame.to_csv("Output\\Output.csv")
+    frame.to_csv("Output\\Output759.csv")
 
 
 def return_best_model(estimator):
@@ -128,34 +129,40 @@ def predict(X_value, y_value, estimator):
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 # print(get_scorer_names())
-sev = pd.read_csv('Output\\Injury\\Injury_Final.csv')
-X = sev.drop("Gross Cost", axis=1)
-y = sev["Gross Cost"]
+sev = pd.read_csv('Output\\Injury_759.csv')
+X = sev.drop("Loss Cost", axis=1)
+y = sev["Loss Cost"]
 
 transformer = Ut.transform(scaler_list, to_bin_list, ordinal_list, passthrough_list)
 X = transformer.fit_transform(X)
 
 rgr = XGBRegressor(objective='reg:gamma', seed=42, eval_metric='gamma-deviance')
 # remove this line
-# X_train, X_test_val, y_train, y_test_val, X_val, y_val, exposure = X, X, X, X, X, X, X
+X_train, X_test_val, y_train, y_test_val, X_val, y_val, exposure = X, X, X, X, X, X, X
+X_test = X
+y_test = y
 
-# X_test = X
-# y_test = y
-X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
-X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
-flat_arr = X_train[:, :1]
-exposure = np.reshape(flat_arr, np.shape(X_train)[0])
+# B----
+# X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.30, random_state=40)
+# X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.33, random_state=40)
+# flat_arr = X_train[:, :1]
+# exposure = np.reshape(flat_arr, np.shape(X_train)[0])
+# X_train = X_train[:, 1:]
+# E----
 
 
-X_train = X_train[:, 1:]
 test_exposure = np.reshape(X_test[:, :1], np.shape(X_test)[0])
 X_test = X_test[:, 1:]
-X_val = X_val[:, 1:]
-params_dict = {'sample_weight': exposure, 'verbose': True}
-rgr.fit(X_train, y_train, **params_dict)
+
+# B----
+# X_val = X_val[:, 1:]
+# params_dict = {'sample_weight': exposure, 'verbose': True}
+# rgr.fit(X_train, y_train, **params_dict)
+# E----
+
 # rgr = return_best_model(rgr)
 # rgr.save_model('Output\\model.json')
-# rgr.load_model('Output\\model.json')
+rgr.load_model('Output\\Output\\model.json')
 y_pred = predict(X_test, y_test, rgr)
 column_dict = get_columns()
 write_output(X_test, y_test, y_pred)
