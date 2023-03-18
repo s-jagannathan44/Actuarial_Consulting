@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Gamma GLM check in">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Gamma GLM Below 2k check in">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project/Gamma_GLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Gamma_GLM.py" afterDir="false" />
     </list>
@@ -83,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00111" summary="Modified existing model to use predict_proba">
-      <created>1668863803177</created>
-      <option name="number" value="00111" />
-      <option name="presentableId" value="LOCAL-00111" />
-      <option name="project" value="LOCAL" />
-      <updated>1668863803177</updated>
     </task>
     <task id="LOCAL-00112" summary="Modified existing model to use predict_proba">
       <created>1668863924664</created>
@@ -427,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678936928531</updated>
     </task>
-    <option name="localTasksCounter" value="160" />
+    <task id="LOCAL-00160" summary="Gamma GLM Below 2k check in">
+      <created>1678961303395</created>
+      <option name="number" value="00160" />
+      <option name="presentableId" value="LOCAL-00160" />
+      <option name="project" value="LOCAL" />
+      <updated>1678961303395</updated>
+    </task>
+    <option name="localTasksCounter" value="161" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,7 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="This file uses ReverseGeoLocation  to get address from Lat Long" />
     <MESSAGE value="Modified the code to use Binomial from Statsmodel instead of Poisson" />
     <MESSAGE value="Added charts and graphs required for EDA" />
     <MESSAGE value="Added new file in  project folder" />
@@ -479,6 +478,7 @@
     <MESSAGE value="Tweedie check in" />
     <MESSAGE value="Gamma check in to use Loss Cost" />
     <MESSAGE value="Gamma GLM check in" />
-    <option name="LAST_COMMIT_MESSAGE" value="Gamma GLM check in" />
+    <MESSAGE value="Gamma GLM Below 2k check in" />
+    <option name="LAST_COMMIT_MESSAGE" value="Gamma GLM Below 2k check in" />
   </component>
 </project>
