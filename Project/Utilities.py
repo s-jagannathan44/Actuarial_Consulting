@@ -57,7 +57,7 @@ def plot_histograms(df):
 # combine_state("D:\\2 Wheeler Magma\\Review\\Injury\\Injury_Make.csv")\
 #      .to_csv("D:\\2 Wheeler Magma\\Review\\Injury\\Injury_State.csv")
 #
-# plot_histograms(pd.read_csv("D:\\2 Wheeler Magma\\Review\\Injury\\Injury_NonZero.csv"))
+plot_histograms(pd.read_csv("Output\\Injury_M_NonZero.csv"))
 
 # combine_make("D:\\2 Wheeler Magma\\Review\\Death\\Death_Input.csv")\
 #     .to_csv("D:\\2 Wheeler Magma\\Review\\Death\\Death_Make.csv")
