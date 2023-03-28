@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Death Gamma Model Completed and saved as sav file">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Saved Model files with multiplier">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Utilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Project/Gamma_GLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Gamma_GLM.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,20 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00114" summary="Neural Network classification model updated">
-      <created>1669189168615</created>
-      <option name="number" value="00114" />
-      <option name="presentableId" value="LOCAL-00114" />
-      <option name="project" value="LOCAL" />
-      <updated>1669189168615</updated>
-    </task>
-    <task id="LOCAL-00115" summary="Moved Baseline files to separate directory">
-      <created>1669189559324</created>
-      <option name="number" value="00115" />
-      <option name="presentableId" value="LOCAL-00115" />
-      <option name="project" value="LOCAL" />
-      <updated>1669189559324</updated>
     </task>
     <task id="LOCAL-00116" summary="Fraud Model updated to use Predict_proba">
       <created>1669202161549</created>
@@ -427,7 +413,21 @@
       <option name="project" value="LOCAL" />
       <updated>1679134347035</updated>
     </task>
-    <option name="localTasksCounter" value="163" />
+    <task id="LOCAL-00163" summary="Updated Utilities file to contain only those methods which are used">
+      <created>1679388882657</created>
+      <option name="number" value="00163" />
+      <option name="presentableId" value="LOCAL-00163" />
+      <option name="project" value="LOCAL" />
+      <updated>1679388882659</updated>
+    </task>
+    <task id="LOCAL-00164" summary="Saved Model files with multiplier">
+      <created>1679882032988</created>
+      <option name="number" value="00164" />
+      <option name="presentableId" value="LOCAL-00164" />
+      <option name="project" value="LOCAL" />
+      <updated>1679882032988</updated>
+    </task>
+    <option name="localTasksCounter" value="165" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,8 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Added new file in  project folder" />
-    <MESSAGE value="Added new files in  project folder" />
     <MESSAGE value="Added method to join 2 dataframes" />
     <MESSAGE value="Added methods to prepare final CSV" />
     <MESSAGE value="fixed bugs in Claim Gross Cost Calculation" />
@@ -479,6 +477,8 @@
     <MESSAGE value="Gamma GLM Below 2k check in" />
     <MESSAGE value="Injury Gamma Model Completed and saved as sav file" />
     <MESSAGE value="Death Gamma Model Completed and saved as sav file" />
-    <option name="LAST_COMMIT_MESSAGE" value="Death Gamma Model Completed and saved as sav file" />
+    <MESSAGE value="Updated Utilities file to contain only those methods which are used" />
+    <MESSAGE value="Saved Model files with multiplier" />
+    <option name="LAST_COMMIT_MESSAGE" value="Saved Model files with multiplier" />
   </component>
 </project>

@@ -5,17 +5,17 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import GammaRegressor
 import joblib
+# import numpy as np
 
 
 def build_model():
-    global df_train, df_test
     linear_model_preprocessor = ColumnTransformer(
         [
             ("binned_numeric", KBinsDiscretizer(n_bins=3, strategy='uniform'), ["V AGE NEW"]),
             (
                 "onehot_categorical",
                 OneHotEncoder(),
-                ["LT_ANNUAL Flag", "UY New", "CC_desc", "Vehicle Make",  "Zone_State", "Body Type"]
+                ["LT_ANNUAL Flag", "UY New", "Body Type", "CC_desc", "Vehicle Make", "Zone_State"]
             ),
         ],
         remainder='drop'
@@ -29,9 +29,30 @@ def build_model():
         ]
     )
     gamma_glm.fit(
-        df_train, df_train["Loss Cost"], regressor__sample_weight=df_train["Exposure"])
-    joblib.dump(gamma_glm, "Output\\GammaDeathModel.sav")
-    return gamma_glm
+        df_train, df["Loss Cost"], regressor__sample_weight=df["Exposure"])
+    #    joblib.dump(gamma_glm, "Output\\GammaDeathModel.sav")
+    return gamma_glm, linear_model_preprocessor
+
+
+def get_columns():
+    columns = {}
+    for encoder in transformer.named_transformers_:
+        if type(transformer.named_transformers_[encoder]) != str:
+            item = [(encoder, transformer.named_transformers_[encoder].get_feature_names_out().size)]
+            columns.update(item)
+    return columns
+
+
+def write_output(X_value):
+    col_list = []
+    for item in column_dict:
+        encoder = transformer.named_transformers_[item]
+        col_names = encoder.get_feature_names_out()
+        for col_name in col_names:
+            col_list.append(col_name)
+
+    frame = pd.DataFrame(X_value, columns=col_list)
+    frame.to_csv("Output\\Output.csv")
 
 
 def execute_model(gamma_model, dataframe):
@@ -40,24 +61,19 @@ def execute_model(gamma_model, dataframe):
     dataframe.to_csv("Output\\df_test.csv")
 
 
-df = pd.read_csv("Output\\Death_Full_Clubbed.csv")
-for col in df.columns:
-    if "Unnamed" in col:
-        df.drop(col, axis=1, inplace=True)
+df = pd.read_csv("Output\\Death_M_Clubbed.csv")
+
+for col_ in df.columns:
+    if "Unnamed" in col_:
+        df.drop(col_, axis=1, inplace=True)
 df_train = df
 df_test = df
 
-# glm = build_model()
-glm = joblib.load("Output\\GammaDeathModel.sav")
-execute_model(glm, df_test)
+glm, transformer = build_model()
+column_dict = get_columns()
+# X = transformer.fit_transform(df_train).toarray()
+# write_output(X)
+# np.savetxt("Output\\co_efficient.csv", glm._final_estimator.coef_, delimiter=",")
 
-# UW Year Code
-# df = pd.read_csv("Output\\Death.csv")
-# index = 0
-# for index in range(len(df)):
-#     if index < len(df) - 1:
-#         if df["UY_Newer"].iloc[index] != "2012-18":
-#             df["UY_Newer"].iloc[index] = df["UY New"].iloc[index]
-#
-# df.to_csv("Output\\Death_Modified.csv")
-#
+glm_ = joblib.load("Output\\GammaMultiplierDeathModel.sav")
+execute_model(glm_, df_test)
