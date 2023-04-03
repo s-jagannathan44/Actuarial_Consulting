@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added code for retrieving coefficients for death">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added code for retrieving coefficients for Injury">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/Gamma_GLM.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Gamma_GLM.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Project/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Utilities.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,13 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00117" summary="French Motor  Model updated to use Predict_proba">
-      <created>1669377147587</created>
-      <option name="number" value="00117" />
-      <option name="presentableId" value="LOCAL-00117" />
-      <option name="project" value="LOCAL" />
-      <updated>1669377147587</updated>
     </task>
     <task id="LOCAL-00118" summary="Credit Card default">
       <created>1669686892130</created>
@@ -427,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679968023873</updated>
     </task>
-    <option name="localTasksCounter" value="166" />
+    <task id="LOCAL-00166" summary="Added code for retrieving coefficients for Injury">
+      <created>1680000911586</created>
+      <option name="number" value="00166" />
+      <option name="presentableId" value="LOCAL-00166" />
+      <option name="project" value="LOCAL" />
+      <updated>1680000911586</updated>
+    </task>
+    <option name="localTasksCounter" value="167" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,7 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Added methods to prepare final CSV" />
     <MESSAGE value="fixed bugs in Claim Gross Cost Calculation" />
     <MESSAGE value="Added UY New and Zone columns" />
     <MESSAGE value="Add file for death" />
@@ -479,6 +478,7 @@
     <MESSAGE value="Updated Utilities file to contain only those methods which are used" />
     <MESSAGE value="Saved Model files with multiplier" />
     <MESSAGE value="Added code for retrieving coefficients for death" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added code for retrieving coefficients for death" />
+    <MESSAGE value="Added code for retrieving coefficients for Injury" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added code for retrieving coefficients for Injury" />
   </component>
 </project>
