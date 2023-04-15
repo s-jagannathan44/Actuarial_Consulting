@@ -2,22 +2,45 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from kneed import KneeLocator
 from sklearn.cluster import KMeans as Km
+from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import silhouette_score, davies_bouldin_score
+import joblib
+import seaborn as sns
 
 
 def cluster_data():
     # Run local implementation of k means
-    km = Km(n_clusters=n_clusters, max_iter=100, init='k-means++')
-    labels = km.fit_predict(X_std)
-    print(silhouette_score(X_std, labels))
-    print(davies_bouldin_score(X_std, labels))
-    df["Cluster"] = km.labels_
+    km = Km(n_clusters=n_clusters, max_iter=100,  init='k-means++')
+    km.fit(X_std)
+    joblib.dump(km, "Output\\Cluster.sav")
+    # km = joblib.load("Output\\Cluster.sav")
+    labels = km.predict(X_std)
+    print("Predict complete")
+    # print(silhouette_score(X_std, labels))
+    df["Cluster"] = labels  # km.labels_
     df.to_csv("Output\\clustered.csv")
+
+    plt.figure(figsize=(16, 6))
+    colors = ["#A181E0", "#E08181", "#599988", "#FF0000"]
+    ax = sns.scatterplot(data=df, x="A80", y="NRA by Distance", hue='Cluster',
+                         s=200, palette=colors, legend=True)
+
+    plt.legend(loc='lower right', title='Cluster')
+    ax.set_title("Clustered Points", fontsize='xx-large', y=1.05)
+
+    plt.figure(figsize=(16, 6))
+    colors = ["#A181E0", "#E08181", "#599988", "#FF0000"]
+    ax = sns.scatterplot(data=df, x="NRA by Distance", y="NHB by Distance", hue='Cluster',
+                         s=200, palette=colors, legend=True)
+
+    plt.legend(loc='lower right', title='Cluster')
+    ax.set_title("Clustered Points", fontsize='xx-large', y=1.05)
+
+    plt.show()
 
 
 def elbow_method():
-    list_k = list(range(2, 10))
+    list_k = list(range(2, 12))
     for k in list_k:
         km = Km(n_clusters=k)
         km.fit(X_std)
@@ -28,41 +51,37 @@ def elbow_method():
     plt.xlabel(r'Number of clusters $k$')
     plt.ylabel('Sum of squared distance')
     plt.show()
-    return KneeLocator(range(2, 10), sse, curve="convex", direction="decreasing").elbow
+    return KneeLocator(range(2, 12), sse, curve="convex", direction="decreasing").elbow
 
 
-def process_data():
-    df["TripEndDateTIme"] = pd.to_datetime(df['TripEndDateTIme'])
-    df["TripStartDateTIme"] = pd.to_datetime(df['TripStartDateTIme'])
-    df["Duration"] = df["TripEndDateTIme"] - df["TripStartDateTIme"]
-    for index in range(len(df)):
-        dayOfWeek.append(pd.Timestamp(df["TripStartDateTIme"].iloc[index]).dayofweek)
-        duration.append(pd.Timedelta(df["Duration"].iloc[index]).total_seconds() / 3600)
+def silhouette_method():
+    list_k = list(range(2, 10))
 
-    df["Distance"] = df["OdometerEnd"] - df["OdometerStart"]
-    df["DayOfWeek"] = dayOfWeek
-    df["TripDuration"] = duration
-    df.drop(df.columns.difference(columns), axis=1, inplace=True)
+    for k in list_k:
+        print(k)
+        km = Km(n_clusters=k)
+        labels = km.fit_predict(X_std)
+        sil_scores.append(silhouette_score(X_std, labels))
+    # Plot sil  against k
+    plt.figure(figsize=(6, 6))
+    plt.plot(list_k, sil_scores, '-o')
+    plt.xlabel(r'Number of clusters $k$')
+    plt.ylabel('Silhouette Score')
 
-    # Standardize the data
-    return MinMaxScaler().fit_transform(df)
+    plt.show()
 
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 sse = []
 sil_scores = []
-davies_score = []
-dayOfWeek = []
-duration = []
-columns = ["id", "Trip_id", "AvgSpeed", "HarshBreaks", "InstancesAbove120KMPH", "InstancesAbove80KMPH", "MaxSpeed",
-           "SuddenTurns", "RashAccelerations", "Distance", "TripDuration", "DayOfWeek"]
-df = pd.read_csv("Output\\Weekend.csv")
-
-# X_std = process_data()
+df = pd.read_csv("Output\\InputFile.csv")
 X_std = MinMaxScaler().fit_transform(df)
-# Determine number of clusters using silhouette_score and  davies_bouldin_score
+# Determine number of clusters using silhouette_score
+
+# silhouette_method()
+
 # n_clusters = elbow_method()
+# print(n_clusters)
 # if n_clusters is None:
-n_clusters = 5
+n_clusters = 4
 cluster_data()
-plt.show()
