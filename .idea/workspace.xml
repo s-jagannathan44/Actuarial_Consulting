@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added code for retrieving coefficients for Injury">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added code to compute variance">
+      <change beforePath="$PROJECT_DIR$/.idea/Actuarial Consulting.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Actuarial Consulting.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/Utilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" beforeDir="false" afterPath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,27 +84,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00118" summary="Credit Card default">
-      <created>1669686892130</created>
-      <option name="number" value="00118" />
-      <option name="presentableId" value="LOCAL-00118" />
-      <option name="project" value="LOCAL" />
-      <updated>1669686892130</updated>
-    </task>
-    <task id="LOCAL-00119" summary="Added code to select features based on feature importanct">
-      <created>1669859470024</created>
-      <option name="number" value="00119" />
-      <option name="presentableId" value="LOCAL-00119" />
-      <option name="project" value="LOCAL" />
-      <updated>1669859470024</updated>
-    </task>
-    <task id="LOCAL-00120" summary="Used stratification to fix the sampling error faced where  accountants training default was 5% while test default was 6%">
-      <created>1670209928727</created>
-      <option name="number" value="00120" />
-      <option name="presentableId" value="LOCAL-00120" />
-      <option name="project" value="LOCAL" />
-      <updated>1670209928727</updated>
     </task>
     <task id="LOCAL-00121" summary="Implemented Unsupervised learning using IsolationForest">
       <created>1670316007405</created>
@@ -427,7 +407,28 @@
       <option name="project" value="LOCAL" />
       <updated>1680000911586</updated>
     </task>
-    <option name="localTasksCounter" value="167" />
+    <task id="LOCAL-00167" summary="Added Pdfs">
+      <created>1680491010111</created>
+      <option name="number" value="00167" />
+      <option name="presentableId" value="LOCAL-00167" />
+      <option name="project" value="LOCAL" />
+      <updated>1680491010111</updated>
+    </task>
+    <task id="LOCAL-00168" summary="Checked in Baseline Code and Added Pdfs">
+      <created>1681542628986</created>
+      <option name="number" value="00168" />
+      <option name="presentableId" value="LOCAL-00168" />
+      <option name="project" value="LOCAL" />
+      <updated>1681542628986</updated>
+    </task>
+    <task id="LOCAL-00169" summary="Added code to compute variance">
+      <created>1681699879650</created>
+      <option name="number" value="00169" />
+      <option name="presentableId" value="LOCAL-00169" />
+      <option name="project" value="LOCAL" />
+      <updated>1681699879650</updated>
+    </task>
+    <option name="localTasksCounter" value="170" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,9 +455,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="fixed bugs in Claim Gross Cost Calculation" />
-    <MESSAGE value="Added UY New and Zone columns" />
-    <MESSAGE value="Add file for death" />
     <MESSAGE value="Base model for Injury and death" />
     <MESSAGE value="Changed Injury model, so it now has 11 columns and 3 lakh rows" />
     <MESSAGE value="Changed Death file, so it now has 11 columns and 3 lakh rows" />
@@ -479,6 +477,9 @@
     <MESSAGE value="Saved Model files with multiplier" />
     <MESSAGE value="Added code for retrieving coefficients for death" />
     <MESSAGE value="Added code for retrieving coefficients for Injury" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added code for retrieving coefficients for Injury" />
+    <MESSAGE value="Added Pdfs" />
+    <MESSAGE value="Checked in Baseline Code and Added Pdfs" />
+    <MESSAGE value="Added code to compute variance" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added code to compute variance" />
   </component>
 </project>
