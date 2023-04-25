@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added code to draw 3d plot">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added model files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" beforeDir="false" afterPath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" afterDir="false" />
     </list>
@@ -83,20 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00123" summary="Implemented functionality to plot lat long on map">
-      <created>1671015106074</created>
-      <option name="number" value="00123" />
-      <option name="presentableId" value="LOCAL-00123" />
-      <option name="project" value="LOCAL" />
-      <updated>1671015106074</updated>
-    </task>
-    <task id="LOCAL-00124" summary="Unsupervised learning via KMeans classification">
-      <created>1671174681372</created>
-      <option name="number" value="00124" />
-      <option name="presentableId" value="LOCAL-00124" />
-      <option name="project" value="LOCAL" />
-      <updated>1671174681372</updated>
     </task>
     <task id="LOCAL-00125" summary="Unsupervised learning via KMeans classification">
       <created>1671188472193</created>
@@ -427,7 +413,21 @@
       <option name="project" value="LOCAL" />
       <updated>1681959948552</updated>
     </task>
-    <option name="localTasksCounter" value="172" />
+    <task id="LOCAL-00172" summary="Check in after code clean up">
+      <created>1682143214497</created>
+      <option name="number" value="00172" />
+      <option name="presentableId" value="LOCAL-00172" />
+      <option name="project" value="LOCAL" />
+      <updated>1682143214497</updated>
+    </task>
+    <task id="LOCAL-00173" summary="Added model files">
+      <created>1682312336976</created>
+      <option name="number" value="00173" />
+      <option name="presentableId" value="LOCAL-00173" />
+      <option name="project" value="LOCAL" />
+      <updated>1682312336976</updated>
+    </task>
+    <option name="localTasksCounter" value="174" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,8 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Changed Death file, so it now has 11 columns and 3 lakh rows" />
-    <MESSAGE value="Updated Injury model" />
     <MESSAGE value="Updated Death  model" />
     <MESSAGE value="GLM Gamma / Tweedie Model for Injury" />
     <MESSAGE value="Used  Gaussian from Stats model" />
@@ -479,6 +477,8 @@
     <MESSAGE value="Added code to compute variance" />
     <MESSAGE value="Added code to perform feature selection via PFA" />
     <MESSAGE value="Added code to draw 3d plot" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added code to draw 3d plot" />
+    <MESSAGE value="Check in after code clean up" />
+    <MESSAGE value="Added model files" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added model files" />
   </component>
 </project>
