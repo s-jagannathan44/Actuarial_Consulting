@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from kneed import KneeLocator
 from sklearn.cluster import KMeans as Km
-# from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import MinMaxScaler
 import joblib
 import seaborn as sns
@@ -12,14 +12,19 @@ import seaborn as sns
 def plot3d(x, y_clusters):
     fig = plt.figure(figsize=(15, 15))
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(x[y_clusters == 0, 0], x[y_clusters == 0, 2], x[y_clusters == 0, 1], s=40, color='blue',
+    ax.scatter(x[y_clusters == 0, 0], x[y_clusters == 0, 2], x[y_clusters == 0, 1], s=40, color='red',
                label="cluster 0")
-    ax.scatter(x[y_clusters == 1, 0], x[y_clusters == 1, 2], x[y_clusters == 1, 1], s=40, color='orange',
+    ax.scatter(x[y_clusters == 1, 0], x[y_clusters == 1, 2], x[y_clusters == 1, 1], s=40, color='blue',
                label="cluster 1")
     ax.scatter(x[y_clusters == 2, 0], x[y_clusters == 2, 2], x[y_clusters == 2, 1], s=40, color='green',
                 label="cluster 2")
-    ax.scatter(x[y_clusters == 3, 0], x[y_clusters == 3, 2], x[y_clusters == 3, 1], s=40, color='#D12B60',
+    ax.scatter(x[y_clusters == 3, 0], x[y_clusters == 3, 2], x[y_clusters == 3, 1], s=40, color='black',
                 label="cluster 3")
+
+    ax.scatter(x[y_clusters == 4, 0], x[y_clusters == 4, 2], x[y_clusters == 4, 1], s=40, color='yellow',
+               label="cluster 4")
+    ax.scatter(x[y_clusters == 5, 0], x[y_clusters == 5, 2], x[y_clusters == 5, 1], s=40, color='orange',
+               label="cluster 5")
 
     ax.set_xlabel('NRA by Distance')
     ax.set_ylabel('NHB by distance')
@@ -30,7 +35,7 @@ def plot3d(x, y_clusters):
 
 def plot(X, y):
     plt.figure(figsize=(16, 6))
-    colors = ["#FFFF00", "#FF0000", "#599988", "#E08181", "#000000"]
+    colors = ["#FFFF00", "#FF0000", "#599988", "#E08181", "#F00000", "#ABCDEF"]
     ax = sns.scatterplot(data=df, x=X, y=y, hue='Cluster',
                          s=200, palette=colors, legend=True)
     plt.legend(loc='lower right', title='Cluster')
@@ -42,18 +47,17 @@ def cluster_data():
     # km.fit(X_std)
     # joblib.dump(km, "Output\\Cluster.sav")
 
-    km = joblib.load("Output\\ModelFiles\\NRANHB1204Clusters.sav")
+    km = joblib.load("CommercialVehicle\\Clustered\\6Clusters.sav")
     labels = km.predict(X_std)
     print("Predict complete")
-    # print(silhouette_score(X_std, labels))
+    print(silhouette_score(X_std, labels))
     df["Cluster"] = labels  # km.labels_
     df.to_csv("Output\\Clustered\\clustered.csv")
-
     # plot("NRA by Distance", "NHB by Distance")
-    # plot("NRA by Distance", "A 120")
+    #  plot("NRA by Distance", "A 120")
     # plot("NHB by Distance", "A 120")
-    # plt.show()
-    plot3d(X_std, labels)
+    plt.show()
+    # plot3d(X_std, labels)
 
 
 def elbow_method():
@@ -73,12 +77,11 @@ def elbow_method():
 
 # -------------------- CODE STARTS HERE ---------------------------------------
 sse = []
-# df = pd.read_csv("Output\\Clustered\\Out of Sample\\RandomSampling\\InputFile_Test.csv")
-df = pd.read_csv("Output\\InputFile.csv")
+df = pd.read_csv("CommercialVehicle\\InputFile.csv")
 X_std = MinMaxScaler().fit_transform(df)
 # n_clusters = elbow_method()
 # print(n_clusters)
-# n_clusters = 4
+# n_clusters = 6
 cluster_data()
 
 # X_train, X_test, y_train, y_test = train_test_split(df, df, test_size=0.5, random_state=25)
