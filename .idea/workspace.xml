@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added random sampling code">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Final code for PCV taxi to be delivered to Client">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" beforeDir="false" afterPath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" afterDir="false" />
     </list>
@@ -83,27 +83,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00126" summary="Data and Excel files for telematics">
-      <created>1671188746890</created>
-      <option name="number" value="00126" />
-      <option name="presentableId" value="LOCAL-00126" />
-      <option name="project" value="LOCAL" />
-      <updated>1671188746890</updated>
-    </task>
-    <task id="LOCAL-00127" summary="Excel files for telematics where we cluster using city/Highway traffic and by deviced Id">
-      <created>1672133595652</created>
-      <option name="number" value="00127" />
-      <option name="presentableId" value="LOCAL-00127" />
-      <option name="project" value="LOCAL" />
-      <updated>1672133595652</updated>
-    </task>
-    <task id="LOCAL-00128" summary="Added silhouette_score, calinski_harabasz_score, davies_bouldin_score">
-      <created>1676349735829</created>
-      <option name="number" value="00128" />
-      <option name="presentableId" value="LOCAL-00128" />
-      <option name="project" value="LOCAL" />
-      <updated>1676349735829</updated>
     </task>
     <task id="LOCAL-00129" summary="Refactored code">
       <created>1676363400806</created>
@@ -427,7 +406,28 @@
       <option name="project" value="LOCAL" />
       <updated>1682403930716</updated>
     </task>
-    <option name="localTasksCounter" value="175" />
+    <task id="LOCAL-00175" summary="Final check in with 6 clusters">
+      <created>1683113437923</created>
+      <option name="number" value="00175" />
+      <option name="presentableId" value="LOCAL-00175" />
+      <option name="project" value="LOCAL" />
+      <updated>1683113437923</updated>
+    </task>
+    <task id="LOCAL-00176" summary="Added model file for commercial vehicles">
+      <created>1683113468337</created>
+      <option name="number" value="00176" />
+      <option name="presentableId" value="LOCAL-00176" />
+      <option name="project" value="LOCAL" />
+      <updated>1683113468337</updated>
+    </task>
+    <task id="LOCAL-00177" summary="Final code for PCV taxi to be delivered to Client">
+      <created>1683167040708</created>
+      <option name="number" value="00177" />
+      <option name="presentableId" value="LOCAL-00177" />
+      <option name="project" value="LOCAL" />
+      <updated>1683167040708</updated>
+    </task>
+    <option name="localTasksCounter" value="178" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,9 +454,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="GLM Gamma / Tweedie Model for Injury" />
-    <MESSAGE value="Used  Gaussian from Stats model" />
-    <MESSAGE value="Added method to combine states" />
     <MESSAGE value="Final Death and Injury Model" />
     <MESSAGE value="Check in after making changes to run the saved model on full file" />
     <MESSAGE value="Check in after making changes to run the saved Death model on full file" />
@@ -479,6 +476,9 @@
     <MESSAGE value="Check in after code clean up" />
     <MESSAGE value="Added model files" />
     <MESSAGE value="Added random sampling code" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added random sampling code" />
+    <MESSAGE value="Final check in with 6 clusters" />
+    <MESSAGE value="Added model file for commercial vehicles" />
+    <MESSAGE value="Final code for PCV taxi to be delivered to Client" />
+    <option name="LAST_COMMIT_MESSAGE" value="Final code for PCV taxi to be delivered to Client" />
   </component>
 </project>

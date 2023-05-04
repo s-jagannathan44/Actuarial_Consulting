@@ -1,4 +1,4 @@
-# This file contains the code for clustering Commercial Vehicle - Taxi Data
+# This file contains the code for clustering Private Car Data
 
 # Import statements used to include code from other libraries
 import pandas as pd
@@ -16,21 +16,16 @@ def plot3d(x, y_clusters):
     fig = plt.figure(figsize=(15, 15))
     ax = fig.add_subplot(111, projection='3d')
 
-    # There is one line for each cluster to be plotted. As we have 6 clusters we have 6 lines.
-    # In case fewer clusters are used the necessary changes can be made
-    ax.scatter(x[y_clusters == 0, 0], x[y_clusters == 0, 2], x[y_clusters == 0, 1], s=40, color='red',
+    # There is one line for each cluster to be plotted. As we have 4 clusters we have 4 lines.
+    # In case more clusters are used the necessary changes can be made
+    ax.scatter(x[y_clusters == 0, 0], x[y_clusters == 0, 2], x[y_clusters == 0, 1], s=40, color='blue',
                label="cluster 0")
-    ax.scatter(x[y_clusters == 1, 0], x[y_clusters == 1, 2], x[y_clusters == 1, 1], s=40, color='blue',
+    ax.scatter(x[y_clusters == 1, 0], x[y_clusters == 1, 2], x[y_clusters == 1, 1], s=40, color='orange',
                label="cluster 1")
     ax.scatter(x[y_clusters == 2, 0], x[y_clusters == 2, 2], x[y_clusters == 2, 1], s=40, color='green',
                label="cluster 2")
-    ax.scatter(x[y_clusters == 3, 0], x[y_clusters == 3, 2], x[y_clusters == 3, 1], s=40, color='black',
+    ax.scatter(x[y_clusters == 3, 0], x[y_clusters == 3, 2], x[y_clusters == 3, 1], s=40, color='#D12B60',
                label="cluster 3")
-
-    ax.scatter(x[y_clusters == 4, 0], x[y_clusters == 4, 2], x[y_clusters == 4, 1], s=40, color='yellow',
-               label="cluster 4")
-    ax.scatter(x[y_clusters == 5, 0], x[y_clusters == 5, 2], x[y_clusters == 5, 1], s=40, color='orange',
-               label="cluster 5")
 
     # These are the 3 columns in the input file which are clustered
     ax.set_xlabel('NRA by Distance')
@@ -102,10 +97,10 @@ def elbow_method():
 
 # -------------------- MAIN CODE STARTS HERE ---------------------------------------
 # This is the input file from which the clusters are to be generated
-df = pd.read_csv("CommercialVehicle\\InputFile.csv")
+df = pd.read_csv("Output\\InputFile.csv")
 # this line is used for Scaling  the input before clustering
 X_std = MinMaxScaler().fit_transform(df)
 # This line sets the number of clusters to be used by K Means
-n_clusters = 6
+n_clusters = 4
 fit_data()
 cluster_data()
