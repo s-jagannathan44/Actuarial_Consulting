@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Final code for PCV taxi to be delivered to Client">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Temp commit">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrequencyModeling/FrequencyModeling.py" beforeDir="false" afterPath="$PROJECT_DIR$/FrequencyModeling/FrequencyModeling.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" beforeDir="false" afterPath="$PROJECT_DIR$/UnsupervisedLearning/KMeans.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,6 +39,9 @@
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2DEmVy3zRD485iDAgspjdlXMGIW" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -47,10 +52,13 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Python.main.executor": "Run",
+    "Python.scratch.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/Django",
+    "full.screen.before.presentation.mode": "false",
+    "last_opened_file_path": "D:/Python Backups/Python/Sriram_1_Python_Basics",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   },
   "keyToStringList": {
@@ -75,6 +83,13 @@
       <recent name="C:\Users\jsrir\AppData\Roaming\JetBrains\PyCharmCE2022.2\scratches" />
     </key>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-7a29c1521ef0-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.11799.298" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -83,27 +98,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660272651818</updated>
-    </task>
-    <task id="LOCAL-00129" summary="Refactored code">
-      <created>1676363400806</created>
-      <option name="number" value="00129" />
-      <option name="presentableId" value="LOCAL-00129" />
-      <option name="project" value="LOCAL" />
-      <updated>1676363400806</updated>
-    </task>
-    <task id="LOCAL-00130" summary="Changed code for Autoencoders">
-      <created>1676537549632</created>
-      <option name="number" value="00130" />
-      <option name="presentableId" value="LOCAL-00130" />
-      <option name="project" value="LOCAL" />
-      <updated>1676537549632</updated>
-    </task>
-    <task id="LOCAL-00131" summary="Implemented Pipleline">
-      <created>1676610532129</created>
-      <option name="number" value="00131" />
-      <option name="presentableId" value="LOCAL-00131" />
-      <option name="project" value="LOCAL" />
-      <updated>1676610532129</updated>
     </task>
     <task id="LOCAL-00132" summary="Implemented PCA Pipline with scoring which shows that we should go back normal clustering as dimensionality reduction provides no benefits when columns are few">
       <created>1676634577578</created>
@@ -427,7 +421,28 @@
       <option name="project" value="LOCAL" />
       <updated>1683167040708</updated>
     </task>
-    <option name="localTasksCounter" value="178" />
+    <task id="LOCAL-00178" summary="Final code for Private Car to be delivered to Client">
+      <created>1683170507487</created>
+      <option name="number" value="00178" />
+      <option name="presentableId" value="LOCAL-00178" />
+      <option name="project" value="LOCAL" />
+      <updated>1683170507487</updated>
+    </task>
+    <task id="LOCAL-00179" summary="Ran IsolationForest On Telematics data">
+      <created>1684389455328</created>
+      <option name="number" value="00179" />
+      <option name="presentableId" value="LOCAL-00179" />
+      <option name="project" value="LOCAL" />
+      <updated>1684389455328</updated>
+    </task>
+    <task id="LOCAL-00180" summary="Temp commit">
+      <created>1695609524685</created>
+      <option name="number" value="00180" />
+      <option name="presentableId" value="LOCAL-00180" />
+      <option name="project" value="LOCAL" />
+      <updated>1695609524685</updated>
+    </task>
+    <option name="localTasksCounter" value="181" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -454,9 +469,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Final Death and Injury Model" />
-    <MESSAGE value="Check in after making changes to run the saved model on full file" />
-    <MESSAGE value="Check in after making changes to run the saved Death model on full file" />
     <MESSAGE value="Added code for conditional merging and XGB Gamma Injury model" />
     <MESSAGE value="Tweedie check in" />
     <MESSAGE value="Gamma check in to use Loss Cost" />
@@ -479,6 +491,25 @@
     <MESSAGE value="Final check in with 6 clusters" />
     <MESSAGE value="Added model file for commercial vehicles" />
     <MESSAGE value="Final code for PCV taxi to be delivered to Client" />
-    <option name="LAST_COMMIT_MESSAGE" value="Final code for PCV taxi to be delivered to Client" />
+    <MESSAGE value="Final code for Private Car to be delivered to Client" />
+    <MESSAGE value="Ran IsolationForest On Telematics data" />
+    <MESSAGE value="Temp commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="Temp commit" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$APPLICATION_CONFIG_DIR$/scratches/Motor Model UK/coefficient.py</url>
+          <line>71</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$APPLICATION_CONFIG_DIR$/scratches/Motor Model UK/coefficient.py</url>
+          <line>32</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

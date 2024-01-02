@@ -19,17 +19,13 @@ from sklearn.linear_model import PoissonRegressor
 def build_model():
     linear_model_preprocessor = ColumnTransformer(
         [
-            ("passthrough_1", "passthrough", ["AnalysisPeriod"]),
+            ("passthrough_1", "passthrough", ["Pclass"]),
             (
                 "onehot_categorical",
                 OrdinalEncoder(),
-                ["GenderMainDriver", "GenderYoungestDriver",
-                 "Use", "PaymentMethod", "BonusMalusProtection"],
+                ["Sex"],
             ),
-            ("binned_2", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["AgeMainDriver"]),
-            ("binned_9", KBinsDiscretizer(n_bins=2, encode='ordinal', strategy='quantile'), ["VehicleAge"]),
-            ("binned_15", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["BonusMalusYears"]),
-            ("binned_19", KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='quantile'), ["PolicyTenure"]),
+            ("binned_2", KBinsDiscretizer(n_bins=4, encode='ordinal', strategy='quantile'), ["Age"]),
         ],
         remainder='drop'
     )
@@ -40,7 +36,7 @@ def build_model():
         ]
     )
     poisson_glm.fit(
-        df_train, df_train["Claim Count"])
+        df_train, df_train["Survived"])
     joblib.dump(poisson_glm, "Frequency.sav")
     return poisson_glm
 
@@ -51,7 +47,7 @@ def execute_model(poisson_model, dataframe):
     dataframe.to_csv("CSV\\df_test.csv")
 
 
-df = pd.read_csv("CSV\\Frequency.csv")
+df = pd.read_csv("CSV\\titanic.csv")
 for col in df.columns:
     if "Unnamed" in col:
         df.drop(col, axis=1, inplace=True)

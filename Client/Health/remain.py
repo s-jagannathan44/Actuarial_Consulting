@@ -1,0 +1,60 @@
+import pandas as pd
+
+df = pd.read_csv("C:\\SHAI\FY23-Policy mem data mapped new.csv")
+#df['concatenated'] = df['Policy Number'] + df['Member ID']
+df2 = df.groupby(['Policy Number'])['Policy Number'].count().to_frame()
+# df.reset_index(drop=True,inplace=True)
+# df2.reset_index(drop=True,inplace=True)
+# df3 = pd.concat([df,df2],axis=1,join='inner')
+#df2.to_csv("merge2.csv")
+#
+df2.rename(columns={"Policy Number": "Policy Number", "Policy Number": "Count_P"}, inplace=True)
+df3 = pd.merge(df, df2, how="outer", on='Policy Number')
+
+#df4 = df.groupby(['concatenated']).count()
+#df5 = pd.merge(df, df4, how="outer", on='concatenated')
+#df5.to_csv("M2.csv")
+df3['concatenated'] = df3['Policy Number'] + df3['Member ID']
+df10 = df3.groupby(['concatenated'])['concatenated'].count().to_frame()
+df10.rename(columns={"": "concatenated", "concatenated": "Count_C"}, inplace=True)
+df11 = pd.merge(df3, df10, how="outer", on='concatenated')
+df11.head(10).to_csv("df11.csv")
+# df3 = df3.set_index('concatenated')
+# df3.to_csv("M1.csv")
+print(df11['EARNED_PREMIUM'].sum())
+print(df11['Count_C'].sum())
+#df5.to_csv("M2.csv")
+df4 = pd.read_csv("Paid.csv")
+
+print(df4['PAID_AMT'].sum())
+df4['concatenated'] = df4['POLICY_NUM'] + df4['MEMBER_ID_CARD_NUM']
+# df2 = df.groupby(['CLAIM_NUM'])['CLAIM_NUM'].count().to_frame()
+# df2 = df.groupby(['CLAIM_NUM']).agg({'PAID_AMT':['sum']})
+df5 = df4.groupby(['concatenated'])['PAID_AMT'].sum().to_frame()
+print(df5['PAID_AMT'].sum())
+# _df5.to_csv("C1.csv")
+# _df6 = pd.merge(df4, df5, how="outer", on='CLAIM_NUM')
+# _df5.to_csv("C1.csv")
+# _df7 = df6.groupby(['MEMBER_ID_CARD_NUM'])['PAID_AMT_x'].sum()
+# df7.rename(columns={"MEMBER_ID_CARD_NUM": "Member ID"}, inplace=True)
+df8 = pd.merge(df11, df5, how="outer", on='concatenated')
+print(df8['PAID_AMT'].sum())
+print(df8['EARNED_PREMIUM'].sum())
+df8.to_csv("E2.csv")
+
+
+# df.head(10000).to_csv("head.csv")
+# df = pd.read_csv("head.csv")
+# df2.to_csv("t1.csv")
+# df.reset_index(drop=True,inplace=True)
+# df2.reset_index(drop=True,inplace=True)
+# # df3 = pd.merge(df,df2,how="inner",on="Policy Number")
+# df3 = pd.concat([df,df2],axis=1,join='inner')
+# df3.to_csv("merge.csv")
+# print(df3.head(100))
+# for col in df.columns:
+# print(col)
+# print(df["EARNED_PREMIUM"].sum())
+# print(df["GWP_RCD"].sum())
+# print(df["POLICIES_EXPOSED"].sum())
+# print(df["LIVES_EXPOSED"].sum())
