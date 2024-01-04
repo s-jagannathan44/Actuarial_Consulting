@@ -42,6 +42,7 @@ print("assign complete")
 df8 = pd.concat([df1, df2, df3, df4, df5, df6], axis=0)
 print("append complete")
 df8.rename(columns={"Policy number": "Policy_number"}, inplace=True)
+df9 = df8.dropna()
 df8.to_csv("CSV\\Member_23.csv")
 
 

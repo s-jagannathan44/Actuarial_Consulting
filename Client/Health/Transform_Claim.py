@@ -1,3 +1,5 @@
+import datetime
+
 import pandas as pd
 import duckdb as db
 
@@ -22,7 +24,12 @@ os_23 = pd.read_csv("C:\\SHAI\\Revised 11-12-23\\FY23_OS.csv")
 
 os_23.rename(columns={'PROVISION_AMT': 'PAID_AMT'}, inplace=True)
 claims = pd.concat([paid_22, paid_23, os_23], axis=0)
+claims['ADMISSION_DT'] = pd.to_datetime(claims['ADMISSION_DT'],  format="mixed", dayfirst=True)
 
+df2 = claims[(claims['ADMISSION_DT'] > datetime.datetime(2022, 3, 31)) &
+             (claims['ADMISSION_DT'] < datetime.datetime(2023, 4, 1))]
+
+claims = df2
 claims.rename(columns={'POLICY_NUM': "Policy_number", "MEMBER_ID_CARD_NUM": "Mem_ID"}, inplace=True)
 q1 = """SELECT claims.*,filter.Aggregate
 FROM claims
