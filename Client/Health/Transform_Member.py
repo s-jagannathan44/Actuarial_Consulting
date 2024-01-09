@@ -42,8 +42,8 @@ print("assign complete")
 df8 = pd.concat([df1, df2, df3, df4, df5, df6], axis=0)
 print("append complete")
 df8.rename(columns={"Policy number": "Policy_number"}, inplace=True)
-df9 = df8.dropna()
-df8.to_csv("CSV\\Member_23.csv")
+df9 = db.sql("select * from df8 where Mem_ID is not null").df()
+df9.to_csv("CSV\\Member_23.csv")
 
 
 def merge_claim():
@@ -53,7 +53,7 @@ def merge_claim():
     q1 = """select df8.Mem_ID, df8.Mem_Age, df8.Mem_Gender, df8.Policy_number, df7.PAID_AMT from df7
  right outer join df8 on df8.Policy_number = df7.POLICY_NUM and df8.Mem_ID = df7.MEMBER_ID_CARD_NUM"""
     df9 = db.execute(q1).df()
-    df9.to_csv("CSV\\Member21.csv")
+    df9.to_csv("CSV\\Member22.csv")
 
 
 
