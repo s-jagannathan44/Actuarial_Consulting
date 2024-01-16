@@ -70,15 +70,10 @@ q1 = """ select Policy_number, Mem_ID, icd_category, Financial_Year, count(claim
         from claim_master group by Policy_number, Mem_ID, icd_category,Financial_Year"""
 claim_count = db.execute(q1).df()
 
-# claim_final = db.sql("""select claim_count.*, claim_master.Quarter from claim_count left join
-#                         claim_master on claim_master.Policy_number =  claim_count.Policy_number and
-#                         claim_master.Mem_Id =  claim_count.Mem_Id""").df()
-
-
 print(claim_count["Aggregate"].sum())
 for col in claim_count.columns:
     if "Unnamed" in col:
         claim_count.drop(col, axis=1, inplace=True)
 
 claim_count.to_csv("CSV\\Claims_Merged.csv")
-
+claim_master.to_csv("CSV\\Claims_for_severity.csv")
