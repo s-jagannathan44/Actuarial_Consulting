@@ -5,12 +5,12 @@ import duckdb as db
 def prepare_frequency_file():
     q3 = """select sum(EARNED_PREMIUM) as EARNED_PREMIUM,sum(PAID_AMT) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
            sum(POLICIES_EXPOSED) as POLICIES_EXPOSED, sum(LIVES_EXPOSED) as LIVES_EXPOSED,
-            icd_category,Zone,Mem_Gender_New,Renewal_Count_New,Financial_Year,
+            Zone,Mem_Gender_New,Renewal_Count_New,Financial_Year,
             Sum_Insured_New, Mem_Age_New, Product_Name_New,  
             Channel_type_New, Revised_Individual_Floater_New 
             from df            
             group by Zone , Mem_Gender_New , Sum_Insured_New, Mem_Age_New, Product_name_New,Channel_type_New, 
-            Revised_Individual_Floater_New,icd_category,Financial_Year,Renewal_Count_New            
+            Revised_Individual_Floater_New,Financial_Year,Renewal_Count_New            
      """
 
     output = db.execute(q3).df()
@@ -89,17 +89,17 @@ def group_age(x):
     else:
         return x
 
-#
-# df = pd.read_csv("CSV\\SummaryExposed_Merged.csv")
-#
-# df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Other" if x >= 13 else group_renewal_count(x))
-# df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: "Other" if x >= 75 else group_age(x))
-# df["Sum_Insured_New"] = df["Sum_Insured"].apply(lambda x: group_si(x))
-# df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
-# df["Revised_Individual_Floater_New"] = df["Revised_Individual_Floater"].apply(lambda x: group_rif(x))
-# df["Channel_type_New"] = df["Channel_type"].apply(lambda x: group_channel_type(x))
-# df["Product_Name_New"] = df["Product_name"].apply(lambda x: group_product_name(x))
-# df.to_csv("freq,csv")
+
+df = pd.read_csv("CSV\\SummaryExposed_Merged.csv")
+
+df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Other" if x >= 13 else group_renewal_count(x))
+df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: "Other" if x >= 75 else group_age(x))
+df["Sum_Insured_New"] = df["Sum_Insured"].apply(lambda x: group_si(x))
+df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
+df["Revised_Individual_Floater_New"] = df["Revised_Individual_Floater"].apply(lambda x: group_rif(x))
+df["Channel_type_New"] = df["Channel_type"].apply(lambda x: group_channel_type(x))
+df["Product_Name_New"] = df["Product_name"].apply(lambda x: group_product_name(x))
+df.to_csv("freq.csv")
 
 
 df = pd.read_csv("freq.csv")
