@@ -14,7 +14,15 @@ def merge_files():
         frame = pd.read_csv(file_name)
         frame["Client_Name"] = client_name
         df = pd.concat([df, frame], axis=0)
+    df["PolicyID"] = df["PolicyID"].apply(lambda x: prefix_pb(str(x)))
     df.to_csv("base_file.csv")
+
+
+def prefix_pb(policy_no):
+    if policy_no.startswith('PB'):
+        return policy_no
+    else:
+        return "PB_" + policy_no
 
 
 def merge_claims():
@@ -26,6 +34,7 @@ def merge_claims():
         frame = pd.read_csv(file_name)
         frame["Client_Name"] = client_name
         df = pd.concat([df, frame], axis=0)
+    df.dropna(subset=['Claim Reference'], inplace=True)
     df.to_csv("claims_file.csv")
 
 
@@ -105,16 +114,19 @@ def calculate_earned_premium():
         exposure["FY" + str(year_) + "_EP"] = exposure["FY" + str(year_)] * exposure["full_premium"]
     exposure.to_csv("premium.csv")
 
+
 def find_missing(policy_number):
     if policy_number not in merged:
         return policy_number
     return ''
 
+
 # merge_files()
-merge_claims()
+# merge_claims()
 # create_master()
-calculate_exposure()
-calculate_earned_premium()
+# calculate_exposure()
+# calculate_earned_premium()
+
 
 premium = pd.read_csv("premium.csv")
 claims = pd.read_csv("claims_file.csv")
@@ -122,9 +134,10 @@ for col in premium.columns:
     if "Unnamed" in col:
         premium.drop(col, axis=1, inplace=True)
 
-premium.rename(columns={"policyno":"Policy Number"},inplace=True)
+premium.rename(columns={"policyno": "Policy Number"}, inplace=True)
 claims["Policy Number"] = claims["Policy Number"].apply(lambda x: "PB_" + str(x))
 claims_policy = claims.merge(premium, on=["Policy Number"], how="inner")
 merged = claims_policy["Policy Number"].tolist()
-claims["Missing_Claims"] = claims["Policy Number"].apply(lambda x:find_missing(x))
+claims["Missing_Claims"] = claims["Policy Number"].apply(lambda x: find_missing(x))
 claims_policy.to_csv("Policy_Claim.csv")
+claims.to_csv("missing.csv")
