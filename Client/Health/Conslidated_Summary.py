@@ -6,6 +6,7 @@ import duckdb as db
 def summaries():
     q3 = """select sum(Normalized_Earned_Premium) as EARNED_PREMIUM,sum(Aggregate) as PAID_AMT,sum(claim_count) as Claim_Count, 
            sum(Normalized_POLICIES_EXPOSED) as POLICIES_EXPOSED, sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED,
+            sum(members_per_policy) as MEMBER_COUNT, 
             icd_category,Zone,Mem_Gender,Renewal_Count,norm_policy.Financial_Year,
             norm_policy.Sum_Insured, member_claim.Mem_Age, Product_name,  
             Channel_type, Revised_Individual_Floater 
@@ -117,6 +118,7 @@ def merge_claim():
             frame.rename(columns={'PROVISION_AMT': 'PAID_AMT'}, inplace=True)
             is_os = True
         frame["file_name"] = file_name
+        print(file_name)
         frame = remove_group(frame,is_os)
         concatenated_claims = pd.concat([concatenated_claims, frame], axis=0)
 
@@ -124,12 +126,11 @@ def merge_claim():
     claims.rename(columns={'POLICY_NUM': "Policy_number", "MEMBER_ID_CARD_NUM": "Mem_ID"}, inplace=True)
     consolidated_claim = group_by_claim_number(claims)
     icd_master = pd.read_csv("C:\\SHAI\\Revised 11-12-23\\ICD_Ver10cm 2019 V1.csv")
-
     claim_master = db.sql("""select consolidated_claim.*, icd_master.ICD_category from consolidated_claim left join 
-                            icd_master on icd_master.icd_code =  consolidated_claim.icd_code """).df()
+                            icd_master on icd_master.icd_code =  consolidated_claim.icd_code 
+                            where consolidated_claim.icd_code NOT like 'B99%' """).df()
 
     q1 = """ select Policy_number, Mem_ID, icd_category, Financial_Year, count(claim_num) as claim_count,sum(Aggregate) as Aggregate
-
             from claim_master group by Policy_number, Mem_ID, icd_category,Financial_Year"""
     claim_count = db.execute(q1).df()
 
@@ -157,12 +158,14 @@ def set_financial_year(year_p):
 
 def remove_group(claims, is_os):
     claims['ADMISSION_DT'] = pd.to_datetime(claims['ADMISSION_DT'], format="mixed", dayfirst=True)
+    claims['DISCHARGE_DT'] = pd.to_datetime(claims['DISCHARGE_DT'], format="mixed", dayfirst=True, errors="coerce")
     claims["Financial_Year"] = claims["ADMISSION_DT"].apply(lambda x: "FY" if pd.isnull(x) else set_financial_year(x))
     if not is_os:
         claims = db.query("""select * from claims where PROD_TYPE != 'Group'""").df()
     claims.rename(columns={'POLICY_NUM': "Policy_number", "MEMBER_ID_CARD_NUM": "Mem_ID"}, inplace=True)
     claims["Policy_number"] = claims["Financial_Year"] + claims["Policy_number"]
     claims["Mem_ID"] = claims["Financial_Year"] + claims["Mem_ID"]
+    claims["Days_Hospitalised"] = claims['DISCHARGE_DT'] - claims['ADMISSION_DT']
     return claims
 
 
@@ -174,12 +177,12 @@ def remove_group(claims, is_os):
 # print("claims  have been merged")
 
 claim = pd.read_csv("CSV\\Claims_Merged.csv")
-policy = pd.read_csv("CSV\\Policy_Merged.csv")
+policy_file = pd.read_csv("CSV\\Policy_Merged.csv")
 member = pd.read_csv("CSV\\Member_Merged.csv")
-
 print("files have been loaded")
+member_per_policy_count = db.sql(""" select Policy_number, count(Mem_ID) as members_per_policy  from member group by Policy_number """).df()
+policy = policy_file.merge(member_per_policy_count, on="Policy_number")
 member_claim = member.merge(claim, on=["Policy_number", "Mem_ID", "Financial_Year"], how="left")
-
 member_count = db.sql(""" select Policy_number, count(Mem_ID) as count  from member_claim group by Policy_number """).df()
 
 q2 = """select policy.Policy_number, EARNED_PREMIUM/count  as Normalized_Earned_Premium,
