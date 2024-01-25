@@ -107,16 +107,20 @@ def transform_member(member):
 
 
 def merge_claim():
+    is_os = False
     path = "C:\\SHAI\\Revised 11-12-23\\Data\\Claims\\*.csv"
     concatenated_claims = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
         frame = pd.read_csv(file_name)
-        if file_name == "C:\\SHAI\\Revised 11-12-23\\Data\\Claims\\FY23_OS.csv":
+        if file_name == "C:\\SHAI\\Revised 11-12-23\\Data\\Claims\\FY23_OS_Final.csv":
             frame.rename(columns={'PROVISION_AMT': 'PAID_AMT'}, inplace=True)
+            is_os = True
+        frame["file_name"] = file_name
+        frame = remove_group(frame,is_os)
         concatenated_claims = pd.concat([concatenated_claims, frame], axis=0)
 
-    claims = remove_group(concatenated_claims)
+    claims = concatenated_claims
     claims.rename(columns={'POLICY_NUM': "Policy_number", "MEMBER_ID_CARD_NUM": "Mem_ID"}, inplace=True)
     consolidated_claim = group_by_claim_number(claims)
     icd_master = pd.read_csv("C:\\SHAI\\Revised 11-12-23\\ICD_Ver10cm 2019 V1.csv")
@@ -131,7 +135,6 @@ def merge_claim():
 
     claim_count.to_csv("CSV\\Claims_Merged.csv")
     claim_master.to_csv("CSV\\Claims_for_severity.csv")
-
 
 
 def group_by_claim_number(claims):
@@ -152,10 +155,11 @@ def set_financial_year(year_p):
     return "FY" + str(year_p.to_period('Q-MAR').qyear)[2:]
 
 
-def remove_group(claims):
+def remove_group(claims, is_os):
     claims['ADMISSION_DT'] = pd.to_datetime(claims['ADMISSION_DT'], format="mixed", dayfirst=True)
     claims["Financial_Year"] = claims["ADMISSION_DT"].apply(lambda x: "FY" if pd.isnull(x) else set_financial_year(x))
-    claims = db.query("""select * from claims where PROD_TYPE != 'Group' """).df()
+    if not is_os:
+        claims = db.query("""select * from claims where PROD_TYPE != 'Group'""").df()
     claims.rename(columns={'POLICY_NUM': "Policy_number", "MEMBER_ID_CARD_NUM": "Mem_ID"}, inplace=True)
     claims["Policy_number"] = claims["Financial_Year"] + claims["Policy_number"]
     claims["Mem_ID"] = claims["Financial_Year"] + claims["Mem_ID"]
@@ -178,9 +182,9 @@ member_claim = member.merge(claim, on=["Policy_number", "Mem_ID", "Financial_Yea
 
 member_count = db.sql(""" select Policy_number, count(Mem_ID) as count  from member_claim group by Policy_number """).df()
 
-q2 = """select policy.Policy_number, EARNED_PREMIUM/count  as Normalized_Earned_Premium,  
+q2 = """select policy.Policy_number, EARNED_PREMIUM/count  as Normalized_Earned_Premium,
         POLICIES_EXPOSED/count as Normalized_POLICIES_EXPOSED , LIVES_EXPOSED/count as Normalized_LIVES_EXPOSED,
-        from policy join member_count 
+        from policy join member_count
         on policy.Policy_number =member_count.Policy_number"""
 nep = db.execute(q2).df()
 norm_policy = policy.merge(nep, on="Policy_number")
