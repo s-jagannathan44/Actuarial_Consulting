@@ -3,6 +3,20 @@ import glob
 import duckdb as db
 
 
+def create_file():
+    claim = pd.read_csv("CSV\\Claims_for_severity.csv")
+    q1 = """select claim.*, Zone,Renewal_Count,
+            Sum_Insured, Product_Name,Plan_type,  
+            Channel_type, Revised_Individual_Floater from claim inner join policy on claim.Policy_number = policy.policy_number and 
+            claim.Financial_Year = policy.Financial_Year  where claim.Mem_ID !='' """
+    policy_claim = db.execute(q1).df()
+    q2 = """select policy_claim.*,  member.Mem_Age, Mem_Gender from policy_claim join member on 
+policy_claim.Policy_number = member.policy_number and 
+            policy_claim.Mem_Id = member.Mem_Id  and policy_claim.Financial_Year = member.Financial_Year   """
+    member_claim = db.execute(q2).df()
+    member_claim.to_csv("CSV\\PolicyMemberClaim.csv")
+
+
 def summaries():
     q3 = """select sum(Normalized_Earned_Premium) as EARNED_PREMIUM,sum(Aggregate) as PAID_AMT,sum(claim_count) as Claim_Count, 
            sum(Normalized_POLICIES_EXPOSED) as POLICIES_EXPOSED, sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED,
@@ -119,7 +133,7 @@ def merge_claim():
             is_os = True
         frame["file_name"] = file_name
         print(file_name)
-        frame = remove_group(frame,is_os)
+        frame = remove_group(frame, is_os)
         concatenated_claims = pd.concat([concatenated_claims, frame], axis=0)
 
     claims = concatenated_claims
@@ -180,10 +194,12 @@ claim = pd.read_csv("CSV\\Claims_Merged.csv")
 policy_file = pd.read_csv("CSV\\Policy_Merged.csv")
 member = pd.read_csv("CSV\\Member_Merged.csv")
 print("files have been loaded")
-member_per_policy_count = db.sql(""" select Policy_number, count(Mem_ID) as members_per_policy  from member group by Policy_number """).df()
+member_per_policy_count = db.sql(
+    """ select Policy_number, count(Mem_ID) as members_per_policy  from member group by Policy_number """).df()
 policy = policy_file.merge(member_per_policy_count, on="Policy_number")
 member_claim = member.merge(claim, on=["Policy_number", "Mem_ID", "Financial_Year"], how="left")
-member_count = db.sql(""" select Policy_number, count(Mem_ID) as count  from member_claim group by Policy_number """).df()
+member_count = db.sql(
+    """ select Policy_number, count(Mem_ID) as count  from member_claim group by Policy_number """).df()
 
 q2 = """select policy.Policy_number, EARNED_PREMIUM/count  as Normalized_Earned_Premium,
         POLICIES_EXPOSED/count as Normalized_POLICIES_EXPOSED , LIVES_EXPOSED/count as Normalized_LIVES_EXPOSED,
@@ -193,3 +209,5 @@ nep = db.execute(q2).df()
 norm_policy = policy.merge(nep, on="Policy_number")
 print("entering summaries")
 summaries()
+print("Creating Severity FIle ")
+create_file()
