@@ -1,25 +1,38 @@
-import numpy as np
+
 import pandas as pd
-import statsmodels.formula.api as smf
 from sklearn.model_selection import train_test_split
 import statsmodels.discrete.count_model as dcm
-import duckdb as db
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OrdinalEncoder
 
-df = pd.read_csv("CSV\\FrequencyModelFile.csv")
+
+df = pd.read_csv("CSV\\forecast.csv")
 # df = df.loc[:, ['Zone', 'Mem_Age_New', "Claim_Count", "LIVES_EXPOSED", "EARNED_PREMIUM"]]
 df["Claim_Count"] = df["Claim_Count"].fillna(0)
 df["LIVES_EXPOSED"] = df["LIVES_EXPOSED"].clip(lower=1)
-df["frequency"] = df["Claim_Count"] / df["LIVES_EXPOSED"]
-df2 = df[df["frequency"] < 1]
-df2 = df2[df2["frequency"]>0]
+df2 = df[df["Frequency"] < 1]
+df2 = df2[df2["Frequency"]>0]
 print(df2["EARNED_PREMIUM"].sum() / df["EARNED_PREMIUM"].sum())
 
-x_train, x_test, y_train, y_test = train_test_split(df2,df2["frequency"], test_size=0.2, random_state=25)
+linear_model_preprocessor = ColumnTransformer(
+        [
+            ("passthrough1", "passthrough", ["Frequency"]),
+            (
+                "onehot_categorical",
+                OrdinalEncoder(),
+                ["Financial_Year"]
+            ),
+        ],
+        remainder='drop'
+    )
+
+y= linear_model_preprocessor.fit_transform(df2)
+df3 = pd.DataFrame(y,columns=["Frequency","Financial_Year"])
+
+x_train, x_test, y_train, y_test = train_test_split(df3,df3["Frequency"], test_size=0.2, random_state=25)
 
 
-out = dcm.ZeroInflatedPoisson.from_formula(formula="frequency ~ Mem_Age_New + Renewal_Count_New + Mem_Gender_New + "
-                                                   "Sum_Insured_New + Channel_type_New + Product_Name_New + "
-                                                   "Revised_Individual_Floater_New",data=x_train)
+out = dcm.ZeroInflatedPoisson.from_formula(formula="Frequency ~ Financial_Year",data=x_train)
 
 
 result = out.fit_regularized(maxiter=100)
@@ -31,6 +44,7 @@ with open('All_Var.txt', 'w') as fh:
     fh.write(summary.as_text())
 
 print("-----------predict-----------")
-y_pred = result.predict(x_test)
-x_test["Pred"] = y_pred
-x_test.to_csv("df_test.csv")
+test = pd.read_csv("input.csv.csv")
+
+y_pred = result.predict(test)
+print(y_pred)
