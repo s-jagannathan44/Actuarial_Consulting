@@ -6,14 +6,15 @@ import duckdb as db
 def create_file():
     claim = pd.read_csv("CSV\\Claims_for_severity.csv")
     q1 = """select claim.*, Zone,Renewal_Count,
-            Sum_Insured, Product_Name,Plan_type,  
-            Channel_type, Revised_Individual_Floater from claim inner join policy on claim.Policy_number = policy.policy_number and 
-            claim.Financial_Year = policy.Financial_Year  where claim.Mem_ID !='' """
+            Sum_Insured, policy_file.product_Name as policy_product_name,  
+            Channel_type, Revised_Individual_Floater from claim inner join policy_file on claim.Policy_number = policy_file.policy_number and 
+            claim.Financial_Year = policy_file.Financial_Year  where claim.Mem_ID !='' """
     policy_claim = db.execute(q1).df()
     q2 = """select policy_claim.*,  member.Mem_Age, Mem_Gender from policy_claim join member on 
 policy_claim.Policy_number = member.policy_number and 
             policy_claim.Mem_Id = member.Mem_Id  and policy_claim.Financial_Year = member.Financial_Year   """
     member_claim = db.execute(q2).df()
+
     member_claim.to_csv("CSV\\PolicyMemberClaim.csv")
 
 
@@ -142,7 +143,7 @@ def merge_claim():
     icd_master = pd.read_csv("C:\\SHAI\\Revised 11-12-23\\ICD_Ver10cm 2019 V1.csv")
     claim_master = db.sql("""select consolidated_claim.*, icd_master.ICD_category from consolidated_claim left join 
                             icd_master on icd_master.icd_code =  consolidated_claim.icd_code 
-                            where consolidated_claim.icd_code NOT like 'B99%' """).df()
+                            where consolidated_claim.WHETHERCOVIDORNOT != 'COVID' """).df()
 
     q1 = """ select Policy_number, Mem_ID, icd_category, Financial_Year, count(claim_num) as claim_count,sum(Aggregate) as Aggregate
             from claim_master group by Policy_number, Mem_ID, icd_category,Financial_Year"""
