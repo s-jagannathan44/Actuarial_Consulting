@@ -1,6 +1,7 @@
 import pandas as pd
 import glob
 import fiscalyear
+import duckdb as db
 
 year = 0
 
@@ -66,6 +67,13 @@ def func(xy):
     return exposure
 
 
+def funct_lt(xy):
+    fy = fiscalyear.FiscalYear(int(year) + 3)
+    date_diff = xy - fy.start
+    exposure = date_diff / (fy.end - fy.start)
+    return exposure
+
+
 def funct(xy):
     fy = fiscalyear.FiscalYear(int(year) + 1)
     date_diff = xy - fy.start
@@ -87,7 +95,9 @@ def calculate_exposure():
     master = pd.read_csv("master.csv")
     master['policy_start_date'] = pd.to_datetime(master['policy_start_date'], format="mixed", dayfirst=True)
     master['policy_end_date'] = pd.to_datetime(master['policy_end_date'], format="mixed", dayfirst=True)
-
+    long_term = db.sql("""select * from master where planname like '%Long Term%' """).df()
+    master = db.sql("""select * from master where planname not like '%Long Term%' """).df()
+    long_term['policy_end_date'] = long_term['policy_end_date'] + pd.DateOffset(years=2)
     fiscalyear.setup_fiscal_calendar(start_month=4)
     for year_ in master["Financial_Year"].unique().tolist():
         year = year_
@@ -97,7 +107,19 @@ def calculate_exposure():
         master.loc[master.Financial_Year == year_, "FY" + str(year_)] = x
         master.loc[master.Financial_Year == year_, "FY" + str(year_ + 1)] = y
         print(year_)
-    master.to_csv("exposure.csv")
+    for year__ in long_term["Financial_Year"].unique().tolist():
+        year = year__
+        df_ = long_term[long_term["Financial_Year"] == year__]
+        ax = df_["policy_start_date"].apply(lambda xz: func(xz))
+        ay = df_["policy_end_date"].apply(lambda xx: funct_lt(xx))
+        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__)] = ax
+        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 1)] = 1
+        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 2)] = 1
+        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 3)] = ay
+        print(year__)
+
+    exposure = pd.concat([master, long_term], axis=0)
+    exposure.to_csv("exposure.csv")
 
 
 def convert_premium(prem):
@@ -132,18 +154,17 @@ def find_missing(policy_number):
     return ''
 
 
-# merge_files()
-# merge_claims()
-count = 0
-# create_master()
 # master = pd.read_csv("master.csv")
 # df2 = pd.pivot_table(master, values="full_premium", columns="Client_Name", aggfunc="sum")
 # df2 = df2.transpose()
 # print(df2)
 
-# calculate_exposure()
-# calculate_earned_premium()
-
+# merge_files()
+# merge_claims()
+# count = 0
+# create_master()
+calculate_exposure()
+calculate_earned_premium()
 
 premium = pd.read_csv("premium.csv")
 claims = pd.read_csv("claims_file.csv")
