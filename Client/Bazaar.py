@@ -12,7 +12,7 @@ def merge_files():
     for file_name in files:
         client_name = file_name[7:-12]
         frame = pd.read_csv(file_name)
-        frame["Client_Name"] = client_name
+        frame["Policy_Client_Name"] = client_name
         df = pd.concat([df, frame], axis=0)
     df["PolicyID"] = df["PolicyID"].apply(lambda x: prefix_pb(str(x)))
     df.to_csv("base_file.csv")
@@ -44,10 +44,19 @@ def set_financial_year(year_p):
 
 def create_master():
     base = pd.read_csv("base_file.csv")
-    base['policy_start_date'] = pd.to_datetime(base['policy_start_date'], format="mixed", dayfirst=True)
+    base = transform_data(base)
     base = base.sort_values(by='policy_start_date')
     base["Financial_Year"] = base["policy_start_date"].apply(lambda x: set_financial_year(x))
     base.to_csv("master.csv")
+
+
+def transform_data(exposure):
+    exposure['policy_start_date'] = pd.to_datetime(exposure['policy_start_date'], format="mixed", dayfirst=True)
+    exposure["tp_premium"] = exposure['tp_premium'].apply(lambda x: convert_premium(x))
+    exposure["tp_addons"] = exposure['tp_addons'].apply(lambda x: convert_premium(x))
+    exposure["full_premium"] = exposure["tp_premium"] + exposure["tp_addons"]
+    exposure["cubiccapacity_New"] = exposure["cubiccapacity"].apply(lambda x: group_cubic_capacity(x))
+    return exposure
 
 
 def func(xy):
@@ -78,6 +87,7 @@ def calculate_exposure():
     master = pd.read_csv("master.csv")
     master['policy_start_date'] = pd.to_datetime(master['policy_start_date'], format="mixed", dayfirst=True)
     master['policy_end_date'] = pd.to_datetime(master['policy_end_date'], format="mixed", dayfirst=True)
+
     fiscalyear.setup_fiscal_calendar(start_month=4)
     for year_ in master["Financial_Year"].unique().tolist():
         year = year_
@@ -91,8 +101,17 @@ def calculate_exposure():
 
 
 def convert_premium(prem):
-    if not prem.isnumeric():
-        return float(''.join(filter(str.isdigit, prem)).isnumeric())
+    global count
+    if isinstance(prem, str):
+        prem = prem[:-3]
+        try:
+            # noinspection PyTypeChecker
+            digits = ''.join(filter(str.isdigit, prem))
+            return float(digits)
+        except ValueError:
+            count = count + 1
+            print("faced an error with {}".format(str(count) + prem))
+            return 0.0
     else:
         return float(prem)
 
@@ -102,14 +121,6 @@ def calculate_earned_premium():
     for col in exposure.columns:
         if "Unnamed" in col:
             exposure.drop(col, axis=1, inplace=True)
-    exposure["tp_premium"] = exposure["tp_premium"].replace(',', '0')
-    exposure["tp_premium"] = exposure["tp_premium"].replace('-', '0', regex=True)
-    exposure["tp_premium"] = exposure["tp_premium"].replace(' ', '0', )
-    exposure["tp_addons"] = exposure["tp_addons"].replace('-', '0', regex=True)
-    exposure["tp_premium"] = exposure['tp_premium'].apply(lambda x: convert_premium(x))
-    exposure["tp_addons"] = exposure['tp_addons'].apply(lambda x: convert_premium(str(x)))
-    exposure["full_premium"] = exposure["tp_premium"] + exposure["tp_addons"]
-    exposure["cubiccapacity_New"] = exposure["cubiccapacity"].apply(lambda x: group_cubic_capacity(x))
     for year_ in exposure["Financial_Year"].unique().tolist():
         exposure["FY" + str(year_) + "_EP"] = exposure["FY" + str(year_)] * exposure["full_premium"]
     exposure.to_csv("premium.csv")
@@ -123,16 +134,22 @@ def find_missing(policy_number):
 
 # merge_files()
 # merge_claims()
+count = 0
 # create_master()
+# master = pd.read_csv("master.csv")
+# df2 = pd.pivot_table(master, values="full_premium", columns="Client_Name", aggfunc="sum")
+# df2 = df2.transpose()
+# print(df2)
+
 # calculate_exposure()
 # calculate_earned_premium()
 
 
 premium = pd.read_csv("premium.csv")
 claims = pd.read_csv("claims_file.csv")
-for col in premium.columns:
-    if "Unnamed" in col:
-        premium.drop(col, axis=1, inplace=True)
+for col_ in premium.columns:
+    if "Unnamed" in col_:
+        premium.drop(col_, axis=1, inplace=True)
 
 premium.rename(columns={"policyno": "Policy Number"}, inplace=True)
 claims["Policy Number"] = claims["Policy Number"].apply(lambda x: "PB_" + str(x))
