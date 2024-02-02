@@ -14,11 +14,9 @@ def build_model():
             (
                 "onehot_categorical",
                 OneHotEncoder(),
-                ["Mem_Age_New", "Mem_Gender_New", "Zone", "Renewal_Count_New", "Sum_Insured_New",
-                 "Channel_type_New", "Product_Name_New", "Revised_Individual_Floater_New"],
+                "Mem_Age_New Mem_Gender_New Renewal_Count_New".split()
             ),
-            ('ordinal_categorical', OrdinalEncoder(), ["Financial_Year"])
-
+            ('ordinal_categorical', OrdinalEncoder(), ["Financial_Year"]),
         ],
         remainder='drop'
         # remainder ='passthrough'
@@ -37,54 +35,53 @@ def build_model():
     return tweedie_glm
 
 
-def pivot_age(dataframe):
-    df2 = pd.pivot_table(dataframe, values="Loss_Cost Pred LIVES_EXPOSED".split(), columns="Mem_Age_New", aggfunc="sum")
-    df2 = df2.transpose()
-    df2["Actual_Total"] = df2["Loss_Cost"].sum()
-    df2["Predicted_Total"] = df2["Pred"].sum()
-    df["Error"] = (df2["Loss_Cost"] - df2['Pred']) / df2["Loss_Cost"]
-    df2.to_csv("Output\\Age.csv")
-
-
-def pivot_gender(dataframe):
-    df2 = pd.pivot_table(dataframe, values="Loss_Cost Pred LIVES_EXPOSED".split(), columns="Mem_Gender_New",
-                         aggfunc="sum")
-    df2 = df2.transpose()
-    df2["Actual_Total"] = df2["Loss_Cost"].sum()
-    df2["Predicted_Total"] = df2["Pred"].sum()
-    df["Error"] = (df2["Loss_Cost"] - df2['Pred']) / df2["Loss_Cost"]
-    df2.to_csv("Output\\Gender.csv")
-
-
-def pivot_renewal_count(dataframe):
-    df2 = pd.pivot_table(dataframe, values="Loss_Cost Pred LIVES_EXPOSED".split(), columns="Renewal_Count_New",
-                         aggfunc="sum")
-    df2 = df2.transpose()
-    df2["Actual_Total"] = df2["Loss_Cost"].sum()
-    df2["Predicted_Total"] = df2["Pred"].sum()
-    df["Error"] = (df2["Loss_Cost"] - df2['Pred']) / df2["Loss_Cost"]
-    df2.to_csv("Output\\RC.csv")
-
-
 def execute_model(tweedie_model, dataframe):
     dataframe.to_csv("Output\\text.csv")
     y_pred = tweedie_model.predict(dataframe)
     dataframe["Pred"] = y_pred
     dataframe.to_csv("Output\\text_out.csv")
-    pivot_age(dataframe)
-    pivot_gender(dataframe)
-    pivot_renewal_count(dataframe)
 
 
-df = pd.read_csv("OOS.csv")
-df = df[df['LIVES_EXPOSED'] >= 1]
-# df["LIVES_EXPOSED"].fillna(0, inplace=True)
+df = pd.read_csv("CSV\\FrequencyModelFile.csv")
 for col in df.columns:
     if "Unnamed" in col:
         df.drop(col, axis=1, inplace=True)
-
+df = df[df["LIVES_EXPOSED"] >= 1]
 df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
+df = df[df["Loss_Cost"] >= 0]
 df["Loss_Cost"].fillna(0, inplace=True)
 df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
 glm = build_model()
 execute_model(glm, df_test)
+
+
+def pivot_age(dataframe):
+    df2 = pd.pivot_table(dataframe, values="Loss_Cost Pred LIVES_EXPOSED".split(), columns="Mem_Age_New",
+                         aggfunc="mean")
+    df2 = df2.transpose()
+    df2["Error"] = (df2["Loss_Cost"] - df2['Pred']) / df2["Loss_Cost"]
+    df2.to_csv("Output\\Age.csv")
+
+
+def pivot_gender(dataframe):
+    df2 = pd.pivot_table(dataframe, values="Loss_Cost Pred LIVES_EXPOSED".split(), columns="Mem_Gender_New",
+                         aggfunc="mean")
+    df2 = df2.transpose()
+    df2["Error"] = (df2["Loss_Cost"] - df2['Pred']) / df2["Loss_Cost"]
+    df2.to_csv("Output\\Gender.csv")
+
+
+def pivot_renewal_count(dataframe):
+    df2 = pd.pivot_table(dataframe, values="Loss_Cost Pred LIVES_EXPOSED".split(), columns="Renewal_Count_New",
+                         aggfunc="mean")
+    df2 = df2.transpose()
+    df2["Error"] = (df2["Loss_Cost"] - df2['Pred']) / df2["Loss_Cost"]
+    df2.to_csv("Output\\RC.csv")
+
+
+def pivot_financial_year(dataframe):
+    df2 = pd.pivot_table(dataframe, values="Loss_Cost Pred LIVES_EXPOSED".split(), columns="Financial_Year",
+                         aggfunc="mean")
+    df2 = df2.transpose()
+    df2["Error"] = (df2["Loss_Cost"] - df2['Pred']) / df2["Loss_Cost"]
+    df2.to_csv("Output\\RC.csv")
