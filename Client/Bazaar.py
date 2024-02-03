@@ -13,7 +13,7 @@ def merge_files():
     for file_name in files:
         client_name = file_name[7:-12]
         frame = pd.read_csv(file_name)
-        frame["Policy_Client_Name"] = client_name
+        frame["Client_Name"] = client_name
         df = pd.concat([df, frame], axis=0)
     df["PolicyID"] = df["PolicyID"].apply(lambda x: prefix_pb(str(x)))
     df.to_csv("base_file.csv")
@@ -40,7 +40,12 @@ def merge_claims():
 
 
 def set_financial_year(year_p):
-    return year_p.to_period('Q-MAR').qyear
+    global count
+    try:
+        return year_p.to_period('Q-MAR').qyear
+    except AttributeError:
+        count = count + 1
+        return ""
 
 
 def create_master():
@@ -95,9 +100,10 @@ def calculate_exposure():
     master = pd.read_csv("master.csv")
     master['policy_start_date'] = pd.to_datetime(master['policy_start_date'], format="mixed", dayfirst=True)
     master['policy_end_date'] = pd.to_datetime(master['policy_end_date'], format="mixed", dayfirst=True)
-    long_term = db.sql("""select * from master where planname like '%Long Term%' """).df()
-    master = db.sql("""select * from master where planname not like '%Long Term%' """).df()
+    long_term = db.sql("""select * from master where newplancategory like '%Long Term%' """).df()
+    master = db.sql("""select * from master where newplancategory not like '%Long Term%' """).df()
     long_term['policy_end_date'] = long_term['policy_end_date'] + pd.DateOffset(years=2)
+    long_term.to_csv("lt.csv")
     fiscalyear.setup_fiscal_calendar(start_month=4)
     for year_ in master["Financial_Year"].unique().tolist():
         year = year_
@@ -106,6 +112,17 @@ def calculate_exposure():
         y = df["policy_end_date"].apply(lambda xx: funct(xx))
         master.loc[master.Financial_Year == year_, "FY" + str(year_)] = x
         master.loc[master.Financial_Year == year_, "FY" + str(year_ + 1)] = y
+        master.loc[master.Financial_Year == year_, "FY" + str(year_) + "_EP"] = (master.loc[master.Financial_Year ==
+                                                                                            year_, "FY" + str(year_)]
+                                                                                 * master.loc[master.Financial_Year ==
+                                                                                              year_, "full_premium"])
+        master.loc[master.Financial_Year == year_, "FY" + str(year_ + 1) + "_EP"] = (master.loc[master.Financial_Year ==
+                                                                                                year_, "FY" + str(
+            year_ + 1)]
+                                                                                     * master.loc[
+                                                                                         master.Financial_Year ==
+                                                                                         year_, "full_premium"])
+
         print(year_)
     for year__ in long_term["Financial_Year"].unique().tolist():
         year = year__
@@ -116,10 +133,26 @@ def calculate_exposure():
         long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 1)] = 1
         long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 2)] = 1
         long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 3)] = ay
+        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__) + "_EP"] = (
+                long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__)]
+                * (long_term.loc[long_term.Financial_Year == year__, "full_premium"]) / 3)
+
+        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 1) + "_EP"] = (
+                long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 1)]
+                * (long_term.loc[long_term.Financial_Year == year__, "full_premium"]) / 3)
+
+        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 2) + "_EP"] = (
+                long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 2)]
+                * (long_term.loc[long_term.Financial_Year == year__, "full_premium"]) / 3)
+
+        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 3) + "_EP"] = (
+                long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 3)]
+                * (long_term.loc[long_term.Financial_Year == year__, "full_premium"]) / 3)
+
         print(year__)
 
     exposure = pd.concat([master, long_term], axis=0)
-    exposure.to_csv("exposure.csv")
+    exposure.to_csv("premium.csv")
 
 
 def convert_premium(prem):
@@ -143,8 +176,14 @@ def calculate_earned_premium():
     for col in exposure.columns:
         if "Unnamed" in col:
             exposure.drop(col, axis=1, inplace=True)
-    for year_ in exposure["Financial_Year"].unique().tolist():
+    long_term = db.sql("""select * from exposure where newplancategory like '%Long Term%' """).df()
+    short_term = db.sql("""select * from exposure where newplancategory not like '%Long Term%' """).df()
+
+    for year_ in short_term["Financial_Year"].unique().tolist():
         exposure["FY" + str(year_) + "_EP"] = exposure["FY" + str(year_)] * exposure["full_premium"]
+    for year_ in long_term["Financial_Year"].unique().tolist():
+        exposure["FY" + str(year_) + "_EP"] = exposure["FY" + str(year_)] * (exposure["full_premium"] / 3.0)
+
     exposure.to_csv("premium.csv")
 
 
@@ -154,20 +193,18 @@ def find_missing(policy_number):
     return ''
 
 
-# master = pd.read_csv("master.csv")
-# df2 = pd.pivot_table(master, values="full_premium", columns="Client_Name", aggfunc="sum")
-# df2 = df2.transpose()
-# print(df2)
-
 # merge_files()
 # merge_claims()
-# count = 0
+count = 0
 # create_master()
-calculate_exposure()
-calculate_earned_premium()
+# calculate_exposure()
 
 premium = pd.read_csv("premium.csv")
 claims = pd.read_csv("claims_file.csv")
+claims['Loss Date'] = pd.to_datetime(claims['Loss Date'], format="mixed", dayfirst=True)
+claims['Report Date'] = pd.to_datetime(claims['Report Date'], format="mixed", dayfirst=True)
+claims['Claim Closed Date'] = pd.to_datetime(claims['Claim Closed Date'], format="mixed", dayfirst=True)
+
 for col_ in premium.columns:
     if "Unnamed" in col_:
         premium.drop(col_, axis=1, inplace=True)
@@ -177,5 +214,8 @@ claims["Policy Number"] = claims["Policy Number"].apply(lambda x: "PB_" + str(x)
 claims_policy = claims.merge(premium, on=["Policy Number"], how="inner")
 merged = claims_policy["Policy Number"].tolist()
 claims["Missing_Claims"] = claims["Policy Number"].apply(lambda x: find_missing(x))
+claims_policy["Loss_FY"] = claims_policy["Loss Date"].apply(lambda x: set_financial_year(x))
+claims_policy["Reported_FY"] = claims_policy["Report Date"].apply(lambda x: set_financial_year(x))
+claims_policy["Paid_FY"] = claims_policy["Claim Closed Date"].apply(lambda x: set_financial_year(x))
 claims_policy.to_csv("Policy_Claim.csv")
 claims.to_csv("missing.csv")
