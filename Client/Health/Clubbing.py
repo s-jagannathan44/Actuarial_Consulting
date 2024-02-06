@@ -14,18 +14,17 @@ def prepare_frequency_file():
      """
 
     output = db.execute(q3).df()
-    output["Frequency"] = output["Claim_Count"] / output["LIVES_EXPOSED"]
 
     output.to_csv("CSV\\FrequencyModelFile.csv")
 
 
 def group_renewal_count(x):
-    if x in [0, 1, 2, 3]:
+    if x in [0, 1, 2, 3, 7]:
         return x
-    elif x in [4, 5, 6, 7]:
-        return "4 to 7"
-    elif x in [8, 9, 10, 11, 12]:
-        return "8 to 12"
+    elif x in [4, 5, 6]:
+        return "4to6"
+    elif x in [8, 9]:
+        return "8to9"
 
 
 def group_gender(x):
@@ -53,54 +52,55 @@ def group_channel_type(x):
 
 def group_product_name(x):
     if x in ["FHO", "COMP", "MCI", "SCRC", "Young Star Insurance Policy", "Star Health Assure Insurance Policy",
-             "SURPLUS-FLOATER", "SURPLUS-IND", "HEALTH GAIN", "Star Womens care Insurance Policy",
-             "Arogya Sanjeevini Policy"]:
+             "SURPLUS-FLOATER",  "Arogya Sanjeevini Policy"]:
         return x
     else:
         return "Other"
 
 
 def group_si(x):
-    if x in [500000, 1000000, 300000, 400000, 1500000, 200000, 750000, 2500000, 2000000, 10000000, 5000000]:
+    if x in [500000, 1000000, 300000, 400000, 1500000, 2500000]:
         return x
+    elif x in [100000, 200000, 7500000, 2000000]:
+        return "1_2_20_7.5"
+
     else:
         return "Other"
 
 
 def group_age(x):
-    if x in [66, 67, 68]:
-        return "66 to 68"
-    elif x in [69, 70, 71, 72]:
-        return "69 to 72"
-    elif x in [73, 74]:
-        return "73 to 74"
-    elif x in [33, 35, 36, 37]:
-        return "33 to 37"
-    elif x in [38, 39]:
-        return "38&39"
-    elif x in [27, 28, 29, 30, 31, 32, 34]:
-        return "27 to 34"
+    if x in [62, 64, 65, 67]:
+        return "46"
+    elif x in [33, 34, 45]:
+        return "33to35"
+    elif x in [28, 29, 30]:
+        return "28to30"
+    elif x in [26, 27]:
+        return "26to27"
+    elif x in [20, 21, 22, 23, 24]:
+        return "20to24"
     elif x in [16, 17]:
-        return "16 to 17"
-    elif x in [10, 11, 12, 13, 14, 15]:
-        return "10 to 15"
+        return "16to17"
+    elif x in [13, 14]:
+        return "13to14"
+    elif x in [8, 9, 10, 11, 12]:
+        return "8to12"
     elif x in [1, 2, 3]:
-        return "1 to 3"
+        return "1to3"
     else:
         return x
 
 
 df = pd.read_csv("CSV\\SummaryExposed_Merged.csv")
 
-df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Other" if x >= 13 else group_renewal_count(x))
-df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: "Other" if x >= 75 else group_age(x))
+df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Other" if x >= 10 else group_renewal_count(x))
+df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: "Other" if x >= 71 else group_age(x))
 df["Sum_Insured_New"] = df["Sum_Insured"].apply(lambda x: group_si(x))
 df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
 df["Revised_Individual_Floater_New"] = df["Revised_Individual_Floater"].apply(lambda x: group_rif(x))
 df["Channel_type_New"] = df["Channel_type"].apply(lambda x: group_channel_type(x))
 df["Product_Name_New"] = df["Product_name"].apply(lambda x: group_product_name(x))
 df.to_csv("freq.csv")
-
 
 df = pd.read_csv("freq.csv")
 prepare_frequency_file()
