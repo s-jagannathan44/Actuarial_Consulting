@@ -5,6 +5,14 @@ import duckdb as db
 
 year = 0
 
+state_dict ={"Andhra Pradesh": "South","Arunachal Pradesh":"East","Assam":"East","Bihar":"East","Chhattisgarh":"North","Goa":"West",
+"Gujarat":"west","Haryana":"North","Himachal Pradesh":"North","Jammu and Kashmir":"North","Jharkhand":"East","Karnataka":"South",
+"Kerala":"South","Madhya Pradesh":"North","Maharashtra":"West","Manipur":"East","Meghalaya":"East","Mizoram":"East",
+"Nagaland":"East","Orissa":"East","Punjab":"North","Rajasthan":"North","Sikkim":"East","Tamil Nadu":"South","TELANGANA":"South",
+"Chattisgarh":"North","Tripura":"East","Uttar Pradesh":"North","UTTARAKHAND":"North","West Bengal":"East",
+"Ladakh":"North","Andaman & Nicobar Islands":"South","Chandigarh":"North",
+"Dadra & Nagar Haveli":"West","Daman & Diu":"West","Lakshadweep":"South","Delhi":"North","Pondicherry":"South"}
+
 
 def merge_files():
     path = "Bazaar/*.csv"
@@ -13,11 +21,18 @@ def merge_files():
     for file_name in files:
         client_name = file_name[7:-12]
         frame = pd.read_csv(file_name)
-        frame["Client_Name"] = client_name
+        frame["Policy_Client_Name"] = client_name
         df = pd.concat([df, frame], axis=0)
     df["PolicyID"] = df["PolicyID"].apply(lambda x: prefix_pb(str(x)))
+    df["Zone"] = df["registration_state"].apply(lambda x: map_zone(x))
     df.to_csv("base_file.csv")
 
+
+def map_zone(state):
+    try:
+       return state_dict[state]
+    except:
+        print(state)
 
 def prefix_pb(policy_no):
     if policy_no.startswith('PB'):
@@ -193,17 +208,22 @@ def find_missing(policy_number):
     return ''
 
 
-# merge_files()
-# merge_claims()
+merge_files()
+merge_claims()
 count = 0
-# create_master()
-# calculate_exposure()
+create_master()
+calculate_exposure()
 
 premium = pd.read_csv("premium.csv")
 claims = pd.read_csv("claims_file.csv")
+claims['Report Date'] = claims['Report Date'].str.replace('-', '')
+claims['Claim Closed Date'] = claims['Claim Closed Date'].str.replace('-', '')
+
+# datetime.strptime("01121017", "%d%m%Y")
+
 claims['Loss Date'] = pd.to_datetime(claims['Loss Date'], format="mixed", dayfirst=True)
-claims['Report Date'] = pd.to_datetime(claims['Report Date'], format="mixed", dayfirst=True)
-claims['Claim Closed Date'] = pd.to_datetime(claims['Claim Closed Date'], format="mixed", dayfirst=True)
+claims['Report Date'] = pd.to_datetime(claims['Report Date'], format="%d%m%Y", dayfirst=True)
+claims['Claim Closed Date'] = pd.to_datetime(claims['Claim Closed Date'], format="%d%m%Y", dayfirst=True)
 
 for col_ in premium.columns:
     if "Unnamed" in col_:
