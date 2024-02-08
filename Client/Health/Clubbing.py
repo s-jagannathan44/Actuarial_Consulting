@@ -2,6 +2,10 @@ import pandas as pd
 import duckdb as db
 
 
+# Clubbed Other with Individual in RIF
+# Clubbed Other with Male in Gender
+
+
 def prepare_frequency_file():
     q3 = """select sum(EARNED_PREMIUM) as EARNED_PREMIUM,sum(PAID_AMT) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
            sum(POLICIES_EXPOSED) as POLICIES_EXPOSED, sum(LIVES_EXPOSED) as LIVES_EXPOSED,
@@ -33,14 +37,14 @@ def group_gender(x):
     if x in ["FEMALE", "F"]:
         return "FEMALE"
     else:
-        return "Other"
+        return "MALE"
 
 
 def group_rif(x):
     if x in ["FLOATER", "INDIVIDUAL"]:
         return x
-    else:
-        return "Other"
+    elif x == 'Other':
+        return "INDIVIDUAL"
 
 
 def group_channel_type(x):
@@ -52,7 +56,7 @@ def group_channel_type(x):
 
 def group_product_name(x):
     if x in ["FHO", "COMP", "MCI", "SCRC", "Young Star Insurance Policy", "Star Health Assure Insurance Policy",
-             "SURPLUS-FLOATER",  "Arogya Sanjeevini Policy"]:
+             "SURPLUS-FLOATER", "Arogya Sanjeevini Policy"]:
         return x
     else:
         return "Other"
@@ -63,32 +67,21 @@ def group_si(x):
         return x
     elif x in [100000, 200000, 7500000, 2000000]:
         return "1_2_20_7.5"
-
     else:
         return "Other"
 
 
 def group_age(x):
-    if x in [62, 64, 65, 67]:
-        return "46"
-    elif x in [33, 34, 45]:
-        return "33to35"
-    elif x in [28, 29, 30]:
-        return "28to30"
-    elif x in [26, 27]:
-        return "26to27"
-    elif x in [20, 21, 22, 23, 24]:
-        return "20to24"
-    elif x in [16, 17]:
-        return "16to17"
-    elif x in [13, 14]:
-        return "13to14"
-    elif x in [8, 9, 10, 11, 12]:
-        return "8to12"
-    elif x in [1, 2, 3]:
-        return "1to3"
+    if 0 <= x <= 20:
+        return "Very Young"
+    elif 21 <= x <= 40:
+        return "Young"
+    elif 41 <= x <= 55:
+        return "Middle_Age"
+    elif x > 55:
+        return "Old"
     else:
-        return x
+        return "Old"
 
 
 df = pd.read_csv("CSV\\SummaryExposed_Merged.csv")
@@ -100,7 +93,4 @@ df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
 df["Revised_Individual_Floater_New"] = df["Revised_Individual_Floater"].apply(lambda x: group_rif(x))
 df["Channel_type_New"] = df["Channel_type"].apply(lambda x: group_channel_type(x))
 df["Product_Name_New"] = df["Product_name"].apply(lambda x: group_product_name(x))
-df.to_csv("freq.csv")
-
-df = pd.read_csv("freq.csv")
 prepare_frequency_file()
