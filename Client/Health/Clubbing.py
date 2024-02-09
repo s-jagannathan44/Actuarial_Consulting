@@ -23,13 +23,10 @@ def prepare_frequency_file():
 
 
 def group_renewal_count(x):
-    if x in [0, 1, 2, 3, 7]:
+    if x in [0, 1]:
         return x
-    elif x in [4, 5, 6]:
-        return "4to6"
-    elif x in [8, 9]:
-        return "8to9"
-
+    elif x in [2,3]:
+        return "2_3"
 
 def group_gender(x):
     if x in ["MALE", "M"]:
@@ -43,7 +40,7 @@ def group_gender(x):
 def group_rif(x):
     if x in ["FLOATER", "INDIVIDUAL"]:
         return x
-    elif x == 'Other':
+    else:
         return "INDIVIDUAL"
 
 
@@ -86,8 +83,8 @@ def group_age(x):
 
 df = pd.read_csv("CSV\\SummaryExposed_Merged.csv")
 
-df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Other" if x >= 10 else group_renewal_count(x))
-df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: "Other" if x >= 71 else group_age(x))
+df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Above3" if x > 3 else group_renewal_count(x))
+df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: group_age(x))
 df["Sum_Insured_New"] = df["Sum_Insured"].apply(lambda x: group_si(x))
 df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
 df["Revised_Individual_Floater_New"] = df["Revised_Individual_Floater"].apply(lambda x: group_rif(x))

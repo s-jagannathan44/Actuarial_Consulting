@@ -1,9 +1,9 @@
 import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder, PolynomialFeatures, OrdinalEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.linear_model import TweedieRegressor
 
 
@@ -15,16 +15,25 @@ def build_model():
             (
                 "onehot_categorical",
                 OneHotEncoder(),
-                "Revised_Individual_Floater_New Mem_Age_New Mem_Gender_New".split()
+                "Renewal_Count_New".split()
             ),
         ],
+
         remainder='drop'
-        # remainder ='passthrough'
     )
+
+    interaction = make_pipeline(
+        OneHotEncoder(),
+        PolynomialFeatures(degree=3, interaction_only=True, include_bias=False)
+    )
+    column_trans = ColumnTransformer(
+        [('interaction', interaction, "Revised_Individual_Floater_New Mem_Gender_New Mem_Age_New".split())],
+        remainder='drop')
+
     print(df_test.shape, df_train.shape)
     tweedie_glm = Pipeline(
         [
-            ("preprocessor", linear_model_preprocessor),
+            ("interaction", column_trans),
             ("regressor", TweedieRegressor(power=1.9, alpha=1e-12, max_iter=300)),
         ]
     )
@@ -61,10 +70,10 @@ def execute_model(tweedie_model, dataframe):
     dataframe["Pred"] = y_pred
     dataframe["Pred_Cost"] = dataframe["Pred"] * dataframe["LIVES_EXPOSED"]
     dataframe.to_csv("Output\\text_out.csv")
-    make_pivots(dataframe, "Revised_Individual_Floater_New")
-    make_pivots(dataframe, "Mem_Gender_New")
-    make_pivots(dataframe, "Mem_Age_New")
-    make_multi(dataframe, "Revised_Individual_Floater_New Mem_Gender_New Mem_Age_New ".split())
+    # make_pivots(dataframe, "Revised_Individual_Floater_New")
+    # make_pivots(dataframe, "Mem_Gender_New")
+    # make_pivots(dataframe, "Mem_Age_New")
+    make_multi(dataframe, "Revised_Individual_Floater_New Mem_Gender_New Mem_Age_New".split())
 
 
 def othering(dataframe):
@@ -78,15 +87,21 @@ def othering(dataframe):
     make_pivots(dataframe, "Sum_Insured_New")
 
 
-df = pd.read_csv("CSV\\FrequencyModelFile.csv")
+# df = pd.read_csv("CSV\\SummaryExposed_Merged.csv", usecols="Mem_Age Mem_Gender LIVES_EXPOSED "
+#                                                            "PAID_AMT Financial_Year Renewal_Count "
+#                                                            "Revised_Individual_Floater".split())
 # df2 = pd.pivot_table(df, values="PAID_AMT LIVES_EXPOSED".split(),
-#                      columns="Mem_Age  Mem_Gender Revised_Individual_Floater".split(), aggfunc="sum").T
+#                      columns="Mem_Age  Mem_Gender Revised_Individual_Floater Renewal_Count".split(),
+#                      aggfunc="sum").T
 #
 # df2["Actual"] = df2["PAID_AMT"] / df2["LIVES_EXPOSED"]
 # df2.to_csv("Output\\multi.csv")
 # train, df = train_test_split(input_file, test_size=0.2, random_state=0)
 # df.to_csv("Output\\OOS.csv")
 
+df = pd.read_csv("CSV\\FrequencyModelFile.csv", usecols="Mem_Age_New Mem_Gender_New LIVES_EXPOSED "
+                                                        "PAID_AMT Financial_Year  "
+                                                        "Product_Name_New Revised_Individual_Floater_New".split())
 for col in df.columns:
     if "Unnamed" in col:
         df.drop(col, axis=1, inplace=True)
@@ -96,6 +111,7 @@ df = df[~ df["Product_Name_New"].isin("SURPLUS-FLOATER".split())]
 df = df[df["Financial_Year"].isin("FY18 FY19 FY20 FY22 FY23".split())]
 df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
 df["Loss_Cost"].fillna(0, inplace=True)
+# df["Revised_Individual_Floater_New"].fillna("INDIVIDUAL", inplace=True)
 df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
 glm = build_model()
 execute_model(glm, df_test)
