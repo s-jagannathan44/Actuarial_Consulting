@@ -9,11 +9,11 @@ import duckdb as db
 def prepare_frequency_file():
     q3 = """select sum(EARNED_PREMIUM) as EARNED_PREMIUM,sum(PAID_AMT) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
            sum(POLICIES_EXPOSED) as POLICIES_EXPOSED, sum(LIVES_EXPOSED) as LIVES_EXPOSED,
-            Zone,Mem_Gender_New,Renewal_Count_New,Financial_Year,
+            Zone_New,Mem_Gender_New,Renewal_Count_New,Financial_Year,
             Sum_Insured_New, Mem_Age_New, Product_Name_New,  
             Channel_type_New, Revised_Individual_Floater_New 
             from df            
-            group by Zone , Mem_Gender_New , Sum_Insured_New, Mem_Age_New, Product_name_New,Channel_type_New, 
+            group by Zone_New , Mem_Gender_New , Sum_Insured_New, Mem_Age_New, Product_name_New,Channel_type_New, 
             Revised_Individual_Floater_New,Financial_Year,Renewal_Count_New            
      """
 
@@ -25,8 +25,9 @@ def prepare_frequency_file():
 def group_renewal_count(x):
     if x in [0, 1]:
         return x
-    elif x in [2,3]:
+    elif x in [2, 3]:
         return "2_3"
+
 
 def group_gender(x):
     if x in ["MALE", "M"]:
@@ -81,6 +82,14 @@ def group_age(x):
         return "Old"
 
 
+zone_dict = {"DEL AO-II":"Zone 1", "MUMBAI":"Zone 1", "DEL AO-I": "Zone 1", "AHMEDABAD":"Zone 2", "KERALA-SOUTH":"Zone 2",
+             "BANGALORE":"Zone 2", "CHANDIGARH":"Zone 2", "CHENNAI":"Zone 3", "DEHRADUN":"Zone 3",
+             "PUNE":"Zone 3", "HYDERABAD":"Zone 3", "TIRUPATHI":"Zone 3", "KERALA-CENTRAL":"Zone 3", "LUCKNOW":"Zone 3",
+             "LUDHIANA":"Zone 3", "INDORE":"Zone 3", "KERALA-NORTH":"Zone 4",
+             "KOLKATA":"Zone 4", "COIMBATORE":"Zone 4", "JAIPUR":"Zone 4", "MADURAI":"Zone 5", "SALEM":"Zone 5", "TRICHY":"Zone 5",
+             "PATNA":"Zone 5", "NAGPUR":"Zone 5", "WEB-SALES ONLINE":"Zone 5",
+             "RANCHI":"Zone 5", "GUWAHATI":"Zone 5", "ODISHA":"Zone 5", "CORPORATE OFFICE":"Zone 5"}
+
 df = pd.read_csv("CSV\\SummaryExposed_Merged.csv")
 
 df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Above3" if x > 3 else group_renewal_count(x))
@@ -90,4 +99,5 @@ df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
 df["Revised_Individual_Floater_New"] = df["Revised_Individual_Floater"].apply(lambda x: group_rif(x))
 df["Channel_type_New"] = df["Channel_type"].apply(lambda x: group_channel_type(x))
 df["Product_Name_New"] = df["Product_name"].apply(lambda x: group_product_name(x))
+df["Zone_New"] = df["Zone"].apply(lambda x: zone_dict[x])
 prepare_frequency_file()
