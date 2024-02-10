@@ -14,15 +14,16 @@ def build_model():
         OneHotEncoder(),
         PolynomialFeatures(degree=3, interaction_only=True, include_bias=False)
     )
-    interactive_2 = make_pipeline(OneHotEncoder(),
-                                  PolynomialFeatures(degree=2, interaction_only=True, include_bias=False))
-    non_interactive = make_pipeline(OrdinalEncoder())
+    # interactive_2 = make_pipeline(OneHotEncoder(),
+    #                               PolynomialFeatures(degree=2, interaction_only=True, include_bias=False))
+    # non_interactive = make_pipeline(OrdinalEncoder())
 
     column_trans = ColumnTransformer(
         [
-         ('interaction', interaction, "Revised_Individual_Floater_New Mem_Gender_New Mem_Age_New Renewal_Count_New".split()),
-         # ('interactive_2', interactive_2, "Mem_Age_New Renewal_Count_New".split()),
-         # ('non_interactive', non_interactive, "Sum_Insured_New".split()),
+            ('interaction', interaction,
+             "Revised_Individual_Floater_New Mem_Gender_New Mem_Age_New Renewal_Count_New Financial_Year".split()),
+            # ('interactive_2', interactive_2, "Mem_Age_New Renewal_Count_New".split()),
+            # ('non_interactive', non_interactive, "Sum_Insured_New".split()),
         ],
     )
 
@@ -30,7 +31,7 @@ def build_model():
     tweedie_glm = Pipeline(
         [
             ("transform", column_trans),
-            ("regressor", TweedieRegressor(power=1.9, alpha=1e-12, max_iter=300)),
+            ("regressor", TweedieRegressor(power=1.9, alpha=1e-12, max_iter=1000)),
         ]
     )
     tweedie_glm.fit(
@@ -70,7 +71,7 @@ def execute_model(tweedie_model, dataframe):
     # make_pivots(dataframe, "Mem_Gender_New")
     # make_pivots(dataframe, "Sum_Insured_New")
     make_multi(dataframe, "Revised_Individual_Floater_New Mem_Gender_New Mem_Age_New "
-                          "Renewal_Count_New".split())
+                          "Renewal_Count_New Financial_Year".split())
 
 
 def othering(dataframe):
@@ -84,15 +85,17 @@ def othering(dataframe):
     # make_pivots(dataframe, "Sum_Insured_New")
 
 
-def find_separation():
-    df = pd.read_csv("CSV\\SummaryExposed_Merged.csv", usecols="Mem_Age Mem_Gender LIVES_EXPOSED "
-                                                               "PAID_AMT Renewal_Count "
-                                                               "Revised_Individual_Floater".split())
-    df2 = pd.pivot_table(df, values="PAID_AMT LIVES_EXPOSED".split(),
-                         columns="Renewal_Count".split(),
-                         aggfunc="sum").T
-    df2["Actual"] = df2["PAID_AMT"] / df2["LIVES_EXPOSED"]
-    df2.to_csv("Output\\multi.csv")
+# def find_separation():
+#     df = pd.read_csv("CSV\\SummaryExposed_Merged.csv", usecols="Mem_Age LIVES_EXPOSED "
+#                                                                "PAID_AMT "
+#                                                                "Product_name Financial_Year Revised_Individual_Floater".split())
+#     df = df[df["Financial_Year"].isin("FY23".split())]
+#     df2 = pd.pivot_table(df, values="PAID_AMT LIVES_EXPOSED".split(),
+#                          columns="Product_name Revised_Individual_Floater".split(),
+#                          aggfunc="sum").T
+#     df2["Actual"] = df2["PAID_AMT"] / df2["LIVES_EXPOSED"]
+#     df2.to_csv("Output\\FY23Pivot.csv")
+#
 
 
 df = pd.read_csv("CSV\\FrequencyModelFile.csv", usecols="Mem_Age_New Mem_Gender_New LIVES_EXPOSED "
@@ -109,7 +112,7 @@ df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
 df["Loss_Cost"].fillna(0, inplace=True)
 df["Pred_Cost"] = df["Loss_Cost"]
 df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
-df_model = df_train[['Mem_Age_New', "Mem_Gender_New", "Revised_Individual_Floater_New",
+df_model = df_train[['Mem_Age_New', "Mem_Gender_New", "Revised_Individual_Floater_New", "Financial_Year",
                      "Renewal_Count_New"]]
 glm = build_model()
 execute_model(glm, df_test)
