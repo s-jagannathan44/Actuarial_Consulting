@@ -21,9 +21,9 @@ def build_model():
     column_trans = ColumnTransformer(
         [
             ('interaction', interaction,
-             "Revised_Product_Name_New Mem_Gender_New Mem_Age_New Renewal_Count_New Financial_Year".split()),
+             "Revised_Product_Name_New Mem_Gender_New Mem_Age_New Renewal_Count_New".split()),
             # ('interactive_2', interactive_2, "Mem_Age_New Renewal_Count_New".split()),
-            ('non_interactive', non_interactive, "Zone_New Channel_type_New Sum_Insured_New".split()),
+            # ('non_interactive', non_interactive, "Zone_New Channel_type_New Sum_Insured_New".split()),
         ],
     )
 
@@ -70,8 +70,8 @@ def execute_model(tweedie_model, dataframe):
     # make_pivots(dataframe, "Revised_Individual_Floater_New")
     # make_pivots(dataframe, "Mem_Gender_New")
     # make_pivots(dataframe, "Sum_Insured_New")
-    make_multi(dataframe, "Revised_Product_Name_New Mem_Gender_New Mem_Age_New "
-                          "Renewal_Count_New Zone_New Sum_Insured_New Financial_Year Channel_type_New".split())
+    make_multi(dataframe, "Revised_Product_Name_New Mem_Gender_New Mem_Age_New Renewal_Count_New"
+                          .split())
 
 
 def othering(dataframe):
@@ -114,7 +114,7 @@ df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
 df["Loss_Cost"].fillna(0, inplace=True)
 df["Pred_Cost"] = df["Loss_Cost"]
 df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
-df_model = df_train[['Mem_Age_New', "Mem_Gender_New", "Revised_Product_Name_New", "Financial_Year", "Channel_type_New",
-                     "Renewal_Count_New", "Zone_New", "Sum_Insured_New"]]
+df_model = df_train[['Mem_Age_New', "Mem_Gender_New", "Revised_Product_Name_New", "Renewal_Count_New"
+                     ]]
 glm = build_model()
 execute_model(glm, df_test)

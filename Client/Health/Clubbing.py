@@ -136,7 +136,7 @@ zone_dict = {"DEL AO-II": "DEL AO-II", "MUMBAI": "Zone 1", "DEL AO-I": "Zone 1",
 
 df = pd.read_csv("CSV\\SummaryExposed_Merged.csv")
 df["Revised_Product_name"] = df["Product_name"] + df["Revised_Individual_Floater"]
-df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Others" if x > 10 else group_renewal_count(x))
+df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Above 10" if x > 10 else group_renewal_count(x))
 df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: "Group 1" if x > 75 else group_age(x))
 df["Sum_Insured_New"] = df["Sum_Insured"].apply(lambda x: group_si(x))
 df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
