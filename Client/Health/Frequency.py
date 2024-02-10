@@ -1,7 +1,7 @@
 import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder, PolynomialFeatures, OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder, PolynomialFeatures
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.linear_model import TweedieRegressor
@@ -16,14 +16,14 @@ def build_model():
     )
     # interactive_2 = make_pipeline(OneHotEncoder(),
     #                               PolynomialFeatures(degree=2, interaction_only=True, include_bias=False))
-    # non_interactive = make_pipeline(OrdinalEncoder())
+    non_interactive = make_pipeline(OneHotEncoder())
 
     column_trans = ColumnTransformer(
         [
             ('interaction', interaction,
-             "Revised_Individual_Floater_New Mem_Gender_New Mem_Age_New Renewal_Count_New Financial_Year".split()),
+             "Revised_Product_Name_New Mem_Gender_New Mem_Age_New Renewal_Count_New Financial_Year".split()),
             # ('interactive_2', interactive_2, "Mem_Age_New Renewal_Count_New".split()),
-            # ('non_interactive', non_interactive, "Sum_Insured_New".split()),
+            ('non_interactive', non_interactive, "Zone_New Channel_type_New Sum_Insured_New".split()),
         ],
     )
 
@@ -70,8 +70,8 @@ def execute_model(tweedie_model, dataframe):
     # make_pivots(dataframe, "Revised_Individual_Floater_New")
     # make_pivots(dataframe, "Mem_Gender_New")
     # make_pivots(dataframe, "Sum_Insured_New")
-    make_multi(dataframe, "Revised_Individual_Floater_New Mem_Gender_New Mem_Age_New "
-                          "Renewal_Count_New Financial_Year".split())
+    make_multi(dataframe, "Revised_Product_Name_New Mem_Gender_New Mem_Age_New "
+                          "Renewal_Count_New Zone_New Sum_Insured_New Financial_Year Channel_type_New".split())
 
 
 def othering(dataframe):
@@ -85,34 +85,36 @@ def othering(dataframe):
     # make_pivots(dataframe, "Sum_Insured_New")
 
 
-# def find_separation():
-#     df = pd.read_csv("CSV\\SummaryExposed_Merged.csv", usecols="Mem_Age LIVES_EXPOSED "
-#                                                                "PAID_AMT "
-#                                                                "Product_name Financial_Year Revised_Individual_Floater".split())
-#     df = df[df["Financial_Year"].isin("FY23".split())]
-#     df2 = pd.pivot_table(df, values="PAID_AMT LIVES_EXPOSED".split(),
-#                          columns="Product_name Revised_Individual_Floater".split(),
-#                          aggfunc="sum").T
-#     df2["Actual"] = df2["PAID_AMT"] / df2["LIVES_EXPOSED"]
-#     df2.to_csv("Output\\FY23Pivot.csv")
-#
+def find_separation():
+    df_ = pd.read_csv("CSV\\FrequencyModelFile.csv", usecols="LIVES_EXPOSED "
+                                                             "PAID_AMT "
+                                                             "Revised_Product_Name_New".split())
+    df2 = pd.pivot_table(df_, values="PAID_AMT LIVES_EXPOSED".split(),
+                         columns="Revised_Product_Name_New".split(),
+                         aggfunc="sum").T
+    df2["Actual"] = df2["PAID_AMT"] / df2["LIVES_EXPOSED"]
+    df2.to_csv("Output\\multi.csv")
 
 
 df = pd.read_csv("CSV\\FrequencyModelFile.csv", usecols="Mem_Age_New Mem_Gender_New LIVES_EXPOSED "
-                                                        "PAID_AMT Financial_Year Renewal_Count_New "
-                                                        "Product_Name_New Revised_Individual_Floater_New".split())
+                                                        "PAID_AMT Financial_Year Renewal_Count_New Zone_New "
+                                                        "Revised_Product_Name_New Channel_type_New Sum_Insured_New "
+                 .split())
 for col in df.columns:
     if "Unnamed" in col:
         df.drop(col, axis=1, inplace=True)
 df = df[df["LIVES_EXPOSED"] >= 1]
 # df = df[(df['PAID_AMT'] != 0) & (df['PAID_AMT'] != -851)]
-df = df[~ df["Product_Name_New"].isin("SURPLUS-FLOATER".split())]
+df = df[~ df["Revised_Product_Name_New"].isin("SURPLUS-FLOATERFLOATER SURPLUS-FLOATERMED-PLT-046 "
+                                              "SURPLUS-INDINDIVIDUAL Corona Kavach PolicyFLOATER "
+                                              "Corona Kavach PolicyINDIVIDUAL"
+                                              " Star Hospital Cash Insurance PolicyFLOATER ".split())]
 df = df[df["Financial_Year"].isin("FY18 FY19 FY20 FY22 FY23".split())]
 df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
 df["Loss_Cost"].fillna(0, inplace=True)
 df["Pred_Cost"] = df["Loss_Cost"]
 df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
-df_model = df_train[['Mem_Age_New', "Mem_Gender_New", "Revised_Individual_Floater_New", "Financial_Year",
-                     "Renewal_Count_New"]]
+df_model = df_train[['Mem_Age_New', "Mem_Gender_New", "Revised_Product_Name_New", "Financial_Year", "Channel_type_New",
+                     "Renewal_Count_New", "Zone_New", "Sum_Insured_New"]]
 glm = build_model()
 execute_model(glm, df_test)

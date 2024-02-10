@@ -10,11 +10,10 @@ def prepare_frequency_file():
     q3 = """select sum(EARNED_PREMIUM) as EARNED_PREMIUM,sum(PAID_AMT) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
            sum(POLICIES_EXPOSED) as POLICIES_EXPOSED, sum(LIVES_EXPOSED) as LIVES_EXPOSED,
             Zone_New,Mem_Gender_New,Renewal_Count_New,Financial_Year,
-            Sum_Insured_New, Mem_Age_New, Product_Name_New,  
-            Channel_type_New, Revised_Individual_Floater_New 
+            Sum_Insured_New, Mem_Age_New, Channel_type_New, Revised_Product_Name_New 
             from df            
-            group by Zone_New , Mem_Gender_New , Sum_Insured_New, Mem_Age_New, Product_name_New,Channel_type_New, 
-            Revised_Individual_Floater_New,Financial_Year,Renewal_Count_New            
+            group by Zone_New , Mem_Gender_New , Sum_Insured_New, Mem_Age_New, Channel_type_New, 
+            Revised_Product_Name_New,Financial_Year,Renewal_Count_New            
      """
 
     output = db.execute(q3).df()
@@ -31,7 +30,6 @@ def group_renewal_count(x):
         return "Group 2"
     elif x in [9, 10]:
         return "Group 3"
-
 
 
 def group_gender(x):
@@ -51,42 +49,39 @@ def group_rif(x):
 
 
 def group_channel_type(x):
-    if x in ["Agents", "Broker", "Office Direct", "Sales Direct", "Tele Marketer", "Bancassurance"]:
+    if x in ["Agents"]:
         return x
+    elif x in ["Office Direct", "Sales Direct"]:
+        return "Direct"
     else:
         return "Other"
 
 
 def group_product_name(x):
-    if x in ["FHO", "COMP", "MCI", "SCRC", "Young Star Insurance Policy", "Star Health Assure Insurance Policy",
-             "SURPLUS-FLOATER", "Arogya Sanjeevini Policy"]:
+    if x in ["FHOFLOATER", "COMPFLOATER", "Young Star Insurance PolicyFLOATER", "MCIINDIVIDUAL", "SCRCINDIVIDUAL",
+             "COMPINDIVIDUAL", "Young Star Insurance PolicyINDIVIDUAL", "Arogya Sanjeevini PolicyFLOATER",
+             "Star Health Assure Insurance PolicyFLOATER", "Arogya Sanjeevini PolicyINDIVIDUAL",
+             "Star Health Assure Insurance PolicyINDIVIDUAL", "Star Micro Rural and Farmers CareFLOATER"]:
         return x
     else:
         return "Other"
 
 
-# def group_si(x):
-#     if x in [500000, 300000, 100000, 10000000, 2500000]:
-#         return "Group_1"
-#     elif x in [400000, 1000000, 1500000, 2000000, 50000000]:
-#         return "Group_2"
-#     elif x in [200000, 750000, 150000]:
-#         return "Group_3"
-#     else:
-#         return "Other"
-
-
 def group_si(x):
-    if x in [500000, 1000000, 300000, 400000, 1500000, 2500000]:
+    if x in [150000, 400000, 500000]:
         return x
-    elif x in [100000, 200000, 7500000, 2000000]:
-        return "1_2_20_7.5"
+    elif x in [100000, 300000]:
+        return "Group 2"
+    elif x in [200000, 750000]:
+        return "Group 4"
+    elif x in [1000000, 1500000, 2000000, 2500000, 5000000, 10000000]:
+        return "Group 3"
     else:
         return "Other"
 
 
 def group_age(x):
-    if x in [0,1,2,3,4,15]:
+    if x in [0, 1, 2, 3, 4, 15]:
         return x
     elif 5 <= x <= 6:
         return "Group 18"
@@ -128,24 +123,25 @@ def group_age(x):
         return "Group 2"
 
 
-
-
-zone_dict = {"DEL AO-II":"Zone 1", "MUMBAI":"Zone 1", "DEL AO-I": "Zone 1", "AHMEDABAD":"Zone 2", "KERALA-SOUTH":"Zone 2",
-             "BANGALORE":"Zone 2", "CHANDIGARH":"Zone 2", "CHENNAI":"Zone 3", "DEHRADUN":"Zone 3",
-             "PUNE":"Zone 3", "HYDERABAD":"Zone 3", "TIRUPATHI":"Zone 3", "KERALA-CENTRAL":"Zone 3", "LUCKNOW":"Zone 3",
-             "LUDHIANA":"Zone 3", "INDORE":"Zone 3", "KERALA-NORTH":"Zone 4",
-             "KOLKATA":"Zone 4", "COIMBATORE":"Zone 4", "JAIPUR":"Zone 4", "MADURAI":"Zone 5", "SALEM":"Zone 5", "TRICHY":"Zone 5",
-             "PATNA":"Zone 5", "NAGPUR":"Zone 5", "WEB-SALES ONLINE":"Zone 5",
-             "RANCHI":"Zone 5", "GUWAHATI":"Zone 5", "ODISHA":"Zone 5", "CORPORATE OFFICE":"Zone 5"}
+zone_dict = {"DEL AO-II": "DEL AO-II", "MUMBAI": "Zone 1", "DEL AO-I": "Zone 1", "AHMEDABAD": "AHMEDABAD",
+             "KERALA-SOUTH": "KERALA-SOUTH",
+             "BANGALORE": "Zone 2", "CHANDIGARH": "Zone 2", "CHENNAI": "Zone 3", "DEHRADUN": "Zone 3",
+             "PUNE": "Zone 4", "HYDERABAD": "Zone 4", "TIRUPATHI": "Zone 4", "KERALA-CENTRAL": "Zone 5",
+             "LUCKNOW": "Zone 5",
+             "LUDHIANA": "Zone 5", "INDORE": "Zone 7", "KERALA-NORTH": "Zone 7",
+             "KOLKATA": "Zone 8", "COIMBATORE": "Zone 8", "JAIPUR": "Zone 8", "MADURAI": "Zone 9", "SALEM": "Zone 9",
+             "TRICHY": "Zone 9",
+             "PATNA": "Zone 10", "NAGPUR": "Zone 10", "WEB-SALES ONLINE": "Zone 10",
+             "RANCHI": "Others", "GUWAHATI": "Others", "ODISHA": "Others", "CORPORATE OFFICE": "Others"}
 
 df = pd.read_csv("CSV\\SummaryExposed_Merged.csv")
-
+df["Revised_Product_name"] = df["Product_name"] + df["Revised_Individual_Floater"]
 df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Others" if x > 10 else group_renewal_count(x))
 df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: "Group 1" if x > 75 else group_age(x))
 df["Sum_Insured_New"] = df["Sum_Insured"].apply(lambda x: group_si(x))
 df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
-df["Revised_Individual_Floater_New"] = df["Revised_Individual_Floater"].apply(lambda x: group_rif(x))
 df["Channel_type_New"] = df["Channel_type"].apply(lambda x: group_channel_type(x))
-df["Product_Name_New"] = df["Product_name"].apply(lambda x: group_product_name(x))
+df["Revised_Product_Name_New"] = df["Revised_Product_name"].apply(lambda x: group_product_name(x))
 df["Zone_New"] = df["Zone"].apply(lambda x: zone_dict[x])
+
 prepare_frequency_file()
