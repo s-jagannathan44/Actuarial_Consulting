@@ -26,7 +26,12 @@ def group_renewal_count(x):
     if x in [0, 1]:
         return x
     elif x in [2, 3]:
-        return "2_3"
+        return "Group 1"
+    elif x in [4, 5, 6, 7, 8]:
+        return "Group 2"
+    elif x in [9, 10]:
+        return "Group 3"
+
 
 
 def group_gender(x):
@@ -60,6 +65,17 @@ def group_product_name(x):
         return "Other"
 
 
+# def group_si(x):
+#     if x in [500000, 300000, 100000, 10000000, 2500000]:
+#         return "Group_1"
+#     elif x in [400000, 1000000, 1500000, 2000000, 50000000]:
+#         return "Group_2"
+#     elif x in [200000, 750000, 150000]:
+#         return "Group_3"
+#     else:
+#         return "Other"
+
+
 def group_si(x):
     if x in [500000, 1000000, 300000, 400000, 1500000, 2500000]:
         return x
@@ -70,16 +86,48 @@ def group_si(x):
 
 
 def group_age(x):
-    if 0 <= x <= 20:
-        return "Very Young"
-    elif 21 <= x <= 40:
-        return "Young"
-    elif 41 <= x <= 55:
-        return "Middle_Age"
-    elif x > 55:
-        return "Old"
-    else:
-        return "Old"
+    if x in [0,1,2,3,4,15]:
+        return x
+    elif 5 <= x <= 6:
+        return "Group 18"
+    elif 7 <= x <= 12:
+        return "Group 17"
+    elif 13 <= x <= 14:
+        return "Group 19"
+    elif 16 <= x <= 17:
+        return "Group 21"
+    elif 18 <= x <= 19:
+        return "Group 20"
+    elif 20 <= x <= 25:
+        return "Group 16"
+    elif 26 <= x <= 30:
+        return "Group 15"
+    elif 31 <= x <= 35:
+        return "Group 13"
+    elif 36 <= x <= 37:
+        return "Group 12"
+    elif 38 <= x <= 39:
+        return "Group 11"
+    elif 40 <= x <= 41:
+        return "Group 10"
+    elif 42 <= x <= 43:
+        return "Group 9"
+    elif 44 <= x <= 45:
+        return "Group 8"
+    elif 46 <= x <= 48:
+        return "Group 7"
+    elif 49 <= x <= 50:
+        return "Group 6"
+    elif 51 <= x <= 53:
+        return "Group 5"
+    elif 54 <= x <= 56:
+        return "Group 4"
+    elif 57 <= x <= 59 or 68 <= x <= 72:
+        return "Group 3"
+    elif 60 <= x <= 67 or 73 <= x <= 75:
+        return "Group 2"
+
+
 
 
 zone_dict = {"DEL AO-II":"Zone 1", "MUMBAI":"Zone 1", "DEL AO-I": "Zone 1", "AHMEDABAD":"Zone 2", "KERALA-SOUTH":"Zone 2",
@@ -92,8 +140,8 @@ zone_dict = {"DEL AO-II":"Zone 1", "MUMBAI":"Zone 1", "DEL AO-I": "Zone 1", "AHM
 
 df = pd.read_csv("CSV\\SummaryExposed_Merged.csv")
 
-df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Above3" if x > 3 else group_renewal_count(x))
-df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: group_age(x))
+df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Others" if x > 10 else group_renewal_count(x))
+df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: "Group 1" if x > 75 else group_age(x))
 df["Sum_Insured_New"] = df["Sum_Insured"].apply(lambda x: group_si(x))
 df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
 df["Revised_Individual_Floater_New"] = df["Revised_Individual_Floater"].apply(lambda x: group_rif(x))
