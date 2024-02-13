@@ -12,15 +12,13 @@ def build_model():
 
     interaction = make_pipeline(
         OneHotEncoder(),
-        PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
+        PolynomialFeatures(degree=3, interaction_only=True, include_bias=False)
     )
-    # non_interactive = make_pipeline(OneHotEncoder())
-# "Revised_Product_Name_New Mem_Gender_New Mem_Age_New Renewal_Count_New Financial_Year ".split()),
     column_trans = ColumnTransformer(
         [
             ('interaction', interaction,
-             "Mem_Age_New Mem_Gender_New Revised_Product_Name_New Renewal_Count_New Financial_Year ".split()),
-            # ('non_interactive', non_interactive, "Financial_Year".split()),
+             "Mem_Age_New Mem_Gender_New Revised_Product_Name_New Renewal_Count_New Zone_New Sum_Insured_New "
+             "Financial_Year".split()),
         ],
     )
 
@@ -54,7 +52,11 @@ def make_multi(dataframe, columns):
     df2["Actual"] = df2["PAID_AMT"] / df2["LIVES_EXPOSED"]
     df2["Predicted"] = df2["Pred_Cost"] / df2["LIVES_EXPOSED"]
     df2["Error"] = (df2["Actual"] - df2["Predicted"]) / df2["Actual"]
-    df2['Error'] = df2['Error'].map('{:.2%}'.format)
+    df2['%ageError'] = df2['Error'].map('{:.2%}'.format)
+    df2["Error"] = df2["Error"].abs()
+    below_ten = df2[df2["Error"] <= 0.1]["LIVES_EXPOSED"].sum()
+    total = df2["LIVES_EXPOSED"].sum()
+    print('{:.2%}'.format(below_ten / total))
     df2.to_csv("Output\\multi.csv")
 
 
@@ -63,8 +65,8 @@ def execute_model(tweedie_model, dataframe):
     dataframe["Pred"] = y_pred
     dataframe["Pred_Cost"] = dataframe["Pred"] * dataframe["LIVES_EXPOSED"]
     dataframe.to_csv("Output\\text_out.csv")
-    make_multi(dataframe, "Mem_Age_New Mem_Gender_New Revised_Product_Name_New Renewal_Count_New  Financial_Year"
-               .split())
+    make_multi(dataframe, "Mem_Age_New Mem_Gender_New Revised_Product_Name_New Renewal_Count_New  Financial_Year "
+                          "Zone_New Sum_Insured_New".split())
 
 
 def multiplier(year):
@@ -83,6 +85,7 @@ df = pd.read_csv("CSV\\FrequencyModelFile.csv", usecols="Mem_Age_New Mem_Gender_
 for col in df.columns:
     if "Unnamed" in col:
         df.drop(col, axis=1, inplace=True)
+
 df = df[df["LIVES_EXPOSED"] >= 1]
 df = df[~ df["Revised_Product_Name_New"].isin("SURPLUS-FLOATERFLOATER SURPLUS-FLOATERMED-PLT-046 "
                                               "SURPLUS-INDINDIVIDUAL Corona Kavach PolicyFLOATER "
@@ -96,31 +99,31 @@ df["Mem_Age_New"].fillna("0.0", inplace=True)
 df["Pred_Cost"] = df["Loss_Cost"]
 
 df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
-df_model = df_train[['Mem_Age_New', "Mem_Gender_New", "Revised_Product_Name_New", "Financial_Year", "Renewal_Count_New"
-                     ]]
+df_model = df_train[['Mem_Age_New', "Mem_Gender_New", "Revised_Product_Name_New", "Financial_Year", "Renewal_Count_New",
+                     "Zone_New", "Sum_Insured_New"]]
 
 # df_model["Mem_Age_New"] = df_model["Mem_Age_New"].astype(str)
 glm = build_model()
 execute_model(glm, df_test)
 
 
-def find_separation():
-    df_ = pd.read_csv("CSV\\FrequencyModelFile.csv", usecols="LIVES_EXPOSED "
-                                                             "PAID_AMT "
-                                                             "Revised_Product_Name_New".split())
-    df2 = pd.pivot_table(df_, values="PAID_AMT LIVES_EXPOSED".split(),
-                         columns="Revised_Product_Name_New".split(),
-                         aggfunc="sum").T
-    df2["Actual"] = df2["PAID_AMT"] / df2["LIVES_EXPOSED"]
-    df2.to_csv("Output\\multi.csv")
-
-
 def othering(dataframe):
-    make_pivots(dataframe, "Revised_Individual_Floater_New")
-    # make_pivots(dataframe, "Product_Name_New")
+    make_pivots(dataframe, "Revised_Product_Name_New")
     make_pivots(dataframe, "Zone_New")
     make_pivots(dataframe, "Mem_Age_New")
-    make_pivots(dataframe, "Mem_Gender_New")
-    # make_pivots(dataframe, "Renewal_Count_New")
+    # make_pivots(dataframe, "Mem_Gender_New")
+    make_pivots(dataframe, "Renewal_Count_New")
     # make_pivots(dataframe, "Channel_type_New")
-    # make_pivots(dataframe, "Sum_Insured_New")
+    make_pivots(dataframe, "Sum_Insured_New")
+
+
+def find_separation():
+    df_ = pd.read_csv("CSV\\FrequencyModelFile.csv", usecols="Mem_Age_New Mem_Gender_New LIVES_EXPOSED "
+                                                             "PAID_AMT Financial_Year Renewal_Count_New Zone_New "
+                                                             "Revised_Product_Name_New Channel_type_New "
+                                                             "Sum_Insured_New ".split())
+
+    df_["Pred_Cost"] = 0.0
+    othering(df_)
+
+
