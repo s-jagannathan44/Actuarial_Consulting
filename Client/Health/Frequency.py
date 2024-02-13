@@ -1,13 +1,13 @@
 import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder, PolynomialFeatures, OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder, PolynomialFeatures
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.linear_model import TweedieRegressor
 
 
-def build_model():
+def build_model(power, iter_):
     global df_train, df_test
 
     interaction = make_pipeline(
@@ -26,7 +26,7 @@ def build_model():
     tweedie_glm = Pipeline(
         [
             ("transform", column_trans),
-            ("regressor", TweedieRegressor(power=1.9, alpha=1e-12, max_iter=5000)),
+            ("regressor", TweedieRegressor(power=power, alpha=1e-12, max_iter=iter_)),
         ]
     )
     tweedie_glm.fit(
@@ -102,9 +102,13 @@ df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
 df_model = df_train[['Mem_Age_New', "Mem_Gender_New", "Revised_Product_Name_New", "Financial_Year", "Renewal_Count_New",
                      "Zone_New", "Sum_Insured_New"]]
 
-# df_model["Mem_Age_New"] = df_model["Mem_Age_New"].astype(str)
-glm = build_model()
-execute_model(glm, df_test)
+powers = [1.7]
+iterations = [5000]
+for p in powers:
+    for i in iterations:
+        print(p, i)
+        glm = build_model(p, i)
+        execute_model(glm, df_test)
 
 
 def othering(dataframe):
@@ -125,5 +129,3 @@ def find_separation():
 
     df_["Pred_Cost"] = 0.0
     othering(df_)
-
-
