@@ -1,4 +1,5 @@
 import joblib
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, PolynomialFeatures
@@ -33,7 +34,7 @@ def build_model(power, iter_):
         df_model, df_train["Loss_Cost"], regressor__sample_weight=df_train["LIVES_EXPOSED"]
     )
     joblib.dump(tweedie_glm, "Tweedie.sav")
-    return tweedie_glm
+    return tweedie_glm, column_trans
 
 
 def make_pivots(dataframe, columns):
@@ -58,13 +59,18 @@ def make_multi(dataframe, columns):
     total = df2["LIVES_EXPOSED"].sum()
     print('{:.2%}'.format(below_ten / total))
     df2.to_csv("Output\\multi.csv")
+    # 1 feature and constant
+    p = 1 + 1
+    aic_value = aic(df2["Actual"], df_test, df2["Predicted"], p)
+    print('{:.2%}'.format(aic_value))
 
 
 def execute_model(tweedie_model, dataframe):
     y_pred = tweedie_model.predict(dataframe)
     dataframe["Pred"] = y_pred
     dataframe["Pred_Cost"] = dataframe["Pred"] * dataframe["LIVES_EXPOSED"]
-    dataframe.to_csv("Output\\text_out.csv")
+    column_dict = get_columns()
+    write_output(tweedie_model._final_estimator.coef_, column_dict)
     make_multi(dataframe, "Mem_Age_New Mem_Gender_New Revised_Product_Name_New Renewal_Count_New  Financial_Year "
                           "Zone_New Sum_Insured_New".split())
 
@@ -76,6 +82,43 @@ def multiplier(year):
         return 1.016
     else:
         return 1.0
+
+
+def get_columns():
+    columns = {}
+    for encoder in transformer.named_transformers_:
+        if transformer.named_transformers_[encoder] is not str:
+            item = [(encoder, transformer.named_transformers_[encoder].get_feature_names_out().size)]
+            columns.update(item)
+    return columns
+
+
+def write_output(x_value, column_dict):
+    col_list = []
+    for item in column_dict:
+        encoder = transformer.named_transformers_[item]
+        col_names = encoder.get_feature_names_out()
+        for col_name in col_names:
+            col_list.append(col_name)
+    frame = pd.DataFrame(x_value.reshape(1, -1), columns=col_list).T
+    frame.to_csv("Output\\co_efficients.csv")
+
+
+def llf_(y, x, pr):
+    # return maximized log likelihood
+    nobs = float(x.shape[0])
+    nobs2 = nobs / 2.0
+    nobs = float(nobs)
+    resid = y - pr
+    ssr = np.sum(resid ** 2)
+    llf = -nobs2 * np.log(2 * np.pi) - nobs2 * np.log(ssr / nobs) - nobs2
+    return llf
+
+
+def aic(y, X_, pr, p):
+    # return aic metric
+    llf = llf_(y, X_, pr)
+    return -2 * llf + 2 * p
 
 
 df = pd.read_csv("CSV\\FrequencyModelFile.csv", usecols="Mem_Age_New Mem_Gender_New LIVES_EXPOSED "
@@ -104,10 +147,10 @@ df_model = df_train[['Mem_Age_New', "Mem_Gender_New", "Revised_Product_Name_New"
 
 powers = [1.7]
 iterations = [5000]
-for p in powers:
+for p_ in powers:
     for i in iterations:
-        print(p, i)
-        glm = build_model(p, i)
+        print(p_, i)
+        glm, transformer = build_model(p_, i)
         execute_model(glm, df_test)
 
 
