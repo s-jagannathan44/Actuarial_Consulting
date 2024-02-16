@@ -141,4 +141,5 @@ df["Channel_type_New"] = df["Channel_type"].apply(lambda x: group_channel_type(x
 df["Revised_Product_Name_New"] = df["Revised_Product_name"].apply(lambda x: group_product_name(x))
 df["Zone_New"] = df["Zone"].apply(lambda x: zone_dict[x])
 
+df.to_csv("Output\\clubbed_file.csv")
 prepare_frequency_file()

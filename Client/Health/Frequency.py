@@ -66,11 +66,13 @@ def make_multi(dataframe, columns):
 
 
 def execute_model(tweedie_model, dataframe):
+    dataframe.to_csv("Output\\text_in.csv")
     y_pred = tweedie_model.predict(dataframe)
     dataframe["Pred"] = y_pred
     dataframe["Pred_Cost"] = dataframe["Pred"] * dataframe["LIVES_EXPOSED"]
     column_dict = get_columns()
     write_output(tweedie_model._final_estimator.coef_, column_dict)
+    dataframe.to_csv("Output\\text_out.csv")
     make_multi(dataframe, "Mem_Age_New Mem_Gender_New Revised_Product_Name_New Renewal_Count_New  Financial_Year "
                           "Zone_New Sum_Insured_New".split())
 

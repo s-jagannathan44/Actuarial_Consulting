@@ -4,19 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Code that merges files for all years into one consolidated file and then prepares the summary off it">
-      <change afterPath="$PROJECT_DIR$/Client/Health/Clubbing.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/Health/Frequency.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/Health/Severity.py" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added co_efficients and AIC">
+      <change afterPath="$PROJECT_DIR$/Client/Health/Forecast.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/DuckDB.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Merge.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Modlin.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Normalize_Premium.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Old_Claim.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Transform_Claim.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Transform_Claim.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/remain.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Clubbing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Clubbing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Frequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Frequency.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,35 +49,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Python.Bazaar.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.Clubbing.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Conslidated_Summary.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Frequency.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Normalize_Claim.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.Severity.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Transform_Claim.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.Transform_Member.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Transform_Policy.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.scratch.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;full.screen.before.presentation.mode&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/jvpra/PycharmProjects/pythonProject1&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Python.Bazaar.executor": "Run",
+    "Python.Clubbing - Claims.executor": "Run",
+    "Python.Clubbing.executor": "Run",
+    "Python.Conslidated_Summary.executor": "Run",
+    "Python.Forecast.executor": "Run",
+    "Python.Forecast_Sarima.executor": "Run",
+    "Python.Frequency.executor": "Run",
+    "Python.Normalize_Claim.executor": "Debug",
+    "Python.Severity.executor": "Debug",
+    "Python.Transform_Claim.executor": "Run",
+    "Python.Transform_Member.executor": "Run",
+    "Python.Transform_Policy.executor": "Run",
+    "Python.Tweedie.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.scratch.executor": "Debug",
+    "Python.scratch_1.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "full.screen.before.presentation.mode": "false",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/jvpra/PycharmProjects/pythonProject1",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Python&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Python"
     ]
   }
-}</component>
+}]]></component>
   <component name="Push.Settings">
     <option name="SHOW_DETAILS_PANEL" value="false" />
   </component>
@@ -460,7 +458,7 @@
       <option name="project" value="LOCAL" />
       <updated>1695609524685</updated>
     </task>
-    <option name="localTasksCounter" value="184" />
+    <option name="localTasksCounter" value="220" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -487,32 +485,32 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Gamma GLM check in" />
-    <MESSAGE value="Gamma GLM Below 2k check in" />
-    <MESSAGE value="Injury Gamma Model Completed and saved as sav file" />
-    <MESSAGE value="Death Gamma Model Completed and saved as sav file" />
-    <MESSAGE value="Updated Utilities file to contain only those methods which are used" />
-    <MESSAGE value="Saved Model files with multiplier" />
-    <MESSAGE value="Added code for retrieving coefficients for death" />
-    <MESSAGE value="Added code for retrieving coefficients for Injury" />
-    <MESSAGE value="Added Pdfs" />
-    <MESSAGE value="Checked in Baseline Code and Added Pdfs" />
-    <MESSAGE value="Added code to compute variance" />
-    <MESSAGE value="Added code to perform feature selection via PFA" />
-    <MESSAGE value="Added code to draw 3d plot" />
-    <MESSAGE value="Check in after code clean up" />
-    <MESSAGE value="Added model files" />
-    <MESSAGE value="Added random sampling code" />
-    <MESSAGE value="Final check in with 6 clusters" />
-    <MESSAGE value="Added model file for commercial vehicles" />
-    <MESSAGE value="Final code for PCV taxi to be delivered to Client" />
-    <MESSAGE value="Final code for Private Car to be delivered to Client" />
-    <MESSAGE value="Ran IsolationForest On Telematics data" />
-    <MESSAGE value="Temp commit" />
-    <MESSAGE value="Added code to remove blank rows from member file and to filter claims by FY" />
-    <MESSAGE value="Added code to remove blank rows from member file and to left join on ICD category" />
-    <MESSAGE value="Code that merges files for all years into one consolidated file and then prepares the summary off it" />
-    <option name="LAST_COMMIT_MESSAGE" value="Code that merges files for all years into one consolidated file and then prepares the summary off it" />
+    <MESSAGE value="Added code to&#10;1) removed covid claims(B.99)&#10;2) add days in hospital&#10;3) add members per policy" />
+    <MESSAGE value="Code that forecasts" />
+    <MESSAGE value="Added code to ssave stats model to file &#10;Moved creation of severity file to consolidated_summary &#10;Added some useful code and code for Sarima Co2 study" />
+    <MESSAGE value="Added code to save claims model to file &#10;Changed Frequency and Severity to use Zone and FY &#10;Added Clubbing of claims" />
+    <MESSAGE value="Rewrote premium transformation logic to fix mismacth issue" />
+    <MESSAGE value="Modified exposure  calculation logic to take care of   long term policies" />
+    <MESSAGE value="Tweedie ClaimCount Model" />
+    <MESSAGE value="Tweedie Loss Cost model with all variables" />
+    <MESSAGE value="Tweedie Loss Cost model with all rows" />
+    <MESSAGE value="PB reviswd code" />
+    <MESSAGE value="PB final code" />
+    <MESSAGE value="Revised Clubbing after dropping covid claims" />
+    <MESSAGE value="Aborted sklearn code that draws pivots" />
+    <MESSAGE value="Reworked clubbing and about to add interactions hence checked in" />
+    <MESSAGE value="Age ,Gender , RIF Model with Interactions" />
+    <MESSAGE value="Add zone clubbing" />
+    <MESSAGE value="4 variable interaction with clubbing" />
+    <MESSAGE value="5 variable interaction with 3 degree polynomial" />
+    <MESSAGE value="All variables thrown in" />
+    <MESSAGE value="5 variables with RIF and Product clubbed" />
+    <MESSAGE value="final model" />
+    <MESSAGE value="IMprovement on BEst model" />
+    <MESSAGE value="Added grid search" />
+    <MESSAGE value="XgBoost Tweedie" />
+    <MESSAGE value="Added co_efficients and AIC" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added co_efficients and AIC" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -526,11 +524,6 @@
           <url>file://$APPLICATION_CONFIG_DIR$/scratches/Motor Model UK/coefficient.py</url>
           <line>32</line>
           <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$APPLICATION_CONFIG_DIR$/scratches/Bazaar.py</url>
-          <line>37</line>
-          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
