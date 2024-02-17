@@ -4,12 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added co_efficients and AIC">
-      <change afterPath="$PROJECT_DIR$/Client/Health/Forecast.py" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Saved Model (.save file) which was tested on un clubbed file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/Health/Clubbing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Clubbing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Forecast.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Forecast.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/Health/Frequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Frequency.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Tweedie.sav" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Tweedie.sav" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -458,7 +459,7 @@
       <option name="project" value="LOCAL" />
       <updated>1695609524685</updated>
     </task>
-    <option name="localTasksCounter" value="220" />
+    <option name="localTasksCounter" value="221" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -485,7 +486,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Added code to&#10;1) removed covid claims(B.99)&#10;2) add days in hospital&#10;3) add members per policy" />
     <MESSAGE value="Code that forecasts" />
     <MESSAGE value="Added code to ssave stats model to file &#10;Moved creation of severity file to consolidated_summary &#10;Added some useful code and code for Sarima Co2 study" />
     <MESSAGE value="Added code to save claims model to file &#10;Changed Frequency and Severity to use Zone and FY &#10;Added Clubbing of claims" />
@@ -510,7 +510,8 @@
     <MESSAGE value="Added grid search" />
     <MESSAGE value="XgBoost Tweedie" />
     <MESSAGE value="Added co_efficients and AIC" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added co_efficients and AIC" />
+    <MESSAGE value="Saved Model (.save file) which was tested on un clubbed file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Saved Model (.save file) which was tested on un clubbed file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

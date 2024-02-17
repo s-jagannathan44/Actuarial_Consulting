@@ -15,11 +15,15 @@ def build_model(power, iter_):
         OneHotEncoder(),
         PolynomialFeatures(degree=3, interaction_only=True, include_bias=False)
     )
+    non_interactive = make_pipeline(OneHotEncoder())
+
     column_trans = ColumnTransformer(
         [
+            ("passthrough1", "passthrough", ["Financial_Year"]),
             ('interaction', interaction,
              "Mem_Age_New Mem_Gender_New Revised_Product_Name_New Renewal_Count_New Zone_New Sum_Insured_New "
-             "Financial_Year".split()),
+             .split()),
+            # ('non_interactive', non_interactive, ["Financial_Year"]),
         ],
     )
 
@@ -66,15 +70,14 @@ def make_multi(dataframe, columns):
 
 
 def execute_model(tweedie_model, dataframe):
-    dataframe.to_csv("Output\\text_in.csv")
     y_pred = tweedie_model.predict(dataframe)
     dataframe["Pred"] = y_pred
     dataframe["Pred_Cost"] = dataframe["Pred"] * dataframe["LIVES_EXPOSED"]
-    column_dict = get_columns()
-    write_output(tweedie_model._final_estimator.coef_, column_dict)
     dataframe.to_csv("Output\\text_out.csv")
-    make_multi(dataframe, "Mem_Age_New Mem_Gender_New Revised_Product_Name_New Renewal_Count_New  Financial_Year "
-                          "Zone_New Sum_Insured_New".split())
+
+
+#  make_multi(dataframe, "Mem_Age_New Mem_Gender_New Revised_Product_Name_New Renewal_Count_New  Financial_Year "
+#                      "Zone_New Sum_Insured_New".split())
 
 
 def multiplier(year):
@@ -84,26 +87,6 @@ def multiplier(year):
         return 1.016
     else:
         return 1.0
-
-
-def get_columns():
-    columns = {}
-    for encoder in transformer.named_transformers_:
-        if transformer.named_transformers_[encoder] is not str:
-            item = [(encoder, transformer.named_transformers_[encoder].get_feature_names_out().size)]
-            columns.update(item)
-    return columns
-
-
-def write_output(x_value, column_dict):
-    col_list = []
-    for item in column_dict:
-        encoder = transformer.named_transformers_[item]
-        col_names = encoder.get_feature_names_out()
-        for col_name in col_names:
-            col_list.append(col_name)
-    frame = pd.DataFrame(x_value.reshape(1, -1), columns=col_list).T
-    frame.to_csv("Output\\co_efficients.csv")
 
 
 def llf_(y, x, pr):
@@ -136,7 +119,8 @@ df = df[~ df["Revised_Product_Name_New"].isin("SURPLUS-FLOATERFLOATER SURPLUS-FL
                                               "SURPLUS-INDINDIVIDUAL Corona Kavach PolicyFLOATER "
                                               "Corona Kavach PolicyINDIVIDUAL"
                                               " Star Hospital Cash Insurance PolicyFLOATER ".split())]
-df = df[df["Financial_Year"].isin("FY18 FY19 FY20 FY22 FY23".split())]
+df = df[df["Financial_Year"].isin([0, 1, 2, 4, 5])]
+# df = df[df["Financial_Year"].isin("FY22 FY23".split())]
 df["PAID_AMT"] = df["PAID_AMT"] * df["Financial_Year"].apply(lambda x: multiplier(x))
 df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
 df["Loss_Cost"].fillna(0, inplace=True)

@@ -61,12 +61,12 @@ def group_product_name(x):
     #     return x
     if x in ["FHOFLOATER", "COMPFLOATER", "MCIINDIVIDUAL"]:
         return x
-    elif x in["SCRCINDIVIDUAL","COMPINDIVIDUAL"]:
+    elif x in ["SCRCINDIVIDUAL", "COMPINDIVIDUAL"]:
         return "Individual Group1"
-    elif x in["Arogya Sanjeevini PolicyINDIVIDUAL","Star Health Assure Insurance PolicyINDIVIDUAL"]:
+    elif x in ["Arogya Sanjeevini PolicyINDIVIDUAL", "Star Health Assure Insurance PolicyINDIVIDUAL"]:
         return "Other"
-    elif x in["Young Star Insurance PolicyFLOATER", "Arogya Sanjeevini PolicyFLOATER",
-              "Star Health Assure Insurance PolicyFLOATER", "Star Micro Rural and Farmers CareFLOATER"]:
+    elif x in ["Young Star Insurance PolicyFLOATER", "Arogya Sanjeevini PolicyFLOATER",
+               "Star Health Assure Insurance PolicyFLOATER", "Star Micro Rural and Farmers CareFLOATER"]:
         return "Floater Group1"
     else:
         return "Other"
@@ -127,6 +127,7 @@ zone_dict = {"DEL AO-II": "Zone 1", "MUMBAI": "Zone 1", "DEL AO-I": "Zone 1", "A
              "PATNA": "Others", "NAGPUR": "Others", "WEB-SALES ONLINE": "Others",
              "RANCHI": "Others", "GUWAHATI": "Others", "ODISHA": "Others", "CORPORATE OFFICE": "Others"}
 
+FY_dict = {"FY18": 0, "FY19": 1, "FY20": 2, "FY21": 3, "FY22": 4, "FY23": 5}
 df = pd.read_csv("CSV\\SummaryExposed_Merged.csv")
 df = df[~ df["ICD_category"].isin(["Certain conditions originating in the perinatal period",
                                    "Congenital malformations, deformations and chromosomal abnormalities",
@@ -140,6 +141,6 @@ df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
 df["Channel_type_New"] = df["Channel_type"].apply(lambda x: group_channel_type(x))
 df["Revised_Product_Name_New"] = df["Revised_Product_name"].apply(lambda x: group_product_name(x))
 df["Zone_New"] = df["Zone"].apply(lambda x: zone_dict[x])
-
+df["Financial_Year"] = df["Financial_Year"].apply(lambda x: FY_dict[x])
 df.to_csv("Output\\clubbed_file.csv")
 prepare_frequency_file()
