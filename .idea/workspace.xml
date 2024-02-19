@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Saved Model (.save file) which was tested on un clubbed file">
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Changed FY to pass through numeric value to enable forecasting">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/Health/Clubbing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Clubbing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Forecast.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Forecast.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/Health/Frequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Frequency.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/Health/Tweedie.sav" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Tweedie.sav" afterDir="false" />
     </list>
@@ -60,7 +59,7 @@
     "Python.Conslidated_Summary.executor": "Run",
     "Python.Forecast.executor": "Run",
     "Python.Forecast_Sarima.executor": "Run",
-    "Python.Frequency.executor": "Run",
+    "Python.Frequency.executor": "Debug",
     "Python.Normalize_Claim.executor": "Debug",
     "Python.Severity.executor": "Debug",
     "Python.Transform_Claim.executor": "Run",
@@ -459,7 +458,7 @@
       <option name="project" value="LOCAL" />
       <updated>1695609524685</updated>
     </task>
-    <option name="localTasksCounter" value="221" />
+    <option name="localTasksCounter" value="222" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -486,7 +485,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Code that forecasts" />
     <MESSAGE value="Added code to ssave stats model to file &#10;Moved creation of severity file to consolidated_summary &#10;Added some useful code and code for Sarima Co2 study" />
     <MESSAGE value="Added code to save claims model to file &#10;Changed Frequency and Severity to use Zone and FY &#10;Added Clubbing of claims" />
     <MESSAGE value="Rewrote premium transformation logic to fix mismacth issue" />
@@ -511,7 +509,8 @@
     <MESSAGE value="XgBoost Tweedie" />
     <MESSAGE value="Added co_efficients and AIC" />
     <MESSAGE value="Saved Model (.save file) which was tested on un clubbed file" />
-    <option name="LAST_COMMIT_MESSAGE" value="Saved Model (.save file) which was tested on un clubbed file" />
+    <MESSAGE value="Changed FY to pass through numeric value to enable forecasting" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed FY to pass through numeric value to enable forecasting" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
