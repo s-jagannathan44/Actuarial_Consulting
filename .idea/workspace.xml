@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Added file the demonstrates interactions using polynomial features">
-      <change beforePath="$PROJECT_DIR$/.idea/Actuarial Consulting.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Actuarial Consulting.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Changed FY to pass through numeric value to enable forecasting">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Clubbing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Clubbing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Frequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Frequency.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Tweedie.sav" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Tweedie.sav" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,18 +53,21 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.Bazaar.executor": "Debug",
+    "Python.Bazaar.executor": "Run",
+    "Python.Clubbing - Claims.executor": "Run",
     "Python.Clubbing.executor": "Run",
     "Python.Conslidated_Summary.executor": "Run",
-    "Python.Frequency.executor": "Run",
+    "Python.Forecast.executor": "Run",
+    "Python.Forecast_Sarima.executor": "Run",
+    "Python.Frequency.executor": "Debug",
     "Python.Normalize_Claim.executor": "Debug",
-    "Python.Severity.executor": "Run",
-    "Python.Transform_Claim.executor": "Debug",
+    "Python.Severity.executor": "Debug",
+    "Python.Transform_Claim.executor": "Run",
     "Python.Transform_Member.executor": "Run",
     "Python.Transform_Policy.executor": "Run",
     "Python.Tweedie.executor": "Run",
     "Python.main.executor": "Run",
-    "Python.scratch.executor": "Run",
+    "Python.scratch.executor": "Debug",
     "Python.scratch_1.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -97,7 +102,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-5a2391486177-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13763.11" />
+        <option value="bundled-python-sdk-67fca87a943a-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.11799.259" />
       </set>
     </attachedChunks>
   </component>
@@ -453,7 +458,7 @@
       <option name="project" value="LOCAL" />
       <updated>1695609524685</updated>
     </task>
-    <option name="localTasksCounter" value="185" />
+    <option name="localTasksCounter" value="222" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -480,32 +485,32 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Gamma GLM Below 2k check in" />
-    <MESSAGE value="Injury Gamma Model Completed and saved as sav file" />
-    <MESSAGE value="Death Gamma Model Completed and saved as sav file" />
-    <MESSAGE value="Updated Utilities file to contain only those methods which are used" />
-    <MESSAGE value="Saved Model files with multiplier" />
-    <MESSAGE value="Added code for retrieving coefficients for death" />
-    <MESSAGE value="Added code for retrieving coefficients for Injury" />
-    <MESSAGE value="Added Pdfs" />
-    <MESSAGE value="Checked in Baseline Code and Added Pdfs" />
-    <MESSAGE value="Added code to compute variance" />
-    <MESSAGE value="Added code to perform feature selection via PFA" />
-    <MESSAGE value="Added code to draw 3d plot" />
-    <MESSAGE value="Check in after code clean up" />
-    <MESSAGE value="Added model files" />
-    <MESSAGE value="Added random sampling code" />
-    <MESSAGE value="Final check in with 6 clusters" />
-    <MESSAGE value="Added model file for commercial vehicles" />
-    <MESSAGE value="Final code for PCV taxi to be delivered to Client" />
-    <MESSAGE value="Final code for Private Car to be delivered to Client" />
-    <MESSAGE value="Ran IsolationForest On Telematics data" />
-    <MESSAGE value="Temp commit" />
-    <MESSAGE value="Added code to remove blank rows from member file and to filter claims by FY" />
-    <MESSAGE value="Added code to remove blank rows from member file and to left join on ICD category" />
-    <MESSAGE value="Code that merges files for all years into one consolidated file and then prepares the summary off it" />
-    <MESSAGE value="Added file the demonstrates interactions using polynomial features" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added file the demonstrates interactions using polynomial features" />
+    <MESSAGE value="Added code to ssave stats model to file &#10;Moved creation of severity file to consolidated_summary &#10;Added some useful code and code for Sarima Co2 study" />
+    <MESSAGE value="Added code to save claims model to file &#10;Changed Frequency and Severity to use Zone and FY &#10;Added Clubbing of claims" />
+    <MESSAGE value="Rewrote premium transformation logic to fix mismacth issue" />
+    <MESSAGE value="Modified exposure  calculation logic to take care of   long term policies" />
+    <MESSAGE value="Tweedie ClaimCount Model" />
+    <MESSAGE value="Tweedie Loss Cost model with all variables" />
+    <MESSAGE value="Tweedie Loss Cost model with all rows" />
+    <MESSAGE value="PB reviswd code" />
+    <MESSAGE value="PB final code" />
+    <MESSAGE value="Revised Clubbing after dropping covid claims" />
+    <MESSAGE value="Aborted sklearn code that draws pivots" />
+    <MESSAGE value="Reworked clubbing and about to add interactions hence checked in" />
+    <MESSAGE value="Age ,Gender , RIF Model with Interactions" />
+    <MESSAGE value="Add zone clubbing" />
+    <MESSAGE value="4 variable interaction with clubbing" />
+    <MESSAGE value="5 variable interaction with 3 degree polynomial" />
+    <MESSAGE value="All variables thrown in" />
+    <MESSAGE value="5 variables with RIF and Product clubbed" />
+    <MESSAGE value="final model" />
+    <MESSAGE value="IMprovement on BEst model" />
+    <MESSAGE value="Added grid search" />
+    <MESSAGE value="XgBoost Tweedie" />
+    <MESSAGE value="Added co_efficients and AIC" />
+    <MESSAGE value="Saved Model (.save file) which was tested on un clubbed file" />
+    <MESSAGE value="Changed FY to pass through numeric value to enable forecasting" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed FY to pass through numeric value to enable forecasting" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -519,11 +524,6 @@
           <url>file://$APPLICATION_CONFIG_DIR$/scratches/Motor Model UK/coefficient.py</url>
           <line>32</line>
           <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$APPLICATION_CONFIG_DIR$/scratches/Bazaar.py</url>
-          <line>37</line>
-          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
