@@ -14,7 +14,7 @@ def prepare_tweedie_file():
 
     output = db.execute(q3).df()
 
-    output.to_csv("CSV\\TweedieModelFile.csv")
+    output.to_csv("CSV\\TweedieModelFile_AgeModified.csv")
 
 
 def group_renewal_count(x):
@@ -59,8 +59,10 @@ def group_product_name(x):
     #          "Star Health Assure Insurance PolicyFLOATER", "Arogya Sanjeevini PolicyINDIVIDUAL",
     #          "Star Health Assure Insurance PolicyINDIVIDUAL", "Star Micro Rural and Farmers CareFLOATER"]:
     #     return x
-    if x in ["FHOFLOATER", "COMPFLOATER", "MCIINDIVIDUAL"]:
+    if x in ["FHOFLOATER", "MCIINDIVIDUAL"]:
         return x
+    elif x in ["COMPFLOATER"]:
+        return "FHOFLOATER"
     elif x in ["SCRCINDIVIDUAL", "COMPINDIVIDUAL"]:
         return "Individual Group1"
     elif x in ["Arogya Sanjeevini PolicyINDIVIDUAL", "Star Health Assure Insurance PolicyINDIVIDUAL"]:
@@ -114,6 +116,8 @@ def group_age(x):
         return "Group 12"
     elif 55 <= x <= 60:
         return "Group 13"
+    elif 61 <= x <= 66:
+        return "Group 14"
 
 
 zone_dict = {"DEL AO-II": "Zone 1", "MUMBAI": "Zone 1", "DEL AO-I": "Zone 1", "AHMEDABAD": "Zone 2",
@@ -127,7 +131,7 @@ zone_dict = {"DEL AO-II": "Zone 1", "MUMBAI": "Zone 1", "DEL AO-I": "Zone 1", "A
              "PATNA": "Others", "NAGPUR": "Others", "WEB-SALES ONLINE": "Others",
              "RANCHI": "Others", "GUWAHATI": "Others", "ODISHA": "Others", "CORPORATE OFFICE": "Others"}
 
-FY_dict = {"FY18": 0, "FY19": 1, "FY20": 2, "FY21": 3, "FY22": 4, "Test": 5}
+FY_dict = {"FY18": 0, "FY19": 1, "FY20": 2, "FY21": 3, "FY22": 4, "FY23": 5}
 df = pd.read_csv("CSV\\SummaryExposed_24.csv")
 # df = df[~ df["ICD_category"].isin(["Certain conditions originating in the perinatal period",
 #                                    "Congenital malformations, deformations and chromosomal abnormalities",
@@ -135,12 +139,12 @@ df = pd.read_csv("CSV\\SummaryExposed_24.csv")
 
 df["Revised_Product_name"] = df["Product_name"] + df["Revised_Individual_Floater"].apply(lambda x: group_rif(x))
 df["Renewal_Count_New"] = df["Renewal_Count"].apply(lambda x: "Above 8" if x > 8 else group_renewal_count(x))
-df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: "Group 1" if x > 60 else group_age(x))
+df["Mem_Age_New"] = df["Mem_Age"].apply(lambda x: "Others" if x > 66 else group_age(x))
 df["Sum_Insured_New"] = df["Sum_Insured"].apply(lambda x: group_si(x))
 df["Mem_Gender_New"] = df["Mem_Gender"].apply(lambda x: group_gender(x))
 df["Channel_type_New"] = df["Channel_type"].apply(lambda x: group_channel_type(x))
 df["Revised_Product_Name_New"] = df["Revised_Product_name"].apply(lambda x: group_product_name(x))
 df["Zone_New"] = df["Zone"].apply(lambda x: zone_dict[x])
 df["Financial_Year"] = df["Financial_Year"].apply(lambda x: FY_dict[x])
-df.to_csv("Output\\clubbed_file_24.csv")
-# prepare_tweedie_file()
+df.to_csv("Output\\clubbed_file_AgeModified.csv")
+prepare_tweedie_file()

@@ -12,7 +12,7 @@ def build_model(power, iter_):
     global df_train, df_test
 
     interaction = make_pipeline(
-        OneHotEncoder(),
+        OneHotEncoder(drop=["Group 3", "MALE", "FHOFLOATER", "0.0", "Zone 1", "500000.0"]),
         PolynomialFeatures(degree=3, interaction_only=True, include_bias=False)
     )
 
@@ -68,18 +68,31 @@ def execute_model(tweedie_model, dataframe):
     y_pred = tweedie_model.predict(dataframe)
     dataframe["Pred"] = y_pred
     dataframe["Pred_Cost"] = dataframe["Pred"] * dataframe["LIVES_EXPOSED"]
-    dataframe.to_csv("Output\\text_out.csv")
+    column_dict = get_columns()
+    write_output(tweedie_model._final_estimator.coef_, column_dict)
     make_multi(dataframe, "Mem_Age_New Mem_Gender_New Revised_Product_Name_New Renewal_Count_New  Financial_Year "
                           "Zone_New Sum_Insured_New".split())
 
 
-def multiplier(year):
-    if year == "FY23":
-        return 1.07
-    elif year == "FY22":
-        return 1.016
-    else:
-        return 1.0
+def get_columns():
+    columns = {}
+    for encoder in transformer.named_transformers_:
+        if transformer.named_transformers_[encoder] != 'passthrough':
+            item = [(encoder, transformer.named_transformers_[encoder].get_feature_names_out().size)]
+            columns.update(item)
+    return columns
+
+
+def write_output(x_value, column_dict):
+    col_list = []
+    col_list.insert(0, "FY")
+    for item in column_dict:
+        encoder = transformer.named_transformers_[item]
+        col_names = encoder.get_feature_names_out()
+        for col_name in col_names:
+            col_list.append(col_name)
+    frame = pd.DataFrame(x_value.reshape(1, -1), columns=col_list).T
+    frame.to_csv("Output\\new_efficients.csv")
 
 
 def llf_(y, x, pr):
@@ -99,9 +112,9 @@ def aic(y, X_, pr, p):
     return -2 * llf + 2 * p
 
 
-df = pd.read_csv("CSV\\TweedieModelFile.csv", usecols="Mem_Age_New Mem_Gender_New LIVES_EXPOSED "
-                                                      "PAID_AMT Financial_Year Renewal_Count_New Zone_New "
-                                                      "Revised_Product_Name_New Channel_type_New Sum_Insured_New "
+df = pd.read_csv("CSV\\TweedieModelFile_AgeModified.csv", usecols="Mem_Age_New Mem_Gender_New LIVES_EXPOSED "
+                                                                  "PAID_AMT Financial_Year Renewal_Count_New Zone_New "
+                                                                  "Revised_Product_Name_New Channel_type_New Sum_Insured_New "
                  .split())
 for col in df.columns:
     if "Unnamed" in col:
