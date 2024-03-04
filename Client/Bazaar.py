@@ -5,13 +5,19 @@ import duckdb as db
 
 year = 0
 
-state_dict ={"Andhra Pradesh": "South","Arunachal Pradesh":"East","Assam":"East","Bihar":"East","Chhattisgarh":"North","Goa":"West",
-"Gujarat":"west","Haryana":"North","Himachal Pradesh":"North","Jammu and Kashmir":"North","Jharkhand":"East","Karnataka":"South",
-"Kerala":"South","Madhya Pradesh":"North","Maharashtra":"West","Manipur":"East","Meghalaya":"East","Mizoram":"East",
-"Nagaland":"East","Orissa":"East","Punjab":"North","Rajasthan":"North","Sikkim":"East","Tamil Nadu":"South","TELANGANA":"South",
-"Chattisgarh":"North","Tripura":"East","Uttar Pradesh":"North","UTTARAKHAND":"North","West Bengal":"East",
-"Ladakh":"North","Andaman & Nicobar Islands":"South","Chandigarh":"North",
-"Dadra & Nagar Haveli":"West","Daman & Diu":"West","Lakshadweep":"South","Delhi":"North","Pondicherry":"South"}
+state_dict = {"Andhra Pradesh": "South", "Arunachal Pradesh": "East", "Assam": "East", "Bihar": "East",
+              "Chhattisgarh": "North", "Goa": "West",
+              "Gujarat": "west", "Haryana": "North", "Himachal Pradesh": "North", "Jammu and Kashmir": "North",
+              "Jharkhand": "East", "Karnataka": "South",
+              "Kerala": "South", "Madhya Pradesh": "North", "Maharashtra": "West", "Manipur": "East",
+              "Meghalaya": "East", "Mizoram": "East",
+              "Nagaland": "East", "Orissa": "East", "Punjab": "North", "Rajasthan": "North", "Sikkim": "East",
+              "Tamil Nadu": "South", "TELANGANA": "South",
+              "Chattisgarh": "North", "Tripura": "East", "Uttar Pradesh": "North", "UTTARAKHAND": "North",
+              "West Bengal": "East",
+              "Ladakh": "North", "Andaman & Nicobar Islands": "South", "Chandigarh": "North",
+              "Dadra & Nagar Haveli": "West", "Daman & Diu": "West", "Lakshadweep": "South", "Delhi": "North",
+              "Pondicherry": "South"}
 
 
 def merge_files():
@@ -30,9 +36,10 @@ def merge_files():
 
 def map_zone(state):
     try:
-       return state_dict[state]
+        return state_dict[state]
     except:
         print(state)
+
 
 def prefix_pb(policy_no):
     if policy_no.startswith('PB'):
@@ -167,7 +174,7 @@ def calculate_exposure():
         print(year__)
 
     exposure = pd.concat([master, long_term], axis=0)
-    exposure.to_csv("premium.csv")
+    exposure.to_csv("premium_02_03.csv")
 
 
 def convert_premium(prem):
@@ -202,40 +209,76 @@ def calculate_earned_premium():
     exposure.to_csv("premium.csv")
 
 
-def find_missing(policy_number):
-    if policy_number not in merged:
-        return policy_number
-    return ''
+def transform_premium_file():
+    global norm_policy
+    frames = pd.DataFrame()
+    years = premium["Financial_Year"].unique().tolist()
+    years.append(2025)
+    years.append(2026)
+    years.append(2027)
+    for yearn in years:
+        yearly_frame = pd.DataFrame(pd.DataFrame(columns=["PolicyID", "Exposure", "EP"]))
+        exp_name = "FY" + str(yearn)
+        ep_name = "FY" + str(yearn) + "_EP"
+        yearly_frame[["PolicyID", "Exposure", "EP"]] = premium[["PolicyID", exp_name, ep_name]]
+        yearly_frame["Accident_Year"] = yearn
+        frames = pd.concat([frames, yearly_frame], axis=0)
+    nep = db.sql("select * from frames where Exposure is not null and EP is not null").df().sort_values(by="PolicyID")
+    # policy.to_csv("modified.csv")
+    norm_policy = premium.merge(nep, on="PolicyID")
+    norm_policy = norm_policy.loc[:, ~norm_policy.columns.str.startswith('FY20')]
+    norm_policy.to_csv("modified_premium.csv")
 
 
-merge_files()
-merge_claims()
+# def find_missing(policy_number):
+#     if policy_number not in merged:
+#         return policy_number
+#     return ''
+
+
+# merge_files()
+# merge_claims()
 count = 0
-create_master()
-calculate_exposure()
-
-premium = pd.read_csv("premium.csv")
-claims = pd.read_csv("claims_file.csv")
-claims['Report Date'] = claims['Report Date'].str.replace('-', '')
-claims['Claim Closed Date'] = claims['Claim Closed Date'].str.replace('-', '')
-
-# datetime.strptime("01121017", "%d%m%Y")
-
-claims['Loss Date'] = pd.to_datetime(claims['Loss Date'], format="mixed", dayfirst=True)
-claims['Report Date'] = pd.to_datetime(claims['Report Date'], format="%d%m%Y", dayfirst=True)
-claims['Claim Closed Date'] = pd.to_datetime(claims['Claim Closed Date'], format="%d%m%Y", dayfirst=True)
-
-for col_ in premium.columns:
-    if "Unnamed" in col_:
-        premium.drop(col_, axis=1, inplace=True)
-
-premium.rename(columns={"policyno": "Policy Number"}, inplace=True)
-claims["Policy Number"] = claims["Policy Number"].apply(lambda x: "PB_" + str(x))
-claims_policy = claims.merge(premium, on=["Policy Number"], how="inner")
-merged = claims_policy["Policy Number"].tolist()
-claims["Missing_Claims"] = claims["Policy Number"].apply(lambda x: find_missing(x))
-claims_policy["Loss_FY"] = claims_policy["Loss Date"].apply(lambda x: set_financial_year(x))
-claims_policy["Reported_FY"] = claims_policy["Report Date"].apply(lambda x: set_financial_year(x))
-claims_policy["Paid_FY"] = claims_policy["Claim Closed Date"].apply(lambda x: set_financial_year(x))
-claims_policy.to_csv("Policy_Claim.csv")
-claims.to_csv("missing.csv")
+df = pd.read_csv("merged_claims.csv")
+df["Total_Claim"] = df["Paid"] + df['OS']
+df["Cause Of Loss"].fillna("-",inplace=True)
+filtered_df = df[df['Cause Of Loss'].str.contains('Death')]
+injury_df = df[~ df['Cause Of Loss'].str.contains('Death')]
+pv =pd.pivot_table(filtered_df, values="Claim_Reference", columns=["Policy Number", "Cause Of Loss"],
+                         aggfunc="count").T.to_csv("dcount.csv")
+gic = pd.pivot_table(filtered_df, values="Total_Claim", columns=["Policy Number", "Cause Of Loss"],
+                         aggfunc="sum").T.to_csv("dgic.csv")
+pass
+# create_master()
+# calculate_exposure()
+# transform_premium_file()
+# premium = pd.read_csv("premium.csv")
+# norm_policy = pd.read_csv("modified_premium.csv")
+#
+# claims = pd.read_csv("claims_file.csv")
+# claims['Loss Date'] = pd.to_datetime(claims['Loss Date'], format="mixed", dayfirst=True)
+# claims['Report Date'] = claims['Report Date'].str.replace('-', '')
+# claims['Claim Closed Date'] = claims['Claim Closed Date'].str.replace('-', '')
+# # claims_policy = claims.merge(premium, on=["Policy Number"], how="inner")
+# # claims_policy["Loss_FY"] = claims_policy["Loss Date"].apply(lambda x: set_financial_year(x))
+# # claims_policy["Reported_FY"] = claims_policy["Report Date"].apply(lambda x: set_financial_year(x))
+# # claims_policy["Paid_FY"] = claims_policy["Claim Closed Date"].apply(lambda x: set_financial_year(x))
+# # claims_policy.to_csv("Policy_Claim_02_03.csv")
+#
+# claims["Accident_Year"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
+# claims["Reported_FY"] = claims["Report Date"].apply(lambda x: set_financial_year(x))
+# claims["Paid_FY"] = claims["Claim Closed Date"].apply(lambda x: set_financial_year(x))
+# claims["Policy Number"] = claims["Policy Number"].apply(lambda x: "PB_" + str(x))
+#
+#
+# for col_ in norm_policy.columns:
+#     if "Unnamed" in col_:
+#         norm_policy.drop(col_, axis=1, inplace=True)
+#
+# norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
+# claims.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
+# claims.rename(columns={"Claim Reference": "Claim_Reference"}, inplace=True)
+#
+#
+# policy_claims = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
+# policy_claims.to_csv("merged_claims.csv")
