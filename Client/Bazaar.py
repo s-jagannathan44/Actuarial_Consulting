@@ -35,10 +35,7 @@ def merge_files():
 
 
 def map_zone(state):
-    try:
-        return state_dict[state]
-    except:
-        print(state)
+    return state_dict[state]
 
 
 def prefix_pb(policy_no):
@@ -67,6 +64,7 @@ def set_financial_year(year_p):
         return year_p.to_period('Q-MAR').qyear
     except AttributeError:
         count = count + 1
+        print("error occurred in set_financial_year")
         return ""
 
 
@@ -139,8 +137,7 @@ def calculate_exposure():
                                                                                  * master.loc[master.Financial_Year ==
                                                                                               year_, "full_premium"])
         master.loc[master.Financial_Year == year_, "FY" + str(year_ + 1) + "_EP"] = (master.loc[master.Financial_Year ==
-                                                                                                year_, "FY" + str(
-            year_ + 1)]
+                                                                                                year_, "FY" + str(year_ + 1)]
                                                                                      * master.loc[
                                                                                          master.Financial_Year ==
                                                                                          year_, "full_premium"])
@@ -239,46 +236,44 @@ def transform_premium_file():
 # merge_files()
 # merge_claims()
 count = 0
-df = pd.read_csv("merged_claims.csv")
-df["Total_Claim"] = df["Paid"] + df['OS']
-df["Cause Of Loss"].fillna("-",inplace=True)
-filtered_df = df[df['Cause Of Loss'].str.contains('Death')]
-injury_df = df[~ df['Cause Of Loss'].str.contains('Death')]
-pv =pd.pivot_table(filtered_df, values="Claim_Reference", columns=["Policy Number", "Cause Of Loss"],
-                         aggfunc="count").T.to_csv("dcount.csv")
-gic = pd.pivot_table(filtered_df, values="Total_Claim", columns=["Policy Number", "Cause Of Loss"],
-                         aggfunc="sum").T.to_csv("dgic.csv")
-pass
 # create_master()
 # calculate_exposure()
 # transform_premium_file()
 # premium = pd.read_csv("premium.csv")
-# norm_policy = pd.read_csv("modified_premium.csv")
-#
-# claims = pd.read_csv("claims_file.csv")
-# claims['Loss Date'] = pd.to_datetime(claims['Loss Date'], format="mixed", dayfirst=True)
-# claims['Report Date'] = claims['Report Date'].str.replace('-', '')
-# claims['Claim Closed Date'] = claims['Claim Closed Date'].str.replace('-', '')
-# # claims_policy = claims.merge(premium, on=["Policy Number"], how="inner")
-# # claims_policy["Loss_FY"] = claims_policy["Loss Date"].apply(lambda x: set_financial_year(x))
-# # claims_policy["Reported_FY"] = claims_policy["Report Date"].apply(lambda x: set_financial_year(x))
-# # claims_policy["Paid_FY"] = claims_policy["Claim Closed Date"].apply(lambda x: set_financial_year(x))
-# # claims_policy.to_csv("Policy_Claim_02_03.csv")
-#
-# claims["Accident_Year"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
-# claims["Reported_FY"] = claims["Report Date"].apply(lambda x: set_financial_year(x))
-# claims["Paid_FY"] = claims["Claim Closed Date"].apply(lambda x: set_financial_year(x))
-# claims["Policy Number"] = claims["Policy Number"].apply(lambda x: "PB_" + str(x))
-#
-#
-# for col_ in norm_policy.columns:
-#     if "Unnamed" in col_:
-#         norm_policy.drop(col_, axis=1, inplace=True)
-#
-# norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
-# claims.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
-# claims.rename(columns={"Claim Reference": "Claim_Reference"}, inplace=True)
-#
-#
-# policy_claims = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
-# policy_claims.to_csv("merged_claims.csv")
+# premium.rename(columns={"policyno": "Policy Number"}, inplace=True)
+norm_policy = pd.read_csv("modified_premium.csv")
+claims = pd.read_csv("claims_file.csv")
+
+claims['Report Date'] = claims['Report Date'].str.replace('-', '')
+claims['Claim Closed Date'] = claims['Claim Closed Date'].str.replace('-', '')
+claims['Loss Date'] = pd.to_datetime(claims['Loss Date'], format="mixed", dayfirst=True)
+claims['Report Date'] = pd.to_datetime(claims['Report Date'], format="%d%m%Y", dayfirst=True)
+claims['Claim Closed Date'] = pd.to_datetime(claims['Claim Closed Date'], format="%d%m%Y", dayfirst=True)
+claims["Loss_FY"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
+claims["Reported_FY"] = claims["Report Date"].apply(lambda x: set_financial_year(x))
+claims["Paid_FY"] = claims["Claim Closed Date"].apply(lambda x: set_financial_year(x))
+
+
+# claims_policy = claims.merge(premium, on=["Policy Number"], how="inner")
+# claims_policy.to_csv("Policy_Claim_02_03.csv")
+claims["Accident_Year"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
+
+for col_ in norm_policy.columns:
+    if "Unnamed" in col_:
+        norm_policy.drop(col_, axis=1, inplace=True)
+
+norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
+claims.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
+claims.rename(columns={"Claim Reference": "Claim_Reference"}, inplace=True)
+
+policy_claims = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
+policy_claims.to_csv("merged_claims.csv")
+print(count)
+
+# df["Cause Of Loss"].fillna("-",inplace=True)
+# filtered_df = df[df['Cause Of Loss'].str.contains('Death')]
+# injury_df = df[~ df['Cause Of Loss'].str.contains('Death')]
+# pv =pd.pivot_table(filtered_df, values="Accident_Year", columns=["Policy Number", "Cause Of Loss"],
+#                          aggfunc="count").T.to_csv("dcount.csv")
+# gic = pd.pivot_table(filtered_df, values="Total_Claim", columns=["Policy Number", "Cause Of Loss"],
+#                          aggfunc="sum").T.to_csv("dgic.csv")
