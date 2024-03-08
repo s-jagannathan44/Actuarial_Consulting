@@ -2,6 +2,7 @@ import pandas as pd
 import glob
 import fiscalyear
 import duckdb as db
+import itertools
 
 year = 0
 
@@ -35,7 +36,11 @@ def merge_files():
 
 
 def map_zone(state):
-    return state_dict[state]
+    try:
+        return state_dict[state]
+    except KeyError:
+        print("Zone mapping error")
+        return ""
 
 
 def prefix_pb(policy_no):
@@ -55,6 +60,7 @@ def merge_claims():
         frame["Client_Name"] = client_name
         df = pd.concat([df, frame], axis=0)
     df.dropna(subset=['Claim Reference'], inplace=True)
+    df["Policy Number"] = df["Policy Number"].apply(lambda x: "PB_" + str(x))
     df.to_csv("claims_file.csv")
 
 
@@ -137,7 +143,8 @@ def calculate_exposure():
                                                                                  * master.loc[master.Financial_Year ==
                                                                                               year_, "full_premium"])
         master.loc[master.Financial_Year == year_, "FY" + str(year_ + 1) + "_EP"] = (master.loc[master.Financial_Year ==
-                                                                                                year_, "FY" + str(year_ + 1)]
+                                                                                                year_, "FY" + str(
+            year_ + 1)]
                                                                                      * master.loc[
                                                                                          master.Financial_Year ==
                                                                                          year_, "full_premium"])
@@ -171,7 +178,7 @@ def calculate_exposure():
         print(year__)
 
     exposure = pd.concat([master, long_term], axis=0)
-    exposure.to_csv("premium_02_03.csv")
+    exposure.to_csv("premium_07_03.csv")
 
 
 def convert_premium(prem):
@@ -188,22 +195,6 @@ def convert_premium(prem):
             return 0.0
     else:
         return float(prem)
-
-
-def calculate_earned_premium():
-    exposure = pd.read_csv("exposure.csv")
-    for col in exposure.columns:
-        if "Unnamed" in col:
-            exposure.drop(col, axis=1, inplace=True)
-    long_term = db.sql("""select * from exposure where newplancategory like '%Long Term%' """).df()
-    short_term = db.sql("""select * from exposure where newplancategory not like '%Long Term%' """).df()
-
-    for year_ in short_term["Financial_Year"].unique().tolist():
-        exposure["FY" + str(year_) + "_EP"] = exposure["FY" + str(year_)] * exposure["full_premium"]
-    for year_ in long_term["Financial_Year"].unique().tolist():
-        exposure["FY" + str(year_) + "_EP"] = exposure["FY" + str(year_)] * (exposure["full_premium"] / 3.0)
-
-    exposure.to_csv("premium.csv")
 
 
 def transform_premium_file():
@@ -227,22 +218,26 @@ def transform_premium_file():
     norm_policy.to_csv("modified_premium.csv")
 
 
-# def find_missing(policy_number):
-#     if policy_number not in merged:
-#         return policy_number
-#     return ''
+def find_missing(policy_number):
+    if policy_number not in merged:
+        return policy_number
+    return ''
 
 
+count = 0
 # merge_files()
 # merge_claims()
-count = 0
 # create_master()
 # calculate_exposure()
+# premium = pd.read_csv("premium_07_03.csv")
 # transform_premium_file()
-# premium = pd.read_csv("premium.csv")
-# premium.rename(columns={"policyno": "Policy Number"}, inplace=True)
+# premium.rename(columns={"policyno": "Policy_Number"}, inplace=True)
+
 norm_policy = pd.read_csv("modified_premium.csv")
+norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
 claims = pd.read_csv("claims_file.csv")
+claims.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
+claims.rename(columns={"Claim Reference": "Claim_Reference"}, inplace=True)
 
 claims['Report Date'] = claims['Report Date'].str.replace('-', '')
 claims['Claim Closed Date'] = claims['Claim Closed Date'].str.replace('-', '')
@@ -253,22 +248,37 @@ claims["Loss_FY"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
 claims["Reported_FY"] = claims["Report Date"].apply(lambda x: set_financial_year(x))
 claims["Paid_FY"] = claims["Claim Closed Date"].apply(lambda x: set_financial_year(x))
 
-
-# claims_policy = claims.merge(premium, on=["Policy Number"], how="inner")
-# claims_policy.to_csv("Policy_Claim_02_03.csv")
+claims_policy = claims.merge(premium, on=["Policy_Number"], how="inner")
+claims_policy.to_csv("Policy_Claim_07_03.csv")
 claims["Accident_Year"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
 
 for col_ in norm_policy.columns:
     if "Unnamed" in col_:
         norm_policy.drop(col_, axis=1, inplace=True)
 
-norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
-claims.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
-claims.rename(columns={"Claim Reference": "Claim_Reference"}, inplace=True)
-
 policy_claims = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
-policy_claims.to_csv("merged_claims.csv")
+policy_claims["Claim_Reference"].fillna(0, inplace=True)
+policy_claims["Claim count"] = policy_claims["Claim_Reference"].apply(lambda x: 0 if x == 0 else 1)
+policy_claims["Total Claim"] = policy_claims["Paid"] = policy_claims["OS"]
+policy_claims["Long term"] = policy_claims["newplancategory"].apply(lambda x: "LT" if "Long Term" in x else "ST")
+policy_claims["Policy Count"] = policy_claims["Long term"].apply(lambda x: 0.25 if x == "LT" else 0.5)
+df_ = policy_claims[policy_claims["Long term"] == "ST"]
+df_["Adjusted full premium"] = df_["full_premium"] / 2.0
+lt_frame = policy_claims[policy_claims["Long term"] == "LT"]
+lt_frame["Adjusted full premium"] = lt_frame["full_premium"] / 4.0
+policy_claims = pd.concat([df_, lt_frame], axis=0)
+
+policy_claims.to_csv("merged_claims_07_03.csv")
 print(count)
+
+
+def extract_missing():
+    global claims_policy, claims, merged
+    claims_policy = pd.read_csv("Policy_Claim_07_03.csv")
+    claims = pd.read_csv("claims_file.csv")
+    merged = claims_policy["Policy_Number"].tolist()
+    claims["Missing_Claims"] = claims["Policy Number"].apply(lambda x: find_missing(x))
+    claims.to_csv("missing.csv")
 
 # df["Cause Of Loss"].fillna("-",inplace=True)
 # filtered_df = df[df['Cause Of Loss'].str.contains('Death')]
