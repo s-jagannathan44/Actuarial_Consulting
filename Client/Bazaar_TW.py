@@ -8,20 +8,22 @@ year = 0
 state_dict = {"Andhra Pradesh": "South", "Arunachal Pradesh": "East", "Assam": "East", "Bihar": "East",
               "Chhattisgarh": "North", "Goa": "West",
               "Gujarat": "west", "Haryana": "North", "Himachal Pradesh": "North", "Jammu and Kashmir": "North",
-              "Jharkhand": "East", "Karnataka": "South",
+              "Jharkhand": "East", "Karnataka": "South", "Jammu & Kashmir": "North", "NCR": "North",
+              'Odisha': "East", "Telangana": "South", "Pondicherry": "South",
               "Kerala": "South", "Madhya Pradesh": "North", "Maharashtra": "West", "Manipur": "East",
-              "Meghalaya": "East", "Mizoram": "East",
+              "Meghalaya": "East", "Mizoram": "East", "Uttarakhand": "North",
               "Nagaland": "East", "Orissa": "East", "Punjab": "North", "Rajasthan": "North", "Sikkim": "East",
               "Tamil Nadu": "South", "TELANGANA": "South",
               "Chattisgarh": "North", "Tripura": "East", "Uttar Pradesh": "North", "UTTARAKHAND": "North",
               "West Bengal": "East",
               "Ladakh": "North", "Andaman & Nicobar Islands": "South", "Chandigarh": "North",
               "Dadra & Nagar Haveli": "West", "Daman & Diu": "West", "Lakshadweep": "South", "Delhi": "North",
-              "Pondicherry": "South"}
+              "Andaman and Nicobar Islands": "South", "Dadra and Nagar Haveli": "West", "Daman and Diu": "West",
+              }
 
 
 def merge_files():
-    path = "Bazaar/*.csv"
+    path = "Bazaar/TW/*.csv"
     df = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
@@ -29,9 +31,16 @@ def merge_files():
         frame = pd.read_csv(file_name)
         frame["Policy_Client_Name"] = client_name
         df = pd.concat([df, frame], axis=0)
-    df["PolicyID"] = df["PolicyID"].apply(lambda x: prefix_pb(str(x)))
-    df["Zone"] = df["registration_state"].apply(lambda x: map_zone(x))
-    df.to_csv("base_file.csv")
+    df["Zone"] = df["registrationstate"].apply(lambda x: map_zone(x))
+    df.rename(columns={"policyno": "Policy_Number"}, inplace=True)
+    df["Policy_Number"] = df["Policy_Number"].apply(lambda x: "PB_" + str(x))
+    df = df.drop_duplicates(subset=["Policy_Number"])
+    for col_ in df.columns:
+        if "Unnamed" in col_:
+            df.drop(col_, axis=1, inplace=True)
+    keys = range(1, 1 + len(df))
+    df.insert(0, 'index', keys)
+    df.to_csv("Bazaar\\Output\\base_file.csv")
 
 
 def map_zone(state):
@@ -50,7 +59,7 @@ def prefix_pb(policy_no):
 
 
 def merge_claims():
-    path = "Bazaar/Claims/*.csv"
+    path = "Bazaar/TW/Claims/*.csv"
     df = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
@@ -60,7 +69,7 @@ def merge_claims():
         df = pd.concat([df, frame], axis=0)
     df.dropna(subset=['Claim Reference'], inplace=True)
     df["Policy Number"] = df["Policy Number"].apply(lambda x: "PB_" + str(x))
-    df.to_csv("claims_file.csv")
+    df.to_csv("Bazaar\\Output\\claims_file.csv")
 
 
 def set_financial_year(year_p):
@@ -74,19 +83,23 @@ def set_financial_year(year_p):
 
 
 def create_master():
-    base = pd.read_csv("base_file.csv")
+    base = pd.read_csv("Bazaar\\Output\\base_file.csv")
+    base.rename(columns={"policy_startdate": "policy_start_date"}, inplace=True)
+    base.rename(columns={"policy_enddate": "policy_end_date"}, inplace=True)
     base = transform_data(base)
     base = base.sort_values(by='policy_start_date')
     base["Financial_Year"] = base["policy_start_date"].apply(lambda x: set_financial_year(x))
-    base.to_csv("master.csv")
+    for col_ in base.columns:
+        if "Unnamed" in col_:
+            base.drop(col_, axis=1, inplace=True)
+
+    base.to_csv("Bazaar\\Output\\master.csv")
 
 
 def transform_data(exposure):
     exposure['policy_start_date'] = pd.to_datetime(exposure['policy_start_date'], format="mixed", dayfirst=True)
-    exposure["tp_premium"] = exposure['tp_premium'].apply(lambda x: convert_premium(x))
-    exposure["tp_addons"] = exposure['tp_addons'].apply(lambda x: convert_premium(x))
-    exposure["full_premium"] = exposure["tp_premium"] + exposure["tp_addons"]
-    exposure["cubiccapacity_New"] = exposure["cubiccapacity"].apply(lambda x: group_cubic_capacity(x))
+    exposure["irda_tp"] = exposure['irda_tp'].apply(lambda x: convert_premium(x))
+    exposure["full_premium"] = exposure["irda_tp"]
     return exposure
 
 
@@ -112,23 +125,35 @@ def funct(xy):
 
 
 def group_cubic_capacity(x):
-    if x < 1000:
-        return "Below 1000cc"
-    elif 1000 <= x <= 1500:
-        return "1000 to 1500cc"
-    elif x > 1500:
-        return "Above 1500cc"
+    if x in [482, 538]:
+        return "Below 75cc"
+    elif x in [714, 752]:
+        return "75 to 150cc"
+    elif x in [1193, 1366]:
+        return "150 to 350cc"
+    elif x in [2323, 2804]:
+        return "Above 350cc"
+
+
+def group_body_type(x):
+    if "Activa" in x or "DIO" in x or "Destini" in x or "Xoom" in x or "PLEASURE" in x \
+            or "CHETAK" in x or "jupiter" in x or "scooty" in x or "zest" in x or "ntorq" in x \
+            or "aerox" in x or "rayzr" in x or "moto gp" in x or "fascino" in x or "burgman" in x \
+            or "avenis" in x or "access" in x or "vespa" in x:
+        return "Scooter"
+    else:
+        return "Bike"
 
 
 def calculate_exposure():
     global year
-    master = pd.read_csv("master.csv")
+    master = pd.read_csv("Bazaar\\Output\\master.csv")
     master['policy_start_date'] = pd.to_datetime(master['policy_start_date'], format="mixed", dayfirst=True)
     master['policy_end_date'] = pd.to_datetime(master['policy_end_date'], format="mixed", dayfirst=True)
-    long_term = db.sql("""select * from master where newplancategory like '%Long Term%' """).df()
-    master = db.sql("""select * from master where newplancategory not like '%Long Term%' """).df()
+    long_term = db.sql("""select * from master where irda_tp >3000 """).df()
+    master = db.sql("""select * from master where irda_tp <3000 """).df()
     long_term['policy_end_date'] = long_term['policy_end_date'] + pd.DateOffset(years=2)
-    long_term.to_csv("lt.csv")
+
     fiscalyear.setup_fiscal_calendar(start_month=4)
     for year_ in master["Financial_Year"].unique().tolist():
         year = year_
@@ -176,7 +201,11 @@ def calculate_exposure():
         print(year__)
 
     exposure = pd.concat([master, long_term], axis=0)
-    exposure.to_csv("premium_07_03.csv")
+    for col_ in exposure.columns:
+        if "Unnamed" in col_:
+            exposure.drop(col_, axis=1, inplace=True)
+
+    exposure.to_csv("Bazaar\\Output\\premium.csv")
 
 
 def convert_premium(prem):
@@ -201,40 +230,42 @@ def transform_premium_file():
     years = premium["Financial_Year"].unique().tolist()
     years.append(2025)
     years.append(2026)
-    years.append(2027)
     for yearn in years:
-        yearly_frame = pd.DataFrame(pd.DataFrame(columns=["PolicyID", "Exposure", "EP"]))
+        yearly_frame = pd.DataFrame(pd.DataFrame(columns=["index", "Exposure", "EP"]))
         exp_name = "FY" + str(yearn)
         ep_name = "FY" + str(yearn) + "_EP"
-        yearly_frame[["PolicyID", "Exposure", "EP"]] = premium[["PolicyID", exp_name, ep_name]]
+        yearly_frame[["index", "Exposure", "EP"]] = premium[["index", exp_name, ep_name]]
         yearly_frame["Accident_Year"] = yearn
         frames = pd.concat([frames, yearly_frame], axis=0)
-    nep = db.sql("select * from frames where Exposure is not null and EP is not null").df().sort_values(by="PolicyID")
+    nep = db.sql("select * from frames where Exposure is not null and EP is not null").df()
     # policy.to_csv("modified.csv")
-    norm_policy = premium.merge(nep, on="PolicyID")
+    norm_policy = premium.merge(nep, on="index")
     norm_policy = norm_policy.loc[:, ~norm_policy.columns.str.startswith('FY20')]
-    norm_policy.to_csv("modified_premium.csv")
+    for col_ in norm_policy.columns:
+        if "Unnamed" in col_:
+            norm_policy.drop(col_, axis=1, inplace=True)
+    norm_policy.to_csv("Bazaar\\Output\\modified_premium.csv")
 
 
-def find_missing(policy_number):
-    if policy_number not in merged:
-        return policy_number
-    return ''
+# def find_missing(policy_number):
+#     if policy_number not in merged:
+#         return policy_number
+#     return ''
 
 
 def transform_claim():
     global claims
-    claims = pd.read_csv("claims_file.csv")
+    claims = pd.read_csv("Bazaar\\Output\\claims_file.csv")
     claims.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
     claims.rename(columns={"Claim Reference": "Claim_Reference"}, inplace=True)
     claims['Report Date'] = claims['Report Date'].str.replace('-', '')
-    claims['Claim Closed Date'] = claims['Claim Closed Date'].str.replace('-', '')
+    claims['Claim Closure Date'] = claims['Claim Closure Date'].str.replace('-', '')
     claims['Loss Date'] = pd.to_datetime(claims['Loss Date'], format="mixed", dayfirst=True)
     claims['Report Date'] = pd.to_datetime(claims['Report Date'], format="%d%m%Y", dayfirst=True)
-    claims['Claim Closed Date'] = pd.to_datetime(claims['Claim Closed Date'], format="%d%m%Y", dayfirst=True)
+    claims['Claim Closure Date'] = pd.to_datetime(claims['Claim Closure Date'], format="%d%m%Y", dayfirst=True)
     claims["Loss_FY"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
     claims["Reported_FY"] = claims["Report Date"].apply(lambda x: set_financial_year(x))
-    claims["Paid_FY"] = claims["Claim Closed Date"].apply(lambda x: set_financial_year(x))
+    claims["Paid_FY"] = claims["Claim Closure Date"].apply(lambda x: set_financial_year(x))
     return claims
 
 
@@ -243,26 +274,24 @@ count = 0
 # merge_claims()
 # create_master()
 # calculate_exposure()
-# premium = pd.read_csv("premium_07_03.csv")
+premium = pd.read_csv("Bazaar\\Output\\premium.csv")
 # transform_premium_file()
-# premium.rename(columns={"policyno": "Policy_Number"}, inplace=True)
 
-norm_policy = pd.read_csv("modified_premium.csv")
-norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
+norm_policy = pd.read_csv("Bazaar\\Output\\modified_premium.csv")
 claims = transform_claim()
-# claims_policy = claims.merge(premium, on=["Policy_Number"], how="inner")
-# claims_policy.to_csv("Policy_Claim_07_03.csv")
+claims_policy = claims.merge(premium, on=["Policy_Number"], how="inner")
+claims_policy.to_csv("Bazaar\\Output\\Policy_Claim.csv")
 claims["Accident_Year"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
 
-for col_ in norm_policy.columns:
-    if "Unnamed" in col_:
-        norm_policy.drop(col_, axis=1, inplace=True)
+for col__ in norm_policy.columns:
+    if "Unnamed" in col__:
+        norm_policy.drop(col__, axis=1, inplace=True)
 
 policy_claims = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
 policy_claims["Claim_Reference"].fillna(0, inplace=True)
 policy_claims["Claim count"] = policy_claims["Claim_Reference"].apply(lambda x: 0 if x == 0 else 1)
-policy_claims["Total Claim"] = policy_claims["Paid"] = policy_claims["OS"]
-policy_claims["Long term"] = policy_claims["newplancategory"].apply(lambda x: "LT" if "Long Term" in x else "ST")
+policy_claims["Total Claim"] = policy_claims["Final Paid"] = policy_claims["Final OS"]
+policy_claims["Long term"] = policy_claims["irda_tp"].apply(lambda x: "LT" if x > 3000 else "ST")
 policy_claims["Policy Count"] = policy_claims["Long term"].apply(lambda x: 0.25 if x == "LT" else 0.5)
 st_frame = policy_claims[policy_claims["Long term"] == "ST"]
 st_frame["Adjusted full premium"] = st_frame["full_premium"] / 2.0
@@ -270,9 +299,15 @@ lt_frame = policy_claims[policy_claims["Long term"] == "LT"]
 lt_frame["Adjusted full premium"] = lt_frame["full_premium"] / 4.0
 policy_claims = pd.concat([st_frame, lt_frame], axis=0)
 
-policy_claims.to_csv("merged_claims_07_03.csv")
-print(count)
+policy_claims["ccnew"] = policy_claims["full_premium"].apply(lambda x: group_cubic_capacity(x))
+policy_claims["body_type"] = policy_claims["modelname"].apply(lambda x: group_body_type(x))
 
+for col__ in policy_claims.columns:
+    if "Unnamed" in col__:
+        policy_claims.drop(col__, axis=1, inplace=True)
+
+policy_claims.to_csv("Bazaar\\Output\\merged_claims.csv")
+print(count)
 
 # def extract_missing():
 #     global claims_policy, claims, merged

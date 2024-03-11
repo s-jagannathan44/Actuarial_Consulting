@@ -4,18 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Some kind of clubbing">
-      <change afterPath="$PROJECT_DIR$/Client/Health/Consolidated_Frequency_Severity.py" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Check in with fixes">
+      <change afterPath="$PROJECT_DIR$/Client/BazaarTweedieClubbing.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/Bazaar_GLM.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Client/Bazaar_TW.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ExperimentalFiles/ConvertExcelToCSV.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Actuarial Consulting.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Actuarial Consulting.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Clubbing - Claims.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Clubbing - Claims.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Clubbing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Clubbing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Forecast.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Forecast.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Frequency.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Frequency.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Severity.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Severity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Tweedie.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Tweedie.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/Tweedie.sav" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Tweedie.sav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/Health/TweedieClubbing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/TweedieClubbing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Bazaar.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Bazaar.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,11 +57,15 @@
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Python.Bazaar.executor": "Run",
+    "Python.BazaarTweedieClubbing.executor": "Run",
+    "Python.Bazaar_GLM.executor": "Run",
+    "Python.Bazaar_TW.executor": "Run",
     "Python.Claims_Clubbing.executor": "Run",
     "Python.Clubbing - Claims.executor": "Run",
     "Python.Clubbing.executor": "Run",
     "Python.Conslidated_Summary.executor": "Run",
     "Python.Consolidated_Frequency_Severity.executor": "Run",
+    "Python.ConvertExcelToCSV.executor": "Run",
     "Python.Forecast.executor": "Run",
     "Python.Forecast_Sarima.executor": "Run",
     "Python.Frequency.executor": "Run",
@@ -73,7 +74,7 @@
     "Python.Transform_Claim.executor": "Run",
     "Python.Transform_Member.executor": "Run",
     "Python.Transform_Policy.executor": "Run",
-    "Python.Tweedie.executor": "Run",
+    "Python.Tweedie.executor": "Debug",
     "Python.TweedieClubbing.executor": "Run",
     "Python.main.executor": "Run",
     "Python.scratch.executor": "Debug",
@@ -467,7 +468,7 @@
       <option name="project" value="LOCAL" />
       <updated>1695609524685</updated>
     </task>
-    <option name="localTasksCounter" value="224" />
+    <option name="localTasksCounter" value="233" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -494,12 +495,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="Rewrote premium transformation logic to fix mismacth issue" />
-    <MESSAGE value="Modified exposure  calculation logic to take care of   long term policies" />
-    <MESSAGE value="Tweedie ClaimCount Model" />
-    <MESSAGE value="Tweedie Loss Cost model with all variables" />
-    <MESSAGE value="Tweedie Loss Cost model with all rows" />
-    <MESSAGE value="PB reviswd code" />
     <MESSAGE value="PB final code" />
     <MESSAGE value="Revised Clubbing after dropping covid claims" />
     <MESSAGE value="Aborted sklearn code that draws pivots" />
@@ -519,7 +514,13 @@
     <MESSAGE value="Changed FY to pass through numeric value to enable forecasting" />
     <MESSAGE value="FrequencyModel File" />
     <MESSAGE value="Some kind of clubbing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Some kind of clubbing" />
+    <MESSAGE value="Fixed Forecast Model run on FY24 data" />
+    <MESSAGE value="Random commit" />
+    <MESSAGE value="Final Model with Comp and FHO merged" />
+    <MESSAGE value="Finally Final" />
+    <MESSAGE value="EP will now ome in Rows instead of columns &#10;Merged claims into policies" />
+    <MESSAGE value="Check in with fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Check in with fixes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -536,5 +537,10 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="exp_name" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
