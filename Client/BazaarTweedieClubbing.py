@@ -23,7 +23,7 @@ def group_insurer(x):
     elif x in ["Bajaj Pvt Car SATP", "Oriental Pvt Car Comp"]:
         return "Oriental Bajaj"
     else:
-        return "Others"
+        return "1Others"
 
 
 def group_plancategory(x):
@@ -50,16 +50,45 @@ def group_makename(x):
     elif x in ["TOYOTA", "MAHINDRA AND MAHINDRA"]:
         return "Group 2"
     elif x in ["MARUTI", "HONDA"]:
-        return "Group 3"
+        return "1Group 3"
     else:
         return "Others"
 
 
 def group_fuel(x):
-    if x in ["Petrol", "Diesel"]:
-        return x
+    if x in ["Petrol"]:
+        return "1Petrol"
     else:
         return "Diesel"
+
+
+def group_zone(x):
+    if x in ["North"]:
+        return "1North"
+    else:
+        return x
+
+
+def make_pivots(dataframe, columns):
+    df2 = pd.pivot_table(dataframe, values="PAID_AMT  LIVES_EXPOSED".split(), columns=columns,
+                         aggfunc="sum").T
+    df2["Actual"] = df2["PAID_AMT"] / df2["LIVES_EXPOSED"]
+    df2.to_csv("Bazaar\\Output\\Sep\\" + columns + ".csv")
+
+
+def othering(dataframe):
+    make_pivots(dataframe, "Insurer_new")
+    make_pivots(dataframe, "Zone_1")
+    make_pivots(dataframe, "cubiccapacity_New")
+    make_pivots(dataframe, "fuel_new")
+    make_pivots(dataframe, "plancategory_new")
+    make_pivots(dataframe, "roundage_new")
+    make_pivots(dataframe, "makename_new")
+
+
+def find_separation():
+    df_ = pd.read_csv("Bazaar\\Output\\4WheeleerFile.csv")
+    othering(df_)
 
 
 df = pd.read_csv("4Wheeler.csv")
@@ -70,9 +99,11 @@ df["Claim_Amount"].fillna(0, inplace=True)
 df.dropna(subset=["Zone_1"], inplace=True)
 df = df[df["Claim_Amount"] < 10000000]
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_insurer(x))
+df["Zone_1"] = df["Zone_1"].apply(lambda x: group_zone(x))
 df["plancategory_new"] = df["newplancategory"].apply(lambda x: group_plancategory(x))
 df["roundage_new"] = df["roundage"].apply(lambda x: group_roumdage(x))
 df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
 df["fuel_new"] = df["fuel"].apply(lambda x: group_fuel(x))
 df["roundage_new"].fillna("Others", inplace=True)
 prepare_tweedie_file()
+# find_separation()
