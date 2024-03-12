@@ -18,18 +18,12 @@ def prepare_tweedie_file():
 
 
 def group_insurer(x):
-    if x in ["Bajaj Pvt Car Comp"]:
+    if x in ["National Pvt Car SATP", "Bajaj Pvt Car Comp"]:
         return x
-    elif x in ["National Pvt Car SATP", "National Pvt Car Comp", "RSA Pvt Car COMP+SATP"]:
-        return "National RSA"
-    elif x in ["Zuno_Pvt_Car_COMP_SATP", "Universal Sompo Pvt Car Comp+SATP", "Liberty Pvt Car COMP+SA"]:
-        return "Group 3"
-    elif x in ["FG Pvt Car Comp+SATP", "Shriram Pvt Car Comp+ SATP"]:
-        return "Group 5"
     elif x in ["Bajaj Pvt Car SATP", "Oriental Pvt Car Comp"]:
-        return "Group 4"
+        return "Oriental Bajaj"
     else:
-        return "Group 1"
+        return "Others"
 
 
 def group_plancategory(x):
@@ -40,35 +34,25 @@ def group_plancategory(x):
 
 
 def group_roumdage(x):
-    if x in [16, 18]:
-        return "Group 1"
-    elif x in [2, 5, 6, 12, 14]:
-        return "Group 2"
-    elif x in [3, 7, 10, 13]:
+    if x in [4, 13]:
         return "Group 3"
-    elif x in [0, 1, 8]:
-        return "Group 4"
-    elif x in [4, 9, 11, 20]:
-        return "Group 5"
+    elif x in [3, 6, 8, 7, 10, 12]:
+        return "Group 1"
+    elif x in [5, 9, 11]:
+        return "Group 2"
     else:
         return "Others"
 
 
 def group_makename(x):
-    if x in ["TOYOTA", 'FIAT', "DATSUN", "Jeep"]:
-        return "Group 2"
-    elif x in ["FORD", "RENAULT", "MITSUBISHI", "SKODA"]:
+    if x in ["HYUNDAI", "TOYOTA", "CHEVROLET", "VOLKSWAGEN"]:
         return "Group 1"
-    elif x in ["AUDI", "MAHINDRA AND MAHINDRA"]:
+    elif x in ["TOYOTA", "MAHINDRA AND MAHINDRA"]:
+        return "Group 2"
+    elif x in ["MARUTI", "HONDA"]:
         return "Group 3"
-    elif x in ["HONDA", "CHEVROLET"]:
-        return "HONDA"
-    elif x in ["MARUTI", "TATA"]:
-        return "MARUTI"
-    elif x in ["HYUNDAI"]:
-        return x
     else:
-        return "Other"
+        return "Others"
 
 
 def group_fuel(x):
@@ -90,5 +74,5 @@ df["plancategory_new"] = df["newplancategory"].apply(lambda x: group_plancategor
 df["roundage_new"] = df["roundage"].apply(lambda x: group_roumdage(x))
 df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
 df["fuel_new"] = df["fuel"].apply(lambda x: group_fuel(x))
-df["roundage_new"].fillna("Group 1", inplace=True)
+df["roundage_new"].fillna("Others", inplace=True)
 prepare_tweedie_file()

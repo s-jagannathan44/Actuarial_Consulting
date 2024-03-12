@@ -1,7 +1,5 @@
-# import joblib
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline, make_pipeline
@@ -12,7 +10,7 @@ def build_model(power, iter_):
     global df_train, df_test
 
     interaction = make_pipeline(
-        OneHotEncoder(drop=["National RSA", "East", "1000 to 1500cc", "COMP", "Group 2", "MARUTI", "Petrol"]),
+        OneHotEncoder(drop=["Others", "North", "1000 to 1500cc", "COMP", "Group 1", "Group 3", "Petrol"]),
     )
 
     column_trans = ColumnTransformer(
@@ -117,7 +115,7 @@ for col in df.columns:
 
 df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
 
-df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
+df_train = df_test = df
 df_model = df_train["Insurer_new Zone_1 cubiccapacity_New plancategory_new roundage_new makename_new fuel_new".split()]
 
 powers = [1.5]
@@ -142,3 +140,5 @@ def othering(dataframe):
 def find_separation():
     df_ = pd.read_csv("Bazaar\\Output\\4WheeleerFile.csv")
     othering(df_)
+
+
