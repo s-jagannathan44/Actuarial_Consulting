@@ -33,7 +33,7 @@ def group_insurer(x):
 
 
 def group_plancategory(x):
-    if x in ["TP"]:
+    if x in ["03. TP"]:
         return "TP"
     else:
         return "COMP"
@@ -79,9 +79,10 @@ def group_fuel(x):
 
 
 df = pd.read_csv("4Wheeler.csv")
+
+df["roundage"] = df["roundage"].apply(pd.to_numeric, errors="coerce")
 df = df[~ df["Insurer"].str.contains("Revised Pvt Car COMP S")]
 df["Claim_Amount"].fillna(0, inplace=True)
-df["roundage"].fillna("Group 1", inplace=True)
 df.dropna(subset=["Zone_1"], inplace=True)
 df = df[df["Claim_Amount"] < 10000000]
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_insurer(x))
@@ -89,5 +90,5 @@ df["plancategory_new"] = df["newplancategory"].apply(lambda x: group_plancategor
 df["roundage_new"] = df["roundage"].apply(lambda x: group_roumdage(x))
 df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
 df["fuel_new"] = df["fuel"].apply(lambda x: group_fuel(x))
-
+df["roundage_new"].fillna("Group 1", inplace=True)
 prepare_tweedie_file()
