@@ -22,6 +22,9 @@ def group_insurer(x):
         return x
     elif x in ["Bajaj Pvt Car SATP", "Oriental Pvt Car Comp"]:
         return "Oriental Bajaj"
+    elif x in ["National Pvt Car Comp", "Zuno_Pvt_Car_COMP_SATP", "Liberty Pvt Car COMP+SA"]:
+        return "Group 1"
+
     else:
         return "1Others"
 
@@ -36,16 +39,16 @@ def group_plancategory(x):
 def group_roumdage(x):
     if x in [4, 13]:
         return "Group 3"
-    elif x in [3, 6, 8, 7, 10, 12]:
+    elif x in [3, 5, 6, 8, 7, 10, 12]:
         return "Group 1"
-    elif x in [5, 9, 11]:
+    elif x in [9, 11]:
         return "Group 2"
     else:
         return "Others"
 
 
 def group_makename(x):
-    if x in ["HYUNDAI", "TOYOTA", "CHEVROLET", "VOLKSWAGEN"]:
+    if x in ["HYUNDAI", "TATA", "CHEVROLET", "VOLKSWAGEN"]:
         return "Group 1"
     elif x in ["TOYOTA", "MAHINDRA AND MAHINDRA"]:
         return "Group 2"
@@ -105,5 +108,6 @@ df["roundage_new"] = df["roundage"].apply(lambda x: group_roumdage(x))
 df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
 df["fuel_new"] = df["fuel"].apply(lambda x: group_fuel(x))
 df["roundage_new"].fillna("Others", inplace=True)
+df.to_csv("Bazaar\\Output\\4WheelerTestFile.csv")
 prepare_tweedie_file()
-# find_separation()
+find_separation()
