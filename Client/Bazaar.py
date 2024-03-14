@@ -261,7 +261,6 @@ for col_ in norm_policy.columns:
 policy_claims = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
 policy_claims["Claim_Reference"].fillna(0, inplace=True)
 policy_claims["Claim count"] = policy_claims["Claim_Reference"].apply(lambda x: 0 if x == 0 else 1)
-policy_claims["Total Claim"] = policy_claims["Paid"] = policy_claims["OS"]
 policy_claims["Long term"] = policy_claims["newplancategory"].apply(lambda x: "LT" if "Long Term" in x else "ST")
 policy_claims["Policy Count"] = policy_claims["Long term"].apply(lambda x: 0.25 if x == "LT" else 0.5)
 st_frame = policy_claims[policy_claims["Long term"] == "ST"]
@@ -269,7 +268,7 @@ st_frame["Adjusted full premium"] = st_frame["full_premium"] / 2.0
 lt_frame = policy_claims[policy_claims["Long term"] == "LT"]
 lt_frame["Adjusted full premium"] = lt_frame["full_premium"] / 4.0
 policy_claims = pd.concat([st_frame, lt_frame], axis=0)
-
+policy_claims["roundage"] = policy_claims["v_age"].apply(lambda x: round(x, 0))
 policy_claims.to_csv("merged_claims_07_03.csv")
 print(count)
 
