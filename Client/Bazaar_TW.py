@@ -2,6 +2,7 @@ import pandas as pd
 import glob
 import fiscalyear
 import duckdb as db
+from datetime import date
 
 year = 0
 
@@ -23,7 +24,7 @@ state_dict = {"Andhra Pradesh": "South", "Arunachal Pradesh": "East", "Assam": "
 
 
 def merge_files():
-    path = "Bazaar/TW/*.csv"
+    path = "Bazaar/TW/CSV/*.csv"
     df = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
@@ -40,7 +41,7 @@ def merge_files():
             df.drop(col_, axis=1, inplace=True)
     keys = range(1, 1 + len(df))
     df.insert(0, 'index', keys)
-    df.to_csv("Bazaar\\Output\\base_file.csv")
+    df.to_csv("Bazaar\\TW\\CSV\\Files\\base_file.csv")
 
 
 def map_zone(state):
@@ -72,6 +73,19 @@ def merge_claims():
     df.to_csv("Bazaar\\Output\\claims_file.csv")
 
 
+def add_years(d, years):
+    """Return a date that's `years` years after the date (or datetime)
+    object `d`. Return the same calendar date (month and day) in the
+    destination year, if it exists, otherwise use the following day
+    (thus changing February 29 to March 1).
+
+    """
+    try:
+        return d.replace(year=d.year + years)
+    except ValueError:
+        return d + (date(d.year + years, 1, 1) - date(d.year, 1, 1))
+
+
 def set_financial_year(year_p):
     global count
     try:
@@ -83,7 +97,7 @@ def set_financial_year(year_p):
 
 
 def create_master():
-    base = pd.read_csv("Bazaar\\Output\\base_file.csv")
+    base = pd.read_csv("Bazaar\\TW\\CSV\\Files\\base_file.csv")
     base.rename(columns={"policy_startdate": "policy_start_date"}, inplace=True)
     base.rename(columns={"policy_enddate": "policy_end_date"}, inplace=True)
     base = transform_data(base)
@@ -93,13 +107,19 @@ def create_master():
         if "Unnamed" in col_:
             base.drop(col_, axis=1, inplace=True)
 
-    base.to_csv("Bazaar\\Output\\master.csv")
+    base.to_csv("Bazaar\\TW\\CSV\\Files\\master.csv")
 
 
 def transform_data(exposure):
     exposure['policy_start_date'] = pd.to_datetime(exposure['policy_start_date'], format="mixed", dayfirst=True)
+    exposure['policy_end_date'] = pd.to_datetime(exposure['policy_end_date'], format="mixed", dayfirst=True)
+    exposure['term'] = exposure['policy_end_date'] - exposure['policy_start_date']
+    exposure['policy_end_date'] = exposure['policy_start_date'].apply(lambda x: add_years(x, 1))
     exposure["irda_tp"] = exposure['irda_tp'].apply(lambda x: convert_premium(x))
     exposure["full_premium"] = exposure["irda_tp"]
+    exposure["ccnew"] = exposure["full_premium"].apply(lambda x: group_cubic_capacity(x))
+    exposure["body_type"] = exposure["modelname"].apply(lambda x: group_body_type(x))
+
     return exposure
 
 
@@ -147,12 +167,9 @@ def group_body_type(x):
 
 def calculate_exposure():
     global year
-    master = pd.read_csv("Bazaar\\Output\\master.csv")
+    master = pd.read_csv("Bazaar\\TW\\CSV\\Files\\master.csv")
     master['policy_start_date'] = pd.to_datetime(master['policy_start_date'], format="mixed", dayfirst=True)
     master['policy_end_date'] = pd.to_datetime(master['policy_end_date'], format="mixed", dayfirst=True)
-    long_term = db.sql("""select * from master where irda_tp >3000 """).df()
-    master = db.sql("""select * from master where irda_tp <3000 """).df()
-    long_term['policy_end_date'] = long_term['policy_end_date'] + pd.DateOffset(years=2)
 
     fiscalyear.setup_fiscal_calendar(start_month=4)
     for year_ in master["Financial_Year"].unique().tolist():
@@ -162,6 +179,7 @@ def calculate_exposure():
         y = df["policy_end_date"].apply(lambda xx: funct(xx))
         master.loc[master.Financial_Year == year_, "FY" + str(year_)] = x
         master.loc[master.Financial_Year == year_, "FY" + str(year_ + 1)] = y
+
         master.loc[master.Financial_Year == year_, "FY" + str(year_) + "_EP"] = (master.loc[master.Financial_Year ==
                                                                                             year_, "FY" + str(year_)]
                                                                                  * master.loc[master.Financial_Year ==
@@ -173,39 +191,11 @@ def calculate_exposure():
                                                                                          year_, "full_premium"])
 
         print(year_)
-    for year__ in long_term["Financial_Year"].unique().tolist():
-        year = year__
-        df_ = long_term[long_term["Financial_Year"] == year__]
-        ax = df_["policy_start_date"].apply(lambda xz: func(xz))
-        ay = df_["policy_end_date"].apply(lambda xx: funct_lt(xx))
-        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__)] = ax
-        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 1)] = 1
-        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 2)] = 1
-        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 3)] = ay
-        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__) + "_EP"] = (
-                long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__)]
-                * (long_term.loc[long_term.Financial_Year == year__, "full_premium"]) / 3)
-
-        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 1) + "_EP"] = (
-                long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 1)]
-                * (long_term.loc[long_term.Financial_Year == year__, "full_premium"]) / 3)
-
-        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 2) + "_EP"] = (
-                long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 2)]
-                * (long_term.loc[long_term.Financial_Year == year__, "full_premium"]) / 3)
-
-        long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 3) + "_EP"] = (
-                long_term.loc[long_term.Financial_Year == year__, "FY" + str(year__ + 3)]
-                * (long_term.loc[long_term.Financial_Year == year__, "full_premium"]) / 3)
-
-        print(year__)
-
-    exposure = pd.concat([master, long_term], axis=0)
-    for col_ in exposure.columns:
+    for col_ in master.columns:
         if "Unnamed" in col_:
-            exposure.drop(col_, axis=1, inplace=True)
+            master.drop(col_, axis=1, inplace=True)
 
-    exposure.to_csv("Bazaar\\Output\\premium.csv")
+    master.to_csv("Bazaar\\TW\\CSV\\Files\\premium.csv")
 
 
 def convert_premium(prem):
@@ -227,24 +217,25 @@ def convert_premium(prem):
 def transform_premium_file():
     global norm_policy
     frames = pd.DataFrame()
-    years = premium["Financial_Year"].unique().tolist()
-    years.append(2025)
-    years.append(2026)
+    premium_ = premium  # premium[premium["Financial_Year"].isin([2024])]
+    years = premium_["Financial_Year"].unique().tolist()
     for yearn in years:
         yearly_frame = pd.DataFrame(pd.DataFrame(columns=["index", "Exposure", "EP"]))
         exp_name = "FY" + str(yearn)
         ep_name = "FY" + str(yearn) + "_EP"
-        yearly_frame[["index", "Exposure", "EP"]] = premium[["index", exp_name, ep_name]]
+        yearly_frame[["index", "Exposure", "EP"]] = premium_[["index", exp_name, ep_name]]
         yearly_frame["Accident_Year"] = yearn
         frames = pd.concat([frames, yearly_frame], axis=0)
-    nep = db.sql("select * from frames where Exposure is not null and EP is not null").df()
+        print(yearn)
     # policy.to_csv("modified.csv")
-    norm_policy = premium.merge(nep, on="index")
+    nep = premium_.merge(frames, on="index")
+    norm_policy = db.sql("select * from nep where Exposure is not null and EP is not null").df()
     norm_policy = norm_policy.loc[:, ~norm_policy.columns.str.startswith('FY20')]
     for col_ in norm_policy.columns:
         if "Unnamed" in col_:
             norm_policy.drop(col_, axis=1, inplace=True)
-    norm_policy.to_csv("Bazaar\\Output\\modified_premium.csv")
+    norm_policy.to_csv("Bazaar\\TW\\CSV\\Files\\modified_premium.csv")
+    pass
 
 
 # def find_missing(policy_number):
@@ -274,13 +265,13 @@ count = 0
 # merge_claims()
 # create_master()
 # calculate_exposure()
-premium = pd.read_csv("Bazaar\\Output\\premium.csv")
+# premium = pd.read_csv("Bazaar\\TW\\CSV\\Files\\premium.csv")
 # transform_premium_file()
 
-norm_policy = pd.read_csv("Bazaar\\Output\\modified_premium.csv")
+norm_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\modified_premium.csv")
 claims = transform_claim()
-claims_policy = claims.merge(premium, on=["Policy_Number"], how="inner")
-claims_policy.to_csv("Bazaar\\Output\\Policy_Claim.csv")
+# claims_policy = claims.merge(premium, on=["Policy_Number"], how="inner")
+# claims_policy.to_csv("Bazaar\\TW\\CSV\\Files\\Policy_Claim.csv")
 claims["Accident_Year"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
 
 for col__ in norm_policy.columns:
@@ -299,14 +290,11 @@ lt_frame = policy_claims[policy_claims["Long term"] == "LT"]
 lt_frame["Adjusted full premium"] = lt_frame["full_premium"] / 4.0
 policy_claims = pd.concat([st_frame, lt_frame], axis=0)
 
-policy_claims["ccnew"] = policy_claims["full_premium"].apply(lambda x: group_cubic_capacity(x))
-policy_claims["body_type"] = policy_claims["modelname"].apply(lambda x: group_body_type(x))
-
 for col__ in policy_claims.columns:
     if "Unnamed" in col__:
         policy_claims.drop(col__, axis=1, inplace=True)
 
-policy_claims.to_csv("Bazaar\\Output\\merged_claims.csv")
+policy_claims.to_csv("Bazaar\\TW\\CSV\\Files\\merged_claims.csv")
 print(count)
 
 # def extract_missing():
