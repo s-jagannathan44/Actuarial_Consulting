@@ -18,18 +18,20 @@ def prepare_tweedie_file():
 
 
 def group_insurer(x):
-    if x in ["National Pvt Car Comp", "National Pvt Car SATP"]:
-        return "National"
-    elif x in ["Bajaj Pvt Car Comp", "Liberty Pvt Car COMP+SA", "Universal Sompo Pvt Car Comp+SATP"]:
-        return "Group 2"
-    elif x in ["Bajaj Pvt Car SATP", "Oriental Pvt Car Comp", "Shriram Pvt Car Comp+ SATP", "FG Pvt Car Comp+SATP"]:
-        return "1Group 3"
-    elif x in ["RSA Pvt Car COMP+SATP", "KGI SATP+COMP Pvt Car", "Zuno_Pvt_Car_COMP_SATP"]:
-        return "Group 1"
-    elif x in ["SBI Pvt Car Comp+SATP"]:
+    if x in ["Oriental Pvt Car Comp", "FG Pvt Car Comp+SATP"]:
         return x
-    else:
+    if x in ["National Pvt Car Comp", "Zuno_Pvt_Car_COMP_SATP"]:
+        return "Group 2"
+    elif x in ["Bajaj Pvt Car Comp", "Liberty Pvt Car COMP+SA", "Universal Sompo Pvt Car Comp+SATP"]:
+        return "Group 3"
+    elif x in ["Bajaj Pvt Car SATP", "Shriram Pvt Car Comp+ SATP"]:
         return "Group 4"
+    elif x in ["RSA Pvt Car COMP+SATP", "KGI SATP+COMP Pvt Car"]:
+        return "Group 1"
+    elif x in ["SBI Pvt Car Comp+SATP", "Oriental Pvt Car SATP", "Chola Pvt Car Comp+SATP"]:
+        return "Group 6"
+    else:
+        return "1National Pvt Car SATP"
 
 
 def group_plancategory(x):
@@ -40,24 +42,30 @@ def group_plancategory(x):
 
 
 def group_roumdage(x):
-    if x in [4, 9]:
+    if x in [9]:
         return x
-    elif x in [0, 2, 13, 14]:
+    elif x in [0, 4, 20]:
         return "Group 1"
-    elif x in [3, 5, 7, 8, 11, 19]:
-        return "1Group 2"
-    elif x in [6, 10, 12, 18]:
-        return "Group 3"
+    elif x in [1, 11]:
+        return "Group 2"
+    elif x in [3, 7, 12, 19]:
+        return "1Group 3"
+    elif x in [5, 8, 13]:
+        return "Group 4"
+    elif x in [6, 10]:
+        return "Group 5"
     else:
         return "Others"
 
 
 def group_makename(x):
-    if x in ["HYUNDAI", "HONDA", "RENAULT"]:
+    if x in ["HONDA", "RENAULT"]:
         return "Group 1"
+    elif x in ["HYUNDAI"]:
+        return x
     elif x in ["MARUTI"]:
         return "1MARUTI"
-    elif x in ["TATA", "CHEVROLET", "VOLKSWAGEN"]:
+    elif x in ["TATA", "CHEVROLET"]:
         return "Group 2"
     else:
         return "Others"
@@ -78,10 +86,10 @@ def group_zone(x):
 
 
 def group_cc(x):
-    # if x in ["Below 1000cc", "1000 to 1500cc"]:
-    #     return "1000 to 1500cc"
-    # else:
-    return x
+    if x in ["Below 1000cc", "1000 to 1500cc"]:
+        return "1000 to 1500cc"
+    else:
+        return x
 
 
 def group_AY(x):
@@ -89,8 +97,10 @@ def group_AY(x):
         return 1
     if x in [2021]:
         return 2
-    else:
+    elif x in [2022]:
         return 3
+    elif x in [2023]:
+        return 4
 
 
 def make_pivots(dataframe, columns):
@@ -121,16 +131,14 @@ def prepare_large_loss():
     df3 = df[df["Zone_1"].isna()]
     df4 = df[df["PAID_AMT"] > 10000000]
     large_loss = pd.concat([df2, df3, df4])
-    large_loss.to_csv("Bazaar\\Output\\large_loss.csv")
+    large_loss.to_csv("Bazaar\\Output\\exclusions.csv")
 
 
 df = pd.read_csv("4Wheeler.csv")
-prepare_large_loss()
 df["roundage"] = df["roundage"].apply(pd.to_numeric, errors="coerce")
 df = df[~ df["Insurer"].str.contains("Revised Pvt Car COMP S")]
 df["PAID_AMT"].fillna(0, inplace=True)
 df.dropna(subset=["Zone_1"], inplace=True)
-df = df[df["PAID_AMT"] < 10000000]
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_insurer(x))
 df["Zone_new"] = df["Zone_1"].apply(lambda x: group_zone(x))
 df["plancategory_new"] = df["newplancategory"].apply(lambda x: group_plancategory(x))
