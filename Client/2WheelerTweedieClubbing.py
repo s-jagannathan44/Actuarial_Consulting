@@ -3,12 +3,12 @@ import duckdb as db
 
 
 def prepare_tweedie_file():
-    q3 = """select  Zone_new, Accident_Year_new,
+    q3 = """select  Zone_new,
            plancategory_new, Age_new, CC_Make_new, body_type,
            sum(PAID_AMT) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
            sum(LIVES_EXPOSED) as LIVES_EXPOSED                       
             from df            
-            group by  plancategory_new, Age_new,  Accident_Year_new,
+            group by  plancategory_new, Age_new,
                       Zone_new, CC_Make_new, body_type           
      """
 
@@ -25,14 +25,16 @@ def group_plancategory(x):
 
 
 def group_age(x):
-    if x in [4, 11]:
-        return "G" + str(x)
-    elif x in [5, 7, 9]:
-        return "1Group 1"
-    elif x in [6, 8]:
+    if x in [2, 8,12,-1]:
+        return "Group 1"
+    elif x in [6, 13]:
         return "Group 2"
-    elif x in [3, 10]:
-        return "Group 3"
+    elif x in [3, 7, 9, 10]:
+        return "1Group 3"
+    elif x in [5]:
+        return "G5"
+    elif x in [4]:
+        return "G4"
     else:
         return "Others"
 
@@ -47,29 +49,32 @@ def group_age(x):
 
 
 def group_zone(x):
-    if x in ["North"]:
-        return "1North"
+    if x in ["West"]:
+        return "1West"
+
     else:
         return x
 
 
 def group_cc_make(x):
-    if x in ["BAJAJ_75 to 150cc", "HONDA_75 to 150cc"]:
-        return "1Group 1"
-    elif x in ["HERO MOTOCORP_75 to 150cc", "TVS_75 to 150cc"]:
-        return "Group 2"
-    elif x in ["HERO HONDA_75 to 150cc"]:
-        return x
+    if x in ["BAJAJ_75 to 150cc"]:
+        return "Bajaj 75"
+    elif x in ["HERO MOTOCORP_75 to 150cc"]:
+        return "Hero"
+    elif x in ["HONDA_75 to 150cc"]:
+        return "1HOMDA"
+    elif x in ["HERO HONDA_75 to 150cc", "TVS_75 to 150cc"]:
+        return "Group 1"
     else:
         return "Others"
 
 
 def group_AY(x):
-    if x in [2021]:
+    if x in [2020]:
         return 1
-    elif x in [2022]:
+    elif x in [2021]:
         return 2
-    elif x in [2023]:
+    elif x in [2022]:
         return 3
 
 
@@ -86,7 +91,7 @@ def othering(dataframe):
     make_pivots(dataframe, "body_type")
     make_pivots(dataframe, "plancategory_new")
     make_pivots(dataframe, "Age_new")
-    make_pivots(dataframe, "Accident_Year_new")
+    # make_pivots(dataframe, "Accident_Year_new")
 
 
 def find_separation():
@@ -95,6 +100,7 @@ def find_separation():
 
 
 df = pd.read_csv("2Wheeler.csv")
+df = df[~ df["Zone"].str.contains("(blank)")]
 df["Age"] = df["Age"].apply(pd.to_numeric, errors="coerce")
 df["PAID_AMT"].fillna(0, inplace=True)
 df["Zone_new"] = df["Zone"].apply(lambda x: group_zone(x))
@@ -102,7 +108,7 @@ df["plancategory_new"] = df["plan_category"].apply(lambda x: group_plancategory(
 df["Age_new"] = df["Age"].apply(lambda x: group_age(x))
 df["CC_Make_new"] = df["CC_Make"].apply(lambda x: group_cc_make(x))
 # df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
-df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
+# df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
 df.to_csv("Bazaar\\Output\\2WheelerTestFile.csv")
 prepare_tweedie_file()
 find_separation()

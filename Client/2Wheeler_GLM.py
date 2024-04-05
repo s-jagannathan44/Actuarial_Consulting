@@ -34,7 +34,7 @@ def build_model():
     df = pd.read_csv("Bazaar\\Output\\2WheeleerFiles.csv")
     df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
     result = smf.glm(
-        formula='Loss_Cost ~ Accident_Year_new + Zone_new + CC_Make_new + body_type + plancategory_new + Age_new',
+        formula='Loss_Cost ~ Zone_new + CC_Make_new + body_type + plancategory_new + Age_new',
         data=df, family=Tweedie(var_power=1.9), var_weights=df["LIVES_EXPOSED"]).fit()
     joblib.dump(result, "Bazaar\\Output\\2Wheeleer.sav")
     return df
@@ -51,7 +51,7 @@ y_pred = result2.predict(df)
 df["Pred"] = y_pred
 df["Pred_Cost"] = df["Pred"] * df["LIVES_EXPOSED"]
 df.to_csv("Bazaar\\Output\\2wheeler.csv")
-make_pivots(df, "Accident_Year_new")
+# make_pivots(df, "Accident_Year_new")
 make_pivots(df, "Zone_new")
 make_pivots(df, "body_type")
 make_pivots(df, "plancategory_new")
