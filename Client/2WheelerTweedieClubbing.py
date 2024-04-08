@@ -3,13 +3,13 @@ import duckdb as db
 
 
 def prepare_tweedie_file():
-    q3 = """select  Zone_new,
-           plancategory_new, Age_new, CC_Make_new, body_type,
+    q3 = """select  Zone_new, Accident_Year_new,
+           plancategory_new, Age_new, CC_new, makename_new, body_type,
            sum(PAID_AMT) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
            sum(LIVES_EXPOSED) as LIVES_EXPOSED                       
             from df            
-            group by  plancategory_new, Age_new,
-                      Zone_new, CC_Make_new, body_type           
+            group by  plancategory_new, Age_new, Accident_Year_new, makename_new,
+                      Zone_new, CC_new, body_type           
      """
 
     output = db.execute(q3).df()
@@ -25,48 +25,41 @@ def group_plancategory(x):
 
 
 def group_age(x):
-    if x in [2, 8,12,-1]:
-        return "Group 1"
-    elif x in [6, 13]:
-        return "Group 2"
-    elif x in [3, 7, 9, 10]:
-        return "1Group 3"
-    elif x in [5]:
-        return "G5"
-    elif x in [4]:
+    if x in [4]:
         return "G4"
+    elif x in [3, 10]:
+        return "Group 2"
+    elif x in [2, 7, 9]:
+        return "1Group 3"
+    elif x in [1, 5, 17]:
+        return "Group 4"
+    elif x in [8, 12]:
+        return "Group 5"
+    elif x in [6, 13]:
+        return "Group 6"
+    elif x in [11, 15]:
+        return "G11Plus"
     else:
-        return "Others"
-
-
-# def group_makename(x):
-#     if x in ["HONDA", "YAMAHA"]:
-#         return "1Group 1"
-#     elif x in ["BAJAJ", "TVS", "HERO HONDA", "HERO MOTOCORP"]:
-#         return x
-#     else:
-#         return "Others"
+        return "1Group 3"
 
 
 def group_zone(x):
-    if x in ["West"]:
-        return "1West"
+    if x in ["North", "blanks"]:
+        return "1North"
 
     else:
         return x
 
 
-def group_cc_make(x):
-    if x in ["BAJAJ_75 to 150cc"]:
-        return "Bajaj 75"
-    elif x in ["HERO MOTOCORP_75 to 150cc"]:
-        return "Hero"
-    elif x in ["HONDA_75 to 150cc"]:
-        return "1HOMDA"
-    elif x in ["HERO HONDA_75 to 150cc", "TVS_75 to 150cc"]:
-        return "Group 1"
-    else:
-        return "Others"
+# def group_cc_make(x):
+#     if x in ["BAJAJ_75 to 150cc"]:
+#         return "Bajaj 75"
+#     elif x in ["HONDA_75 to 150cc"]:
+#         return "HOMDA"
+#     elif x in ["HERO HONDA_75 to 150cc", "HERO MOTOCORP_75 to 150cc"]:
+#         return "Group 1"
+#     else:
+#         return "Others"
 
 
 def group_AY(x):
@@ -78,6 +71,24 @@ def group_AY(x):
         return 3
 
 
+def group_cc(x):
+    if x in ["Below 75cc", "Above 350cc"]:
+        return "Others"
+    elif x in ["75 to 150cc"]:
+        return "075 to 150cc"
+    else:
+        return x
+
+
+def group_makename(x):
+    if x in ["HONDA", "BAJAJ", "TVS"]:
+        return x
+    elif x in ["HERO HONDA", "HERO MOTOCORP"]:
+        return "1Group 1"
+    else:
+        return "Others"
+
+
 def make_pivots(dataframe, columns):
     df2 = pd.pivot_table(dataframe, values="PAID_AMT  LIVES_EXPOSED".split(), columns=columns,
                          aggfunc="sum").T
@@ -87,11 +98,12 @@ def make_pivots(dataframe, columns):
 
 def othering(dataframe):
     make_pivots(dataframe, "Zone_new")
-    make_pivots(dataframe, "CC_Make_new")
+    make_pivots(dataframe, "CC_new")
+    make_pivots(dataframe, "makename_new")
     make_pivots(dataframe, "body_type")
     make_pivots(dataframe, "plancategory_new")
     make_pivots(dataframe, "Age_new")
-    # make_pivots(dataframe, "Accident_Year_new")
+    make_pivots(dataframe, "Accident_Year_new")
 
 
 def find_separation():
@@ -100,15 +112,14 @@ def find_separation():
 
 
 df = pd.read_csv("2Wheeler.csv")
-df = df[~ df["Zone"].str.contains("(blank)")]
 df["Age"] = df["Age"].apply(pd.to_numeric, errors="coerce")
 df["PAID_AMT"].fillna(0, inplace=True)
 df["Zone_new"] = df["Zone"].apply(lambda x: group_zone(x))
 df["plancategory_new"] = df["plan_category"].apply(lambda x: group_plancategory(x))
 df["Age_new"] = df["Age"].apply(lambda x: group_age(x))
-df["CC_Make_new"] = df["CC_Make"].apply(lambda x: group_cc_make(x))
-# df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
-# df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
+df["CC_new"] = df["ccnew"].apply(lambda x: group_cc(x))
+df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
+df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
 df.to_csv("Bazaar\\Output\\2WheelerTestFile.csv")
 prepare_tweedie_file()
 find_separation()
