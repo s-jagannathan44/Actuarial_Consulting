@@ -57,8 +57,15 @@ def merge_claims():
         client_name = file_name[14:-8]
         frame = pd.read_csv(file_name)
         frame["Client_Name"] = client_name
+        if client_name == "National Only TP made b":
+            frame["Policy Number"] = frame["Policy Number"].str.replace("`", "")
+        if client_name == "NIA Pvt Car Claims ":
+            frame["Policy Number"] = frame["Policy Number"].str.replace("PB_", "")
+        if client_name == "United TP Claims Data Pvt":
+            frame["Policy Number"] = frame["Policy Number"].str.replace("PB_", "")
         df = pd.concat([df, frame], axis=0)
     df.dropna(subset=['Claim Reference'], inplace=True)
+
     df["Policy Number"] = df["Policy Number"].apply(lambda x: "PB_" + str(x))
     df.to_csv("claims_file.csv")
 
@@ -142,7 +149,8 @@ def calculate_exposure():
                                                                                  * master.loc[master.Financial_Year ==
                                                                                               year_, "full_premium"])
         master.loc[master.Financial_Year == year_, "FY" + str(year_ + 1) + "_EP"] = (master.loc[master.Financial_Year ==
-                                                                                                year_, "FY" + str(year_ + 1)]
+                                                                                                year_, "FY" + str(
+            year_ + 1)]
                                                                                      * master.loc[
                                                                                          master.Financial_Year ==
                                                                                          year_, "full_premium"])
@@ -176,7 +184,7 @@ def calculate_exposure():
         print(year__)
 
     exposure = pd.concat([master, long_term], axis=0)
-    exposure.to_csv("premium_07_03.csv")
+    exposure.to_csv("premium_07_04.csv")
 
 
 def convert_premium(prem):
@@ -199,7 +207,6 @@ def transform_premium_file():
     global norm_policy
     frames = pd.DataFrame()
     years = premium["Financial_Year"].unique().tolist()
-    years.append(2025)
     years.append(2026)
     years.append(2027)
     for yearn in years:
@@ -213,7 +220,7 @@ def transform_premium_file():
     # policy.to_csv("modified.csv")
     norm_policy = premium.merge(nep, on="PolicyID")
     norm_policy = norm_policy.loc[:, ~norm_policy.columns.str.startswith('FY20')]
-    norm_policy.to_csv("modified_premium.csv")
+    norm_policy.to_csv("modified_premium_07_04.csv")
 
 
 def find_missing(policy_number):
@@ -239,15 +246,17 @@ def transform_claim():
 
 
 count = 0
-# merge_files()
-# merge_claims()
-# create_master()
-# calculate_exposure()
-# premium = pd.read_csv("premium_07_03.csv")
-# transform_premium_file()
+merge_files()
+merge_claims()
+
+create_master()
+calculate_exposure()
+premium = pd.read_csv("premium_07_04.csv")
+transform_premium_file()
 # premium.rename(columns={"policyno": "Policy_Number"}, inplace=True)
 
-norm_policy = pd.read_csv("modified_premium.csv")
+# ----------------------------- MAIN CODE ------------------------------------
+norm_policy = pd.read_csv("modified_premium_07_04.csv")
 norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
 claims = transform_claim()
 # claims_policy = claims.merge(premium, on=["Policy_Number"], how="inner")
@@ -269,9 +278,22 @@ lt_frame = policy_claims[policy_claims["Long term"] == "LT"]
 lt_frame["Adjusted full premium"] = lt_frame["full_premium"] / 4.0
 policy_claims = pd.concat([st_frame, lt_frame], axis=0)
 policy_claims["roundage"] = policy_claims["v_age"].apply(lambda x: round(x, 0))
-policy_claims.to_csv("merged_claims_07_03.csv")
+policy_claims.to_csv("merged_claims_07_04.csv")
 print(count)
 
+
+# ----------------------------- MAIN CODE ------------------------------------
+
+# def make_pivots(dataframe, columns, value, name):
+#     df2 = pd.pivot_table(dataframe, values=value, columns=columns,
+#                          aggfunc="sum").T
+#     df2.to_csv("Bazaar\\Output\\" + name + ".csv")
+#
+#
+# merged_policy = pd.read_csv("merged_claims_07_04.csv")
+# make_pivots(merged_policy, "Policy_Client_Name", ["Exposure", "EP"], "Exp")
+# make_pivots(merged_policy, "Policy_Client_Name", ["Policy Count", "Adjusted full premium"], "Insurer")
+# make_pivots(merged_policy, "Policy_Client_Name", ["Claim count"], "Claims")
 
 # def extract_missing():
 #     global claims_policy, claims, merged
