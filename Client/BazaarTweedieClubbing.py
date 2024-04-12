@@ -22,12 +22,12 @@ def group_insurer(x):
         return "1National"
     elif x in ["Bajaj Pvt Car Comp", "Liberty Pvt Car COMP+SA", "Oriental Pvt Car Comp"]:
         return "Group 2"
-    elif x in ["Oriental Pvt Car Comp", "FG Pvt Car Comp+SATP"]:
+    elif x in ["Oriental Pvt Car SATP", "FG Pvt Car Data Upda"]:
         return "Group 3"
     elif x in ["Bajaj Pvt Car SATP", "Universal Sompo Pvt Car Comp+SATP"]:
         return "Group 4"
     elif x in ["NIA Pvt car comp satp bkgs apr 16 t"]:
-        return x
+        return "1National"  # x
     elif x in ["United Comp SATP PVT", "RSA Pvt Car COMP+SATP"]:
         return "United RSA"
 
@@ -50,7 +50,7 @@ def group_roumdage(x):
     elif x in [3, 5, 6, 12, 13]:
         return "1Group 3"
     elif x in [1, 7, 10]:
-        return "Group 4"
+        return "1Group 3"  # "Group 4"
     elif x in [4, 8, 9]:
         return "Group 5"
     elif x in [11, 20]:
@@ -62,7 +62,9 @@ def group_roumdage(x):
 def group_makename(x):
     if x in ["FORD", "MARUTI", "TATA"]:
         return "1Group 1"
-    elif x in ["HONDA", "CHEVROLET"]:
+    elif x in ["CHEVROLET"]:
+        return "1Group 1"
+    elif x in ["HONDA"]:  # , "CHEVROLET"]:
         return x
     elif x in ["HYUNDAI", "VOLKSWAGEN"]:
         return "Group 2"
@@ -103,7 +105,7 @@ def group_AY(x):
     if x in [2021]:
         return 2
     else:
-        return 3
+        return 2
 
 
 def make_pivots(dataframe, columns):
@@ -131,9 +133,9 @@ def find_separation():
 
 df = pd.read_csv("4Wheeler.csv")
 df["roundage"] = df["roundage"].apply(pd.to_numeric, errors="coerce")
-df["PAID_AMT"].fillna(0, inplace=True)
+# df["PAID_AMT"].fillna(0, inplace=True)
 df = df[~ df["Insurer"].str.contains("Revised Pvt Car COMP S")]
-df = df[df["Accident_Year"].isin([2019, 2020, 2021, 2022])]
+df = df[df["Accident_Year"].isin([2019, 2020, 2022])]
 df.dropna(subset=["Zone_1"], inplace=True)
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_insurer(x))
 df["Zone_new"] = df["Zone_1"].apply(lambda x: group_zone(x))
@@ -142,7 +144,7 @@ df["roundage_new"] = df["roundage"].apply(lambda x: group_roumdage(x))
 df["cc_new"] = df["cubiccapacity_New"].apply(lambda x: group_cc(x))
 df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
 df["fuel_new"] = df["fuel"].apply(lambda x: group_fuel(x))
-df["roundage_new"].fillna("Others", inplace=True)
+# df["roundage_new"].fillna("Others", inplace=True)
 df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
 df.to_csv("Bazaar\\Output\\4WheelerTestFile.csv")
 prepare_tweedie_file()
