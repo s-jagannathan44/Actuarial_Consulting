@@ -18,19 +18,24 @@ def prepare_tweedie_file():
 
 
 def group_insurer(x):
-    if x in ["National Pvt Car Comp", "National Pvt Car SATP", "Zuno_Pvt_Car_COMP_SATP"]:
-        return "1National"
-    elif x in ["Bajaj Pvt Car Comp", "Liberty Pvt Car COMP+SA", "Oriental Pvt Car Comp"]:
+    if x in ["National Pvt Car Comp", "National Pvt Car SATP"]:
+        return "1NIA"
+    elif x in ["FG Pvt Car Data Upda"]:
+        return x
+    elif x in ["KGI SATP+COMP Pvt Car", "Shriram Pvt Car Comp+ SATP"]:
+        return "Group 1"
+    elif x in ["Oriental Pvt Car SATP", "Bajaj Pvt Car SATP"]:
         return "Group 2"
-    elif x in ["Oriental Pvt Car SATP", "FG Pvt Car Data Upda"]:
+    elif x in ["Chola Pvt Car Comp+SATP", "SBI Pvt Car Comp+SATP"]:
         return "Group 3"
-    elif x in ["Bajaj Pvt Car SATP", "Universal Sompo Pvt Car Comp+SATP"]:
+    elif x in ["Bajaj Pvt Car Comp", "Oriental Pvt Car Comp"]:
         return "Group 4"
-    elif x in ["NIA Pvt car comp satp bkgs apr 16 t"]:
-        return "1National"  # x
+    elif x in ["Liberty Pvt Car COMP+SA", "Universal Sompo Pvt Car Comp+SATP"]:
+        return "Group 5"
+    elif x in ["NIA Pvt car comp satp bkgs apr 16 t", "Zuno_Pvt_Car_COMP_SATP"]:
+        return "1NIA"
     elif x in ["United Comp SATP PVT", "RSA Pvt Car COMP+SATP"]:
         return "United RSA"
-
     else:
         return "Others"
 
@@ -42,38 +47,36 @@ def group_plancategory(x):
         return "COMP"
 
 
-def group_roumdage(x):
-    if x in [0, 18, 19, -1]:
-        return "1Group 3"
-    elif x in [2, 14]:
-        return "1Group 3"
-    elif x in [3, 5, 6, 12, 13]:
-        return "1Group 3"
-    elif x in [1, 7, 10]:
-        return "1Group 3"  # "Group 4"
-    elif x in [4, 8, 9]:
-        return "Group 5"
+def group_roundage(x):
+    if x in [18, 19, -1]:
+        return "1Group 6"
+    elif x in [2]:
+        return "G2"
+    elif x in [7, 12]:
+        return "Group 2"
+    elif x in [3, 5, 14]:
+        return "Group 3"
+    elif x in [6, 9]:
+        return "Group 4"
+    elif x in [1, 10]:
+        return "1Group 6"
+    elif x in [4, 8, 13]:
+        return "1Group 6"
     elif x in [11, 20]:
-        return "Group 6"
+        return "Group 7"
     else:
         return "Others"
 
 
 def group_makename(x):
-    if x in ["FORD", "MARUTI", "TATA"]:
-        return "1Group 1"
-    elif x in ["CHEVROLET"]:
-        return "1Group 1"
-    elif x in ["HONDA"]:  # , "CHEVROLET"]:
+    if x in ["MARUTI", "TATA", "MAHINDRA AND MAHINDRA"]:
+        return "1MARUTI"
+    elif x in ["CHEVROLET", "FORD"]:
+        return "Group 1"
+    elif x in ["HONDA",]:
         return x
-    elif x in ["HYUNDAI", "VOLKSWAGEN"]:
-        return "Group 2"
-    elif x in ["DATSUN", "MAHINDRA AND MAHINDRA"]:
-        return "Group 4"
-    elif x in ["RENAULT", "SKODA"]:
-        return "Group 3"
-    elif x in ["JEEP", "TOYOTA"]:
-        return "1Group 1"
+    elif x in ["HYUNDAI", "VOLKSWAGEN", "RENAULT"]:
+        return "HYUNDAI+"
     else:
         return "Others"
 
@@ -86,8 +89,8 @@ def group_fuel(x):
 
 
 def group_zone(x):
-    if x in ["North", "East"]:
-        return "1North"
+    if x in ["North", "East", "West"]:
+        return "NEW"
     else:
         return x
 
@@ -131,7 +134,7 @@ def find_separation():
     othering(df_)
 
 
-df = pd.read_csv("4Wheeler.csv")
+df = pd.read_csv("4WheelerMinus21.csv")
 df["roundage"] = df["roundage"].apply(pd.to_numeric, errors="coerce")
 # df["PAID_AMT"].fillna(0, inplace=True)
 df = df[~ df["Insurer"].str.contains("Revised Pvt Car COMP S")]
@@ -140,7 +143,7 @@ df.dropna(subset=["Zone_1"], inplace=True)
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_insurer(x))
 df["Zone_new"] = df["Zone_1"].apply(lambda x: group_zone(x))
 df["plancategory_new"] = df["newplancategory"].apply(lambda x: group_plancategory(x))
-df["roundage_new"] = df["roundage"].apply(lambda x: group_roumdage(x))
+df["roundage_new"] = df["roundage"].apply(lambda x: group_roundage(x))
 df["cc_new"] = df["cubiccapacity_New"].apply(lambda x: group_cc(x))
 df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
 df["fuel_new"] = df["fuel"].apply(lambda x: group_fuel(x))
