@@ -14,28 +14,23 @@ def prepare_tweedie_file():
 
     output = db.execute(q3).df()
 
-    output.to_csv("Bazaar\\Output\\4WheeleerFiles.csv")
+    output.to_csv("Bazaar\\Output\\4WheelerFiles.csv")
 
 
 def group_insurer(x):
-    if x in ["National Pvt Car Comp", "National Pvt Car SATP"]:
-        return "1NIA"
-    elif x in ["FG Pvt Car Data Upda"]:
-        return x
-    elif x in ["KGI SATP+COMP Pvt Car", "Shriram Pvt Car Comp+ SATP"]:
-        return "Group 1"
-    elif x in ["Oriental Pvt Car SATP", "Bajaj Pvt Car SATP"]:
+    if x in ["National Pvt Car Comp", "National Pvt Car SATP", "Zuno_Pvt_Car_COMP_SATP"]:
+        return "1National"
+    elif x in ["Bajaj Pvt Car Comp", "Liberty Pvt Car COMP+SA", "Oriental Pvt Car Comp"]:
         return "Group 2"
-    elif x in ["Chola Pvt Car Comp+SATP", "SBI Pvt Car Comp+SATP"]:
+    elif x in ["Oriental Pvt Car SATP", "FG Pvt Car Data Upda"]:
         return "Group 3"
-    elif x in ["Bajaj Pvt Car Comp", "Oriental Pvt Car Comp"]:
+    elif x in ["Bajaj Pvt Car SATP", "Universal Sompo Pvt Car Comp+SATP"]:
         return "Group 4"
-    elif x in ["Liberty Pvt Car COMP+SA", "Universal Sompo Pvt Car Comp+SATP"]:
-        return "Group 5"
-    elif x in ["NIA Pvt car comp satp bkgs apr 16 t", "Zuno_Pvt_Car_COMP_SATP"]:
-        return "1NIA"
+    elif x in ["NIA Pvt car comp satp bkgs apr 16 t"]:
+        return x
     elif x in ["United Comp SATP PVT", "RSA Pvt Car COMP+SATP"]:
         return "United RSA"
+
     else:
         return "Others"
 
@@ -47,36 +42,36 @@ def group_plancategory(x):
         return "COMP"
 
 
-def group_roundage(x):
-    if x in [18, 19, -1]:
-        return "1Group 6"
-    elif x in [2]:
-        return "G2"
-    elif x in [7, 12]:
-        return "Group 2"
-    elif x in [3, 5, 14]:
-        return "Group 3"
-    elif x in [6, 9]:
+def group_roumdage(x):
+    if x in [0, 18, 19, -1]:
+        return "1Group 3"
+    elif x in [2, 14]:
+        return "1Group 3"
+    elif x in [3, 5, 6, 12, 13]:
+        return "1Group 3"
+    elif x in [1, 7, 10]:
         return "Group 4"
-    elif x in [1, 10]:
-        return "1Group 6"
-    elif x in [4, 8, 13]:
-        return "1Group 6"
+    elif x in [4, 8, 9]:
+        return "Group 5"
     elif x in [11, 20]:
-        return "Group 7"
+        return "Group 6"
     else:
         return "Others"
 
 
 def group_makename(x):
-    if x in ["MARUTI", "TATA", "MAHINDRA AND MAHINDRA"]:
-        return "1MARUTI"
-    elif x in ["CHEVROLET", "FORD"]:
-        return "Group 1"
-    elif x in ["HONDA",]:
+    if x in ["FORD", "MARUTI", "TATA"]:
+        return "1Group 1"
+    elif x in ["HONDA", "CHEVROLET"]:
         return x
-    elif x in ["HYUNDAI", "VOLKSWAGEN", "RENAULT"]:
-        return "HYUNDAI+"
+    elif x in ["HYUNDAI", "VOLKSWAGEN"]:
+        return "Group 2"
+    elif x in ["DATSUN", "MAHINDRA AND MAHINDRA"]:
+        return "Group 4"
+    elif x in ["RENAULT", "SKODA"]:
+        return "Group 3"
+    elif x in ["JEEP", "TOYOTA"]:
+        return "1Group 1"
     else:
         return "Others"
 
@@ -89,8 +84,8 @@ def group_fuel(x):
 
 
 def group_zone(x):
-    if x in ["North", "East", "West"]:
-        return "NEW"
+    if x in ["North", "East"]:
+        return "1North"
     else:
         return x
 
@@ -108,7 +103,7 @@ def group_AY(x):
     if x in [2021]:
         return 2
     else:
-        return 2
+        return 3
 
 
 def make_pivots(dataframe, columns):
@@ -130,20 +125,20 @@ def othering(dataframe):
 
 
 def find_separation():
-    df_ = pd.read_csv("Bazaar\\Output\\4WheeleerFiles.csv")
+    df_ = pd.read_csv("Bazaar\\Output\\4WheelerFiles.csv")
     othering(df_)
 
 
-df = pd.read_csv("4WheelerMinus21.csv")
+df = pd.read_csv("4Wheeler - WithoutMultiplier.csv")
 df["roundage"] = df["roundage"].apply(pd.to_numeric, errors="coerce")
 # df["PAID_AMT"].fillna(0, inplace=True)
 df = df[~ df["Insurer"].str.contains("Revised Pvt Car COMP S")]
-df = df[df["Accident_Year"].isin([2019, 2020, 2022])]
+df = df[df["Accident_Year"].isin([2019, 2020, 2021, 2022])]
 df.dropna(subset=["Zone_1"], inplace=True)
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_insurer(x))
 df["Zone_new"] = df["Zone_1"].apply(lambda x: group_zone(x))
 df["plancategory_new"] = df["newplancategory"].apply(lambda x: group_plancategory(x))
-df["roundage_new"] = df["roundage"].apply(lambda x: group_roundage(x))
+df["roundage_new"] = df["roundage"].apply(lambda x: group_roumdage(x))
 df["cc_new"] = df["cubiccapacity_New"].apply(lambda x: group_cc(x))
 df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
 df["fuel_new"] = df["fuel"].apply(lambda x: group_fuel(x))
