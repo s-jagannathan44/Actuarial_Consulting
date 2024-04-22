@@ -6,7 +6,7 @@ def prepare_tweedie_file():
     q3 = """select  Zone_new, cc_New, Accident_Year_new, 
            Insurer_new, plancategory_new, roundage_new, makename_new, fuel_new,
            sum(PAID_AMT) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
-           sum(LIVES_EXPOSED) as LIVES_EXPOSED               
+           sum(LIVES_EXPOSED) as LIVES_EXPOSED, sum(EP) as EARNED_PREMIUM               
             from df            
             group by  Insurer_new, plancategory_new, roundage_new, makename_new, fuel_new, Accident_Year_new, 
                       Zone_new, cc_New           
@@ -51,9 +51,9 @@ def group_roumdage(x):
     elif x in [1, 7, 10]:
         return "Group 4"
     elif x in [2, 14]:
-        return "1Group 3"  # "Group 2"
+        return "1Group 3"
     elif x in [0, 18, 19, -1]:
-        return "1Group 3"  # "Group 1"
+        return "Group 1"
     elif x in [11]:
         return "G11"
     else:
@@ -68,11 +68,11 @@ def group_makename(x):
     elif x in ["RENAULT", "VOLKSWAGEN"]:
         return "Group 3"
     elif x in ["TOYOTA", "MAHINDRA AND MAHINDRA"]:
-        return "1Group 1"  # "Group 4"
+        return "1Group 1"
     elif x in ["CHEVROLET"]:
-        return x
+        return "1Group 1"
     else:
-        return "1Group 1"  # "Others"
+        return "1Group 1"
 
 
 def group_fuel(x):
@@ -97,18 +97,12 @@ def group_cc(x):
 
 
 def group_AY(x):
-    if x in [2018]:
-        return 0
     if x in [2020]:
         return 1
     if x in [2019, 2021]:
         return 2
     if x in [2022]:
         return 3
-    if x in [2023]:
-        return 4
-    if x in [2024]:
-        return 5
 
 
 def make_pivots(dataframe, columns):
@@ -134,12 +128,12 @@ def find_separation():
     othering(df_)
 
 
-df = pd.read_csv("full file.csv")
+df = pd.read_csv("4Wheeler.csv")
 df["roundage"] = df["roundage"].apply(pd.to_numeric, errors="coerce")
-# df["PAID_AMT"].fillna(0, inplace=True)
-# df = df[~ df["Insurer"].str.contains("Revised Pvt Car COMP S")]
-df = df[df["Accident_Year"].isin([2018, 2019, 2020, 2021, 2022, 2023, 2024])]
-# df.dropna(subset=["Zone_1"], inplace=True)
+df = df[~ df["Insurer"].str.contains("Revised Pvt Car COMP S")]
+df = df[df["Accident_Year"].isin([2019, 2020, 2021, 2022])]
+df.dropna(subset=["Zone_1"], inplace=True)
+df.dropna(subset=["cubiccapacity_New"], inplace=True)
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_insurer(x))
 df["Zone_new"] = df["Zone_1"].apply(lambda x: group_zone(x))
 df["plancategory_new"] = df["newplancategory"].apply(lambda x: group_plancategory(x))
@@ -147,8 +141,7 @@ df["roundage_new"] = df["roundage"].apply(lambda x: group_roumdage(x))
 df["cc_new"] = df["cubiccapacity_New"].apply(lambda x: group_cc(x))
 df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
 df["fuel_new"] = df["fuel"].apply(lambda x: group_fuel(x))
-# df["roundage_new"].fillna("Others", inplace=True)
 df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
-df.to_csv("Bazaar\\Output\\NonLargelossTestFile.csv")
-# prepare_tweedie_file()
-# find_separation()
+df.to_csv("Bazaar\\Output\\4WheelerTestFile.csv")
+prepare_tweedie_file()
+find_separation()
