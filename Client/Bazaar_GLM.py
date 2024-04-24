@@ -41,7 +41,7 @@ def build_model():
     return df_
 
 
-df = pd.read_csv("Bazaar\\Output\\4WheelerTestFile.csv")  # build_model()  #
+df = pd.read_csv("Bazaar\\Output\\4WheelerTestFile.csv")  # build_model()
 result2 = joblib.load("Bazaar\\Output\\4Wheeleer.sav")
 print("-----------Summary-----------")
 print(result2.summary2())
@@ -51,7 +51,7 @@ print("-----------predict-----------")
 y_pred = result2.predict(df)
 df["Pred"] = y_pred
 df["Pred_Cost"] = df["Pred"] * df["LIVES_EXPOSED"]
-df.to_csv("Bazaar\\Output\\new_4wheeler.csv")
+df.to_csv("Bazaar\\Output\\nonlarge_unclubed_4wheeler.csv")
 # make_pivots(df, "Accident_Year_new")
 # make_pivots(df, "Zone_new")4
 # make_pivots(df, "cc_new")
@@ -60,11 +60,11 @@ df.to_csv("Bazaar\\Output\\new_4wheeler.csv")
 
 # make_multi(df, "Accident_Year_new Zone_new cc_new Insurer_new makename_new ".split())
 
-make_pivots(df, "Accident_Year")
-make_pivots(df, "Zone_1")
-make_pivots(df, "cubiccapacity_New")
-make_pivots(df, "Insurer")
-make_pivots(df, "makename")
-make_pivots(df, "newplancategory")
-make_pivots(df, "fuel")
-make_pivots(df, "roundage")
+# make_pivots(df, "Accident_Year")
+# make_pivots(df, "Zone_1")
+# make_pivots(df, "cubiccapacity_New")
+# make_pivots(df, "Insurer")
+# make_pivots(df, "makename")
+# make_pivots(df, "newplancategory")
+# make_pivots(df, "fuel")
+# make_pivots(df, "roundage")
