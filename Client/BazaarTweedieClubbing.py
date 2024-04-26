@@ -93,6 +93,8 @@ def group_AY(x):
         return 4
     if x in [2018]:
         return 1
+    if x in [2024]:
+        return 5
 
 
 def make_pivots(dataframe, columns):
@@ -119,7 +121,7 @@ df = pd.read_csv("4Wheeler - Large Loss.csv")
 df["roundage"] = df["roundage"].apply(pd.to_numeric, errors="coerce")
 df["PAID_AMT"] = df["PAID_AMT"].fillna(0)
 df = df[~ df["Insurer"].str.contains("Revised Pvt Car COMP S")]
-df = df[df["Accident_Year"].isin([2018, 2019, 2020, 2021, 2022, 2023])]
+df = df[df["Accident_Year"].isin([2018, 2019, 2020, 2021, 2022, 2023, 2024])]
 df.dropna(subset=["Zone_1"], inplace=True)
 df.dropna(subset=["cubiccapacity_New"], inplace=True)
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_insurer(x))
@@ -130,6 +132,6 @@ df["cc_new"] = df["cubiccapacity_New"].apply(lambda x: group_cc(x))
 df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
 df["fuel_new"] = df["fuel"].apply(lambda x: group_fuel(x))
 df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
-df.to_csv("Bazaar\\Output\\4WheelerLargeLossFile.csv")
-prepare_tweedie_file()
+df.to_csv("Bazaar\\Output\\4WheelerLargeLossUn_clubbedFile.csv")
+# prepare_tweedie_file()
 # find_separation()

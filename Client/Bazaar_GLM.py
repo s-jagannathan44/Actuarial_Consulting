@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from statsmodels.genmod.families import Tweedie
 import statsmodels.formula.api as smf
+from sklearn.model_selection import train_test_split
 
 
 def make_multi(dataframe, columns):
@@ -40,7 +41,8 @@ def build_model():
     return df_
 
 
-df = pd.read_csv("Bazaar\\Output\\4WheelerLargeLossFile.csv")  # build_model()  #
+df__ = pd.read_csv("Bazaar\\Output\\4WheelerLargeLossUn_clubbedFile.csv")  # build_model()  #
+df, df_test = train_test_split(df__, test_size=0.5, random_state=0)
 result2 = joblib.load("Bazaar\\Output\\4WheeleerLarge.sav")
 print("-----------Summary-----------")
 print(result2.summary2())
@@ -50,7 +52,7 @@ print("-----------predict-----------")
 y_pred = result2.predict(df)
 df["Pred"] = y_pred
 df["Pred_Cost"] = df["Pred"] * df["LIVES_EXPOSED"]
-df.to_csv("Bazaar\\Output\\large_output.csv")
+df.to_csv("Bazaar\\Output\\large_output_fifty_percent.csv")
 # make_pivots(df, "Accident_Year_new")
 # make_pivots(df, "Zone_new")
 # make_pivots(df, "cc_new")
@@ -60,10 +62,10 @@ df.to_csv("Bazaar\\Output\\large_output.csv")
 # make_multi(df, "Accident_Year_new Zone_new cc_new Insurer_new makename_new ".split())
 
 # make_pivots(df, "Accident_Year")
-make_pivots(df, "Zone_1")
-make_pivots(df, "cubiccapacity_New")
-make_pivots(df, "Insurer")
-make_pivots(df, "makename")
+# make_pivots(df, "Zone_1")
+# make_pivots(df, "cubiccapacity_New")
+# make_pivots(df, "Insurer")
+# make_pivots(df, "makename")
 # make_pivots(df, "newplancategory")
 # make_pivots(df, "fuel")
 # make_pivots(df, "roundage")
