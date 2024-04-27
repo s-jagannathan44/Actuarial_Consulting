@@ -151,7 +151,7 @@ def group_age(x):
 
 
 def prepare_forecast_file():
-    df_24 = pd.read_csv("CSV\\SummaryExposed_24.csv")
+    df_24 = pd.read_csv("CSV\\SummaryExposed_24_v2.csv")
     df_24["Revised_Product_name"] = (
             df_24["Product_name"] + df_24["Revised_Individual_Floater"].apply(lambda x: group_rif(x)))
     df_24["Financial_Year"] = 6
@@ -201,3 +201,4 @@ df["Zone_New"] = df["Zone"].apply(lambda x: zone_dict[x])
 
 df.to_csv("Output\\clubbed_file_AgeModified.csv")
 prepare_tweedie_file()
+

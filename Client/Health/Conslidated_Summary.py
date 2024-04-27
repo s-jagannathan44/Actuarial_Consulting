@@ -30,7 +30,7 @@ def summaries():
      """
 
     output = db.execute(q3).df()
-    output.to_csv("CSV\\SummaryExposed_24..csv")
+    output.to_csv("CSV\\SummaryExposed_24_v2.csv")
 
 
 def rename_columns(file_name):
@@ -56,7 +56,7 @@ def rename_columns(file_name):
 
 
 def merge_policies():
-    path = "C:\\SHAI\\Revised 11-12-23\\Data\\TestData\\FY24 upto Jan'24 Exposure Mapped_Final_v1.csv"
+    path = "C:\\SHAI\\Revised 11-12-23\\Data\\TestData\\FY24 upto Jan'24 Exposure Mapped_Final_v2.csv"
     concatenated_policies = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
@@ -66,11 +66,11 @@ def merge_policies():
         frame["Policy_number"] = frame["Policy_number"].apply(lambda x: financial_year + x)
         concatenated_policies = pd.concat([concatenated_policies, frame], axis=0)
         print(financial_year)
-    concatenated_policies.to_csv("CSV\\Policy_24.csv")
+    concatenated_policies.to_csv("CSV\\Policy_24_v2.csv")
 
 
 def merge_members():
-    path = "C:\\SHAI\\Revised 11-12-23\\Data\\TestData\\FY24 upto Jan'24 Exposure Mapped_Final_v1.csv"
+    path = "C:\\SHAI\\Revised 11-12-23\\Data\\TestData\\FY24 upto Jan'24 Exposure Mapped_Final_v2.csv"
     concatenated_members = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
@@ -92,7 +92,7 @@ def merge_members():
         print(financial_year)
         concatenated_members = pd.concat([concatenated_members, final_member], axis=0)
 
-    concatenated_members.to_csv("CSV\\Member_24.csv")
+    concatenated_members.to_csv("CSV\\Member_24_v2.csv")
 
 
 def transform_member(member):
@@ -182,14 +182,14 @@ def remove_group(claims, is_os):
 
 # merge_policies()
 # print("policies have been merged")
-# merge_members()
-# print("members  have been merged")
+merge_members()
+print("members  have been merged")
 # merge_claim()
 # print("claims  have been merged")
 
 # claim = pd.read_csv("CSV\\Claims_Merged.csv")
-policy = pd.read_csv("CSV\\Policy_24.csv")
-member = pd.read_csv("CSV\\Member_24.csv")
+policy = pd.read_csv("CSV\\Policy_24_v2.csv")
+member = pd.read_csv("CSV\\Member_24_v2.csv")
 print("files have been loaded")
 # member_per_policy_count = db.sql(
 #     """ select Policy_number, count(Mem_ID) as members_per_policy  from member group by Policy_number """).df()

@@ -231,7 +231,7 @@ def find_missing(policy_number):
 
 def transform_claim():
     global claims
-    claims = pd.read_csv("claims_file.csv")
+    claims = pd.read_csv("claims_file_v2.csv")
     claims.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
     claims.rename(columns={"Claim Reference": "Claim_Reference"}, inplace=True)
     claims['Report Date'] = claims['Report Date'].str.replace('-', '')
@@ -246,13 +246,13 @@ def transform_claim():
 
 
 count = 0
-merge_files()
-merge_claims()
-
-create_master()
-calculate_exposure()
-premium = pd.read_csv("premium_07_04.csv")
-transform_premium_file()
+# merge_files()
+# merge_claims()
+#
+# create_master()
+# calculate_exposure()
+# premium = pd.read_csv("premium_07_04.csv")
+# transform_premium_file()
 # premium.rename(columns={"policyno": "Policy_Number"}, inplace=True)
 
 # ----------------------------- MAIN CODE ------------------------------------
@@ -278,8 +278,8 @@ lt_frame = policy_claims[policy_claims["Long term"] == "LT"]
 lt_frame["Adjusted full premium"] = lt_frame["full_premium"] / 4.0
 policy_claims = pd.concat([st_frame, lt_frame], axis=0)
 policy_claims["roundage"] = policy_claims["v_age"].apply(lambda x: round(x, 0))
-policy_claims.to_csv("merged_claims_07_04.csv")
-print(count)
+policy_claims.to_csv("merged_claims_final.csv")
+# print(count)
 
 
 # ----------------------------- MAIN CODE ------------------------------------
@@ -290,7 +290,7 @@ print(count)
 #     df2.to_csv("Bazaar\\Output\\" + name + ".csv")
 #
 #
-# merged_policy = pd.read_csv("merged_claims_07_04.csv")
+# merged_policy = pd.read_csv("merged_claims_final.csv")
 # make_pivots(merged_policy, "Policy_Client_Name", ["Exposure", "EP"], "Exp")
 # make_pivots(merged_policy, "Policy_Client_Name", ["Policy Count", "Adjusted full premium"], "Insurer")
 # make_pivots(merged_policy, "Policy_Client_Name", ["Claim count"], "Claims")

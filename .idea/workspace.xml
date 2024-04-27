@@ -4,15 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Check in with fixes">
-      <change afterPath="$PROJECT_DIR$/Client/BazaarTweedieClubbing.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/Bazaar_GLM.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Client/Bazaar_TW.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ExperimentalFiles/ConvertExcelToCSV.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Actuarial Consulting.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Actuarial Consulting.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="66779db5-01d8-4fac-a072-948f208df9da" name="Changes" comment="Final clubbing with  multiplier">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/Bazaar.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Bazaar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Conslidated_Summary.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/Forecast.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/Forecast.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/Health/TweedieClubbing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/Health/TweedieClubbing.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,47 +49,52 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.Bazaar.executor": "Run",
-    "Python.BazaarTweedieClubbing.executor": "Run",
-    "Python.Bazaar_GLM.executor": "Run",
-    "Python.Bazaar_TW.executor": "Run",
-    "Python.Claims_Clubbing.executor": "Run",
-    "Python.Clubbing - Claims.executor": "Run",
-    "Python.Clubbing.executor": "Run",
-    "Python.Conslidated_Summary.executor": "Run",
-    "Python.Consolidated_Frequency_Severity.executor": "Run",
-    "Python.ConvertExcelToCSV.executor": "Run",
-    "Python.Forecast.executor": "Run",
-    "Python.Forecast_Sarima.executor": "Run",
-    "Python.Frequency.executor": "Run",
-    "Python.Normalize_Claim.executor": "Debug",
-    "Python.Severity.executor": "Run",
-    "Python.Transform_Claim.executor": "Run",
-    "Python.Transform_Member.executor": "Run",
-    "Python.Transform_Policy.executor": "Run",
-    "Python.Tweedie.executor": "Debug",
-    "Python.TweedieClubbing.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.scratch.executor": "Debug",
-    "Python.scratch_1.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "full.screen.before.presentation.mode": "false",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/jvpra/PycharmProjects/pythonProject1",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python.2WheelerTweedieClubbing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.2Wheeler_GLM.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Bazaar-Frequency.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Bazaar.executor&quot;: &quot;Run&quot;,
+    &quot;Python.BazaarFrequencyClubbing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.BazaarTweedieClubbing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Bazaar_GLM.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Bazaar_TW.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Claims_Clubbing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Clubbing - Claims.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Clubbing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Conslidated_Summary.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Consolidated_Frequency_Severity.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ConvertExcelToCSV.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Forecast.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Forecast_Sarima.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Frequency.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Normalize_Claim.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.Severity.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Transform_Claim.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Transform_Member.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Transform_Policy.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Tweedie.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.TweedieClubbing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.scratch.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.scratch_1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.statsmodelcharts.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;full.screen.before.presentation.mode&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/jvpra/PycharmProjects/pythonProject1&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Python"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="Push.Settings">
     <option name="SHOW_DETAILS_PANEL" value="false" />
   </component>
@@ -468,7 +470,7 @@
       <option name="project" value="LOCAL" />
       <updated>1695609524685</updated>
     </task>
-    <option name="localTasksCounter" value="233" />
+    <option name="localTasksCounter" value="252" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -495,24 +497,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="false" />
-    <MESSAGE value="PB final code" />
-    <MESSAGE value="Revised Clubbing after dropping covid claims" />
-    <MESSAGE value="Aborted sklearn code that draws pivots" />
-    <MESSAGE value="Reworked clubbing and about to add interactions hence checked in" />
-    <MESSAGE value="Age ,Gender , RIF Model with Interactions" />
-    <MESSAGE value="Add zone clubbing" />
-    <MESSAGE value="4 variable interaction with clubbing" />
-    <MESSAGE value="5 variable interaction with 3 degree polynomial" />
-    <MESSAGE value="All variables thrown in" />
-    <MESSAGE value="5 variables with RIF and Product clubbed" />
-    <MESSAGE value="final model" />
-    <MESSAGE value="IMprovement on BEst model" />
-    <MESSAGE value="Added grid search" />
-    <MESSAGE value="XgBoost Tweedie" />
-    <MESSAGE value="Added co_efficients and AIC" />
-    <MESSAGE value="Saved Model (.save file) which was tested on un clubbed file" />
-    <MESSAGE value="Changed FY to pass through numeric value to enable forecasting" />
-    <MESSAGE value="FrequencyModel File" />
     <MESSAGE value="Some kind of clubbing" />
     <MESSAGE value="Fixed Forecast Model run on FY24 data" />
     <MESSAGE value="Random commit" />
@@ -520,7 +504,25 @@
     <MESSAGE value="Finally Final" />
     <MESSAGE value="EP will now ome in Rows instead of columns &#10;Merged claims into policies" />
     <MESSAGE value="Check in with fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Check in with fixes" />
+    <MESSAGE value="Two Wheeler EP and 4 Wheeler GLM" />
+    <MESSAGE value="sckit replaces statsmodel" />
+    <MESSAGE value="Revised clubbing to as few groups as possible" />
+    <MESSAGE value="Stats model with relativity" />
+    <MESSAGE value="Final clubbing" />
+    <MESSAGE value="Final clubbing after fixes for total claim issue" />
+    <MESSAGE value="Tw issue fix and final GLM" />
+    <MESSAGE value="FY24 summary" />
+    <MESSAGE value="Clubbing with large loss removed" />
+    <MESSAGE value="Final clubbing linked to Tw Version 2 and Tw model data xls" />
+    <MESSAGE value="Final 4 Wheeler clubbing linked to Analysis V10 and 4 Wheeler model data xls" />
+    <MESSAGE value="After adding CHola" />
+    <MESSAGE value="Tweedie Analysis and TW model v2" />
+    <MESSAGE value="Separated CC_Make into CC &amp; Make &#10;Tweedie Analysis and TW model v2" />
+    <MESSAGE value="Final file" />
+    <MESSAGE value="Final clubbing with multiplier" />
+    <MESSAGE value="Final clubbing without multiplier" />
+    <MESSAGE value="Final clubbing with  multiplier" />
+    <option name="LAST_COMMIT_MESSAGE" value="Final clubbing with  multiplier" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
