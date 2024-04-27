@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from statsmodels.genmod.families import Tweedie
 import statsmodels.formula.api as smf
+from sklearn.model_selection import train_test_split
 
 
 def make_multi(dataframe, columns):
@@ -31,17 +32,18 @@ def make_pivots(dataframe, columns):
 
 
 def build_model():
-    df = pd.read_csv("Bazaar\\Output\\4WheeleerFiles.csv")
-    df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
+    df_ = pd.read_csv("Bazaar\\Output\\4WheelerLargeFiles.csv")
+    df_["Loss_Cost"] = df_["PAID_AMT"] / df_["LIVES_EXPOSED"]
     result = smf.glm(
-        formula='Loss_Cost ~ Accident_Year_new + Zone_new + cc_new + Insurer_Fuel_new + plancategory_new + roundage_new  + makename_new',
-        data=df, family=Tweedie(var_power=1.9), var_weights=df["LIVES_EXPOSED"]).fit()
-    joblib.dump(result, "Bazaar\\Output\\4Wheeleer.sav")
-    return df
+        formula='Loss_Cost ~ cc_new + Zone_new + Insurer_new + makename_new',
+        data=df_, family=Tweedie(var_power=1.9), var_weights=df_["LIVES_EXPOSED"]).fit()
+    joblib.dump(result, "Bazaar\\Output\\4WheeleerLarge.sav")
+    return df_
 
 
-df = pd.read_csv("Bazaar\\Output\\4WheelerTestFile.csv")  # build_model()
-result2 = joblib.load("Bazaar\\Output\\4Wheeleer.sav")
+df__ = pd.read_csv("Bazaar\\Output\\4WheelerLargeLossUn_clubbedFile.csv")  # build_model()  #
+df, df_test = train_test_split(df__, test_size=0.5, random_state=0)
+result2 = joblib.load("Bazaar\\Output\\4WheeleerLarge.sav")
 print("-----------Summary-----------")
 print(result2.summary2())
 print("-----------GLM simple form relativity-----------")
@@ -50,11 +52,20 @@ print("-----------predict-----------")
 y_pred = result2.predict(df)
 df["Pred"] = y_pred
 df["Pred_Cost"] = df["Pred"] * df["LIVES_EXPOSED"]
-df.to_csv("Bazaar\\Output\\new_4wheeler.csv")
-make_pivots(df, "Accident_Year")
-make_pivots(df, "Zone_1")
-make_pivots(df, "cubiccapacity_New")
-make_pivots(df, "newplancategory")
-make_pivots(df, "Insurer_Fuel")
-make_pivots(df, "makename")
-make_pivots(df, "roundage")
+df.to_csv("Bazaar\\Output\\large_output_fifty_percent.csv")
+# make_pivots(df, "Accident_Year_new")
+# make_pivots(df, "Zone_new")
+# make_pivots(df, "cc_new")
+# make_pivots(df, "Insurer_new")
+# make_pivots(df, "makename_new")
+
+# make_multi(df, "Accident_Year_new Zone_new cc_new Insurer_new makename_new ".split())
+
+# make_pivots(df, "Accident_Year")
+# make_pivots(df, "Zone_1")
+# make_pivots(df, "cubiccapacity_New")
+# make_pivots(df, "Insurer")
+# make_pivots(df, "makename")
+# make_pivots(df, "newplancategory")
+# make_pivots(df, "fuel")
+# make_pivots(df, "roundage")
