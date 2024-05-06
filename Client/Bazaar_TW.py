@@ -23,12 +23,13 @@ state_dict = {"Andhra Pradesh": "South", "Arunachal Pradesh": "East", "Assam": "
               }
 
 
+# noinspection PyTypeChecker
 def merge_files():
     path = "Bazaar/TW/CSV/*.csv"
     df = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
-        client_name = file_name[14:-12]
+        client_name = file_name[14:-4]
         frame = pd.read_csv(file_name)
         frame["Policy_Client_Name"] = client_name
         df = pd.concat([df, frame], axis=0)
@@ -64,7 +65,7 @@ def merge_claims():
     df = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
-        client_name = file_name[17:-8]
+        client_name = file_name[17:-4]
         frame = pd.read_csv(file_name)
         frame["Client_Name"] = client_name
         df = pd.concat([df, frame], axis=0)
@@ -93,7 +94,7 @@ def set_financial_year(year_p):
     except AttributeError:
         count = count + 1
         print("error occurred in set_financial_year")
-        return ""
+        return "-1"
 
 
 def create_master():
@@ -118,7 +119,7 @@ def transform_data(exposure):
     exposure["irda_tp"] = exposure['irda_tp'].apply(lambda x: convert_premium(x))
     exposure["full_premium"] = exposure["irda_tp"]
     exposure["ccnew"] = exposure["full_premium"].apply(lambda x: group_cubic_capacity(x))
-    exposure["body_type"] = " "  # exposure["modelname"].apply(lambda x: group_body_type(x))
+    exposure["body_type"] = exposure["modelname"].apply(lambda x: group_body_type(x))
 
     return exposure
 
@@ -161,6 +162,8 @@ def group_body_type(x):
             or "aerox" in x or "rayzr" in x or "moto gp" in x or "fascino" in x or "burgman" in x \
             or "avenis" in x or "access" in x or "vespa" in x:
         return "Scooter"
+    elif "(blank)" in x:
+        return "Blank"
     else:
         return "Bike"
 
@@ -172,7 +175,9 @@ def calculate_exposure():
     master['policy_end_date'] = pd.to_datetime(master['policy_end_date'], format="mixed", dayfirst=True)
 
     fiscalyear.setup_fiscal_calendar(start_month=4)
-    for year_ in master["Financial_Year"].unique().tolist():
+    fy_l = master["Financial_Year"].unique().tolist()
+    fy_l.remove(-1)
+    for year_ in fy_l:
         year = year_
         df = master[master["Financial_Year"] == year_]
         x = df["policy_start_date"].apply(lambda xz: func(xz))
@@ -214,11 +219,13 @@ def convert_premium(prem):
         return float(prem)
 
 
+# noinspection PyUnusedLocal
 def transform_premium_file():
     global norm_policy
     frames = pd.DataFrame()
     premium_ = premium  # premium[premium["Financial_Year"].isin([2024])]
     years = premium_["Financial_Year"].unique().tolist()
+    years.remove(-1)
     for yearn in years:
         yearly_frame = pd.DataFrame(pd.DataFrame(columns=["index", "Exposure", "EP"]))
         exp_name = "FY" + str(yearn)
@@ -238,6 +245,13 @@ def transform_premium_file():
     pass
 
 
+def find_invalid(loss_date, inception_date, expiry_date):
+    if loss_date < inception_date or loss_date > expiry_date:
+        return 0
+    else:
+        return 1
+
+
 # def find_missing(policy_number):
 #     if policy_number not in merged:
 #         return policy_number
@@ -254,22 +268,29 @@ def transform_claim():
     claims['Loss Date'] = pd.to_datetime(claims['Loss Date'], format="mixed", dayfirst=True)
     claims['Report Date'] = pd.to_datetime(claims['Report Date'], format="%d%m%Y", dayfirst=True)
     claims['Claim Closure Date'] = pd.to_datetime(claims['Claim Closure Date'], format="%d%m%Y", dayfirst=True)
+    claims['Risk Inception Date'] = pd.to_datetime(claims['Risk Inception Date'], format="mixed", dayfirst=True)
+    claims['Risk Expiry Date'] = pd.to_datetime(claims['Risk Expiry Date'], format="mixed", dayfirst=True)
     claims["Loss_FY"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
     claims["Reported_FY"] = claims["Report Date"].apply(lambda x: set_financial_year(x))
     claims["Paid_FY"] = claims["Claim Closure Date"].apply(lambda x: set_financial_year(x))
+    claims['DateDiff'] = claims.apply(
+        lambda row: find_invalid(row['Loss Date'], row['Risk Inception Date'], row['Risk Expiry Date']), axis=1)
     return claims
 
 
 count = 0
-merge_files()
-merge_claims()
-create_master()
-calculate_exposure()
+
+
+# merge_files()
+# merge_claims()
+# create_master()
+# calculate_exposure()
 premium = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\premium.csv")
-transform_premium_file()
+# transform_premium_file()
 
 norm_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\modified_premium.csv")
 claims = transform_claim()
+
 # claims_policy = claims.merge(premium, on=["Policy_Number"], how="inner")
 # claims_policy.to_csv("Bazaar\\TW\\CSV\\Files\\Policy_Claim.csv")
 claims["Accident_Year"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
@@ -299,8 +320,18 @@ print(count)
 
 # def extract_missing():
 #     global claims_policy, claims, merged
-#     claims_policy = pd.read_csv("Policy_Claim_07_03.csv")
-#     claims = pd.read_csv("claims_file.csv")
+#     claims_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\merged_claims.csv")
+#     claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\claims_file.csv")
 #     merged = claims_policy["Policy_Number"].tolist()
 #     claims["Missing_Claims"] = claims["Policy Number"].apply(lambda x: find_missing(x))
-#     claims.to_csv("missing.csv")
+#     claims.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\missing.csv")
+
+
+# noinspection PyUnusedLocal
+# def extract_nia():
+#     niap = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\NIAP.csv")
+#     claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\NIAC.csv")
+#     pol_list = claims["Policy_Number"].to_list()
+#     mis = niap[niap["Policy_Number"].isin(pol_list)]
+#     mis.drop_duplicates().to_csv("cl.csv")
+#     pass
