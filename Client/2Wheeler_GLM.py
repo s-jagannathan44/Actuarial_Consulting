@@ -34,13 +34,13 @@ def build_model():
     df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerFiles.csv")
     df_["Loss_Cost"] = df_["PAID_AMT"] / df_["LIVES_EXPOSED"]
     result = smf.glm(
-        formula='Loss_Cost ~ plan_category + Age_new + Accident_Year_new + CC_new + Make_type_new',
+        formula='Loss_Cost ~ plan_category + Age_new + Accident_Year_new + CC_new + Make_type_new + Zone_new',
         data=df_, family=Tweedie(var_power=1.9), var_weights=df_["LIVES_EXPOSED"]).fit()
     joblib.dump(result, "Bazaar\\TW\\CSV\\Files\\Output\\2Wheeleer.sav")
     return df_
 
 
-df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerTestFile.csv")  #  build_model()   #
+df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerTestFile.csv")  # build_model()  #
 result2 = joblib.load("Bazaar\\TW\\CSV\\Files\\Output\\2Wheeleer.sav")
 print("-----------Summary-----------")
 print(result2.summary2())
@@ -56,8 +56,7 @@ make_pivots(df, "Age")
 make_pivots(df, "Accident_Year")
 make_pivots(df, "ccnew")
 make_pivots(df, "Make_type")
-# make_pivots(df, "Insurer_new")
-# make_pivots(df, "Make_type")
+make_pivots(df, "Zone")
 # make_pivots(df, "Age")
 # make_pivots(df, "ccnew")
 # make_pivots(df, "Insurer")

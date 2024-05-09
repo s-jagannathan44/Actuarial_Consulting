@@ -4,11 +4,11 @@ import duckdb as db
 
 def prepare_tweedie_file():
     q3 = """select  
-           plan_category,Age_new, Accident_Year_new, CC_new, Make_type_new,
+           plan_category,Age_new, Accident_Year_new, CC_new, Make_type_new,Zone_new,
            sum(PAID_AMT) as PAID_AMT,sum(Count) as Claim_Count, 
            sum(LIVES_EXPOSED) as LIVES_EXPOSED                       
             from df            
-            group by  plan_category,Age_new, Accident_Year_new, CC_new, Make_type_new          
+            group by  plan_category,Age_new, Accident_Year_new, CC_new, Make_type_new, Zone_new          
      """
 
     output = db.execute(q3).df()
@@ -34,9 +34,8 @@ def group_age(x):
 
 
 def group_zone(x):
-    if x in ["North", "East"]:
-        return "1North"
-
+    if x in ["North"]:
+         return "1North"
     else:
         return x
 
