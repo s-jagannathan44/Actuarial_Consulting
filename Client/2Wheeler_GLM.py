@@ -40,7 +40,7 @@ def build_model():
     return df_
 
 
-df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerTestFile.csv")  # build_model()  #
+df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerForecastFile.csv")  # build_model()  #
 result2 = joblib.load("Bazaar\\TW\\CSV\\Files\\Output\\2Wheeleer.sav")
 print("-----------Summary-----------")
 print(result2.summary2())
@@ -50,13 +50,13 @@ print("-----------predict-----------")
 y_pred = result2.predict(df)
 df["Pred"] = y_pred
 df["Pred_Cost"] = df["Pred"] * df["LIVES_EXPOSED"]
-df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2wheelerOutput.csv")
-make_pivots(df, "plan_category")
-make_pivots(df, "Age")
-make_pivots(df, "Accident_Year")
-make_pivots(df, "ccnew")
-make_pivots(df, "Make_type")
-make_pivots(df, "Zone")
+df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2wheelerForecast.csv")
+# make_pivots(df, "plan_category")
+# make_pivots(df, "Age")
+# make_pivots(df, "Accident_Year")
+# make_pivots(df, "ccnew")
+# make_pivots(df, "Make_type")
+# make_pivots(df, "Zone")
 # make_pivots(df, "Age")
 # make_pivots(df, "ccnew")
 # make_pivots(df, "Insurer")

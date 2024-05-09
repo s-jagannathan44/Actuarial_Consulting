@@ -47,6 +47,11 @@ def group_AY(x):
         return 2
     elif x in [2022]:
         return 3
+    #  Forecast Years
+    elif x in [2023]:
+        return 4
+    elif x in [2024]:
+        return 5
 
 
 def group_cc(x):
@@ -99,11 +104,11 @@ def find_separation():
     othering(df_)
 
 
-df = pd.read_csv("2Wheeler.csv")
+df = pd.read_csv("2Wheeler_Forecast.csv")
 # df.dropna(subset=["body_type"], inplace=True)
 # df.dropna(subset=["ccnew"], inplace=True)
 # df.dropna(subset=["Age"], inplace=True)
-# df = df[df["Accident_Year"].isin([2020, 2021, 2022])]
+# df = df[df["Accident_Year"].isin([2023, 2024])]
 df["Age"] = df["Age"].apply(pd.to_numeric, errors="coerce")
 df["PAID_AMT"].fillna(0, inplace=True)
 df["Zone_new"] = df["Zone"].apply(lambda x: group_zone(x))
@@ -112,6 +117,6 @@ df["CC_new"] = df["ccnew"].apply(lambda x: group_cc(x))
 df["Make_type_new"] = df["Make_type"].apply(lambda x: group_make_type(x))
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_Insurer(x))
 df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
-prepare_tweedie_file()
-df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerTestFile.csv")
+# prepare_tweedie_file()
+df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerForecastFile.csv")
 # find_separation()
