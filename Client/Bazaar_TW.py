@@ -190,7 +190,8 @@ def calculate_exposure():
                                                                                  * master.loc[master.Financial_Year ==
                                                                                               year_, "full_premium"])
         master.loc[master.Financial_Year == year_, "FY" + str(year_ + 1) + "_EP"] = (master.loc[master.Financial_Year ==
-                                                                                                year_, "FY" + str(year_ + 1)]
+                                                                                                year_, "FY" + str(
+            year_ + 1)]
                                                                                      * master.loc[
                                                                                          master.Financial_Year ==
                                                                                          year_, "full_premium"])
@@ -281,11 +282,19 @@ def transform_claim():
 count = 0
 
 
+def extract_missing():
+    data = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\premium.csv")
+    # creating bool series True for NaN values
+    for col_ in data.columns:
+        bool_series = pd.isnull(data[col_])
+        data[bool_series].to_csv(col_ + ".csv")
+
+
 # merge_files()
 # merge_claims()
 # create_master()
 # calculate_exposure()
-premium = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\premium.csv")
+# premium = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\premium.csv")
 # transform_premium_file()
 
 norm_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\modified_premium.csv")
