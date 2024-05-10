@@ -4,54 +4,52 @@ import duckdb as db
 
 def prepare_tweedie_file():
     q3 = """select  
-           plan_category,Age_new, Accident_Year_new, CC_new, Make_type_new,Zone_new,
+           plan_category,CC_new, Make_type_new, Accident_Year_new, Insurer_new, 
            sum(PAID_AMT) as PAID_AMT,sum(Count) as Claim_Count, 
            sum(LIVES_EXPOSED) as LIVES_EXPOSED                       
             from df            
-            group by  plan_category,Age_new, Accident_Year_new, CC_new, Make_type_new, Zone_new          
+            group by  plan_category,CC_new, Make_type_new ,Accident_Year_new, Insurer_new         
      """
 
     output = db.execute(q3).df()
 
-    output.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerFiles.csv")
+    output.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerNewFiles.csv")
 
 
 def group_age(x):
-    if x in [11]:
+    if x in [10, 11]:
         return "G" + str(x)
-    elif x in [2, 8, 12 ,13]:
-        return "1Group 2"
-    elif x in [4, 6]:
+    elif x in [5, 6]:
+        return "1Group 3"
+    elif x in [3, 4]:
         return "Group 1"
-    elif x in [5, 7]:
-        return "Group 4"
-    elif x in [3, 10]:
-        return "Group 3"
-    elif x in [1, 9, 14, 15]:
-        return "Group 5"
+    elif x in [2, 8]:
+        return "1Group 3"  # return "Group 5"
+    elif x in [9, 13, 16]:
+        return "Group 2"
+    elif x in [7, 18]:
+        return "1Group 3"  # return "Group 4"
+    elif x in [12, 14]:
+        return "Group 6"
     else:
-        return "Others"
+        return "1Group 3"  # return "Others"
 
 
 def group_zone(x):
-    if x in ["North"]:
-         return "1North"
+    if x in ["North", "East"]:
+        return "1North"
     else:
         return x
 
 
 def group_AY(x):
-    if x in [2020]:
+    if x in [2022]:
         return 1
-    elif x in [2021]:
-        return 2
-    elif x in [2022]:
-        return 3
-    #  Forecast Years
     elif x in [2023]:
-        return 4
+        return 2
+    #  Forecast Years
     elif x in [2024]:
-        return 5
+        return 3
 
 
 def group_cc(x):
@@ -64,19 +62,19 @@ def group_cc(x):
 
 
 def group_make_type(x):
-    if x in ["TVS_Bike", "MAHINDRA_Bike"]:
-        return "TVS+"
-    elif x in ["HERO HONDA_Bike", "HERO MOTOCORP_Bike", "BAJAJ_Bike", "ROYAL ENFIELD_Bike"]:
-        return "1HERO HONDA"
-    elif x in ["YAMAHA_Bike", "SUZUKI_Bike", "HONDA_Bike", "HONDA_Scooter"]:   # "BAJAJ_Bike", "ROYAL ENFIELD_Bike",
+    if x in ["HERO HONDA_Bike", "HERO MOTOCORP_Bike", "HONDA_Scooter", "TVS_Bike"]:
         return x
+    elif x in ["YAMAHA_Bike", "BAJAJ_Bike", "HONDA_Bike"]:
+        return "Bajaj+"
+    elif x in ["ROYAL ENFIELD_Bike"]:
+        return x   # return "Royal Honda"
     else:
-        return "Others"
+        return "Bajaj+"  # "Others"
 
 
 def group_Insurer(x):
-    if x in ["Bajaj 2w comp satp ", "SGI 2W Bookings"]:
-        return "Bajaj"
+    if x in ["Bajaj 2w comp satp", "NIA 2W Comp SATP"]:
+        return "Bajaj+"
     else:
         return x
 
@@ -95,16 +93,16 @@ def othering(dataframe):
     make_pivots(dataframe, "Make_type_new")
     make_pivots(dataframe, "plan_category")
     make_pivots(dataframe, "Age_new")
-    # make_pivots(dataframe, "Accident_Year_new")
-    make_pivots(dataframe, "Insurer_new")
+    make_pivots(dataframe, "Accident_Year_new")
+    # make_pivots(dataframe, "Insurer_new")
 
 
 def find_separation():
-    df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerFiles.csv")
+    df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerNewFiles.csv")
     othering(df_)
 
 
-df = pd.read_csv("2Wheeler_Forecast.csv")
+df = pd.read_csv("2Wheeler_New.csv")
 # df.dropna(subset=["body_type"], inplace=True)
 # df.dropna(subset=["ccnew"], inplace=True)
 # df.dropna(subset=["Age"], inplace=True)
@@ -117,6 +115,6 @@ df["CC_new"] = df["ccnew"].apply(lambda x: group_cc(x))
 df["Make_type_new"] = df["Make_type"].apply(lambda x: group_make_type(x))
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_Insurer(x))
 df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
-# prepare_tweedie_file()
-df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerForecastFile.csv")
+prepare_tweedie_file()
+df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewFile.csv")
 # find_separation()
