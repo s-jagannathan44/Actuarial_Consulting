@@ -3,62 +3,74 @@ import duckdb as db
 
 
 def prepare_tweedie_file():
-    q3 = """select  Zone_new, cc_New, 
-           Insurer_new, makename_new,
+    q3 = """select Insurer_new,  Zone_new, plancategory_new, roundage_new, cc_New, 
+           makename_new, fuel_new, Accident_Year_new,              
            sum(PAID_AMT) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
-           sum(LIVES_EXPOSED) as LIVES_EXPOSED               
+           sum(LIVES_EXPOSED) as LIVES_EXPOSED, sum(EP) as EARNED_PREMIUM               
             from df            
-            group by  Insurer_new, makename_new, 
+            group by  Insurer_new, plancategory_new, roundage_new, makename_new, fuel_new, Accident_Year_new, 
                       Zone_new, cc_New           
      """
 
     output = db.execute(q3).df()
 
-    output.to_csv("Bazaar\\Output\\4WheelerLargeFiles.csv")
+    output.to_csv("Bazaar\\Output\\4WheelerFiles.csv")
 
 
 def group_insurer(x):
-    if x in ["Oriental Pvt Car Comp", "NIA Pvt car comp satp bkgs apr 16 t"]:
-        return "1Insurer_Group1"
-    elif x in ["FG Pvt Car Data Upda", "KGI SATP+COMP Pvt Car", "Oriental Pvt Car SATP", "Shriram Pvt Car Comp+ SATP"]:
-        return "Insurer_Group5"
-    elif x in ["Bajaj Pvt Car SATP", "National Pvt Car SATP", "United Comp SATP PVT"]:
-        return "Insurer_Group3"
-    elif x in ["Bajaj Pvt Car Comp", "Liberty Pvt Car COMP+SA", "SBI Pvt Car Comp+SATP"]:
-        return "Insurer_Group2"
-    else:
-        return "Insurer_Others"
+    if x in ["Chola Pvt Car Comp+SATP", "Oriental Pvt Car SATP", "Bajaj Pvt Car SATP", "Oriental Pvt Car Comp"]:
+        return "1Insurer_Group 5"
+    elif x in ["National Pvt Car Comp", "Liberty Pvt Car COMP+SA"]:
+        return "Insurer_Group 2"
+    elif x in ["FG Pvt Car Data Upda", "Universal Sompo Pvt Car Comp+SATP"]:
+        return "Insurer_Group 3"
+    elif x in ["Liberty Pvt Car COMP+SA", "National Pvt Car Comp"]:
+        return "Insurer_Group 2"
+    elif x in ["Shriram Pvt Car Comp+ SATP", "Bajaj Pvt Car Comp"]:
+        return "Insurer_Group 4"
+    elif x in ["RSA Pvt Car COMP+SATP", "United Comp SATP PVT", "KGI SATP+COMP Pvt Car", "Zuno_Pvt_Car_COMP_SATP"]:
+        return "Insurer_Group 6"
+    elif x in ["National Pvt Car SATP", "NIA Pvt car comp satp bkgs apr 16 t" , "SBI Pvt Car Comp+SATP"]:
+        return x
 
 
 def group_plancategory(x):
     if x in ["03. TP"]:
         return "TP"
+    if x in ["02. Comp With ZD"]:
+        return x
     else:
-        return "COMP"
+        return "02. COMP"
 
 
 def group_roumdage(x):
-    if x in [4, 8, 9, 2, 12]:
-        return "1Group 1"
-    elif x in [7, 11, 14]:
-        return "Group 3"
-    elif x in [5, 10]:
-        return "Group 4"
-    elif x in [3, 1]:
-        return "Group 2"
+    if x in [2, 5, 7, 8, 13]:
+        return "1Age_Group 3"
+    elif x in [9, 11]:
+        return "Age_Group 5"
+    elif x in [3, 12, 19]:
+        return "Age_Group 4"
+    elif x in [6, 10, 18]:
+        return "Age_Group 2"
+    elif x in [0, 14, 16, 17]:
+        return "Age_Group 1"
+    elif x in [4]:
+        return "Age_G4"
     else:
-        return "Others"
+        return "Age_Others"
 
 
 def group_makename(x):
-    if x in ["MARUTI"]:
-        return "1MARUTI"
-    elif x in ["FORD", "CHEVROLET", "HONDA", "SKODA"]:
-        return "Make_Group6"
-    elif x in ["HYUNDAI", "TATA"]:
+    if x in ["CHEVROLET", "MARUTI"]:
+        return "1Make_Group 1"
+    elif x in ["HYUNDAI", "RENAULT"]:
+        return "Make_Group 2"
+    elif x in ["TATA", "HONDA"]:
+        return "Make_Group 4"
+    elif x in ["TOYOTA", "MAHINDRA AND MAHINDRA"]:
+        return "Make_Group 3"
+    elif x in ["FORD"]:
         return x
-    elif x in ["MAHINDRA AND MAHINDRA", "VOLKSWAGEN"]:
-        return "Make_Group4"
     else:
         return "Make_Others"
 
@@ -66,35 +78,28 @@ def group_makename(x):
 def group_fuel(x):
     if x in ["Diesel"]:
         return "Diesel"
-    else:
+    elif x in ["Petrol"]:
         return "1Petrol"
+    else:
+        return "CNG+"
 
 
 def group_zone(x):
-    if x in ["North", "South"]:
-        return "1North"
-    else:
-        return "EastWest"
+    # if x in ["North",  "West"]:
+    #     return "1NW"
+    # else:
+    return x
 
 
 def group_cc(x):
-    if x in ["Below 1000cc", "1000 to 1500cc"]:
-        return "1000 to 1500cc"
-    else:
-        return x
+    # if x in ["Below 1000cc", "1000 to 1500cc"]:
+    #     return "1000 to 1500cc"
+    # else:
+    return x
 
 
 def group_AY(x):
-    if x in [2019, 2021, 2022]:
-        return 3
-    if x in [2020]:
-        return 2
-    if x in [2023]:
-        return 4
-    if x in [2018]:
-        return 1
-    if x in [2024]:
-        return 5
+    return x
 
 
 def make_pivots(dataframe, columns):
@@ -108,6 +113,9 @@ def othering(dataframe):
     make_pivots(dataframe, "Insurer_new")
     make_pivots(dataframe, "Zone_new")
     make_pivots(dataframe, "cc_new")
+    make_pivots(dataframe, "fuel_new")
+    make_pivots(dataframe, "plancategory_new")
+    make_pivots(dataframe, "roundage_new")
     make_pivots(dataframe, "makename_new")
     make_pivots(dataframe, "Accident_Year_new")
 
@@ -117,11 +125,10 @@ def find_separation():
     othering(df_)
 
 
-df = pd.read_csv("4Wheeler - Large Loss.csv")
+df = pd.read_csv("4Wheeler.csv")
 df["roundage"] = df["roundage"].apply(pd.to_numeric, errors="coerce")
-df["PAID_AMT"] = df["PAID_AMT"].fillna(0)
 df = df[~ df["Insurer"].str.contains("Revised Pvt Car COMP S")]
-df = df[df["Accident_Year"].isin([2018, 2019, 2020, 2021, 2022, 2023, 2024])]
+df = df[df["Accident_Year"].isin([2024])]
 df.dropna(subset=["Zone_1"], inplace=True)
 df.dropna(subset=["cubiccapacity_New"], inplace=True)
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_insurer(x))
@@ -132,6 +139,6 @@ df["cc_new"] = df["cubiccapacity_New"].apply(lambda x: group_cc(x))
 df["makename_new"] = df["makename"].apply(lambda x: group_makename(x))
 df["fuel_new"] = df["fuel"].apply(lambda x: group_fuel(x))
 df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
-df.to_csv("Bazaar\\Output\\4WheelerLargeLossUn_clubbedFile.csv")
+df.to_csv("Bazaar\\Output\\4WheelerPPT2024File.csv")
 # prepare_tweedie_file()
 # find_separation()
