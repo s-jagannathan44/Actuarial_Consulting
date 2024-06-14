@@ -24,8 +24,7 @@ def make_pivots(dataframe, columns):
                          aggfunc="sum").T
     df2["Actual"] = df2["PAID_AMT"] / df2["LIVES_EXPOSED"]
     df2["Predicted"] = df2["Pred_Cost"] / df2["LIVES_EXPOSED"]
-    df2["Error"] = (df2["Actual"] - df2["Predicted"]) / df2["Actual"]
-    # df2["Error"] = df2["Error"].abs()
+    df2["Error"] = (df2["Predicted"] - df2["Actual"]) / df2["Actual"]
     df2['%ageError'] = df2['Error'].map('{:.2%}'.format)
     df2.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\" + columns + ".csv")
 
@@ -34,13 +33,13 @@ def build_model():
     df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerNewFiles.csv")
     df_["Loss_Cost"] = df_["PAID_AMT"] / df_["LIVES_EXPOSED"]
     result = smf.glm(
-        formula='Loss_Cost ~ plan_category + CC_new + Make_type_new + Accident_Year_new + Insurer_new + Zone_new ',
+        formula='Loss_Cost ~ Insurer_PlanType_new + cc_Make_new + body_type_new + Accident_Year_new + Zone_new + Age_new',
         data=df_, family=Tweedie(var_power=1.9), var_weights=df_["LIVES_EXPOSED"]).fit()
     joblib.dump(result, "Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerNew.sav")
     return df_
 
 
-df  =   pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewFile.csv")  #  build_model() #
+df =    pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewFile.csv")  # build_model() #
 result2 = joblib.load("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerNew.sav")
 print("-----------Summary-----------")
 print(result2.summary2())
@@ -51,16 +50,13 @@ y_pred = result2.predict(df)
 df["Pred"] = y_pred
 df["Pred_Cost"] = df["Pred"] * df["LIVES_EXPOSED"]
 df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2wheelerOutputNew.csv")
-make_pivots(df, "plan_category")
-make_pivots(df, "Make_type")
-make_pivots(df, "Accident_Year")
-make_pivots(df, "ccnew")
-make_pivots(df, "Insurer")
+
+make_pivots(df, "cc_Make")
 make_pivots(df, "Zone")
-# make_pivots(df, "Accident_Year_new")
-# make_pivots(df, "Zone_new")
-# make_pivots(df, "body_type")
-# make_pivots(df, "plancategory_new")
-# make_pivots(df, "Age_new")
-# make_pivots(df, "CC_new")
-# make_pivots(df, "makename_new")
+make_pivots(df, "Insurer")
+make_pivots(df, "plan_category")
+make_pivots(df, "Accident_Year")
+make_pivots(df, "body_type")
+make_pivots(df, "Age")
+make_pivots(df, "ccnew")
+make_pivots(df, "Make")
