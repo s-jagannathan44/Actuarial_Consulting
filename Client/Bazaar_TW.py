@@ -29,12 +29,15 @@ def merge_files():
     df = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
-        client_name = file_name[14:-4]
+        client_name = file_name[14:-5]
         frame = pd.read_csv(file_name)
         frame["Policy_Client_Name"] = client_name
+        frame["file_name"] = file_name[14:-4]
+        if client_name in ["United comp+satp booking", "Liberty Comp+SATP Bookings 2", "NIA Comp+SATP Bookings "]:
+            frame["PolicyNo"] = frame["PolicyNo"].str.replace("PB_", "")
         df = pd.concat([df, frame], axis=0)
     df["Zone"] = df["registrationstate"].apply(lambda x: map_zone(x))
-    df.rename(columns={"policyno": "Policy_Number"}, inplace=True)
+    df.rename(columns={"PolicyNo": "Policy_Number"}, inplace=True)
     df["Policy_Number"] = df["Policy_Number"].apply(lambda x: "PB_" + str(x))
     df = df.drop_duplicates(subset=["Policy_Number"])
     for col_ in df.columns:
@@ -68,6 +71,10 @@ def merge_claims():
         client_name = file_name[17:-4]
         frame = pd.read_csv(file_name)
         frame["Client_Name"] = client_name
+        if client_name in ["United claims data", "SGI 2W Claims Data TP Revised", "Liberty 2W Claims Data TP",
+                           "NIA 2W Claims Data TP Revised", "Zuno 2W Claims data TP Revised"]:
+            frame["Policy Number"] = frame["Policy Number"].str.replace("PB_", "")
+
         df = pd.concat([df, frame], axis=0)
     df.dropna(subset=['Claim Reference'], inplace=True)
     df["Policy Number"] = df["Policy Number"].apply(lambda x: "PB_" + str(x))
@@ -176,7 +183,7 @@ def calculate_exposure():
 
     fiscalyear.setup_fiscal_calendar(start_month=4)
     fy_l = master["Financial_Year"].unique().tolist()
-    fy_l.remove(-1)
+
     for year_ in fy_l:
         year = year_
         df = master[master["Financial_Year"] == year_]
@@ -226,7 +233,7 @@ def transform_premium_file():
     frames = pd.DataFrame()
     premium_ = premium  # premium[premium["Financial_Year"].isin([2024])]
     years = premium_["Financial_Year"].unique().tolist()
-    years.remove(-1)
+
     for yearn in years:
         yearly_frame = pd.DataFrame(pd.DataFrame(columns=["index", "Exposure", "EP"]))
         exp_name = "FY" + str(yearn)
@@ -253,10 +260,10 @@ def find_invalid(loss_date, inception_date, expiry_date):
         return 1
 
 
-# def find_missing(policy_number):
-#     if policy_number not in merged:
-#         return policy_number
-#     return ''
+def find_missing(policy_number):
+    if policy_number not in merged:
+        return policy_number
+    return ''
 
 
 def transform_claim():
@@ -296,12 +303,10 @@ def extract_missing():
 # calculate_exposure()
 # premium = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\premium.csv")
 # transform_premium_file()
-
-norm_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\modified_premium.csv")
+#
 claims = transform_claim()
+norm_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\modified_premium.csv")
 
-# claims_policy = claims.merge(premium, on=["Policy_Number"], how="inner")
-# claims_policy.to_csv("Bazaar\\TW\\CSV\\Files\\Policy_Claim.csv")
 claims["Accident_Year"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
 
 for col__ in norm_policy.columns:
@@ -324,23 +329,29 @@ for col__ in policy_claims.columns:
     if "Unnamed" in col__:
         policy_claims.drop(col__, axis=1, inplace=True)
 
-policy_claims.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\merged_claims.csv")
+policy_claims.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\merged_claims_analysis.csv")
 print(count)
 
-# def extract_missing():
+
+# def extract_missing_claims():
+#     global claims_policy, claims, merged
+#     claims_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\merged_claims.csv")
+#     claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\claims_file.csv")
+#     merged = claims_policy["Claim_Reference"].tolist()
+#     claims["Missing_Claims"] = claims["Claim Reference"].apply(lambda x: find_missing(x))
+#     claims.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\missing_claims.csv")
+#
+#
+# extract_missing_claims()
+#
+#
+# def extract_missing_():
 #     global claims_policy, claims, merged
 #     claims_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\merged_claims.csv")
 #     claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\claims_file.csv")
 #     merged = claims_policy["Policy_Number"].tolist()
 #     claims["Missing_Claims"] = claims["Policy Number"].apply(lambda x: find_missing(x))
 #     claims.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\missing.csv")
+#
+# extract_missing_()
 
-
-# noinspection PyUnusedLocal
-# def extract_nia():
-#     niap = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\NIAP.csv")
-#     claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\NIAC.csv")
-#     pol_list = claims["Policy_Number"].to_list()
-#     mis = niap[niap["Policy_Number"].isin(pol_list)]
-#     mis.drop_duplicates().to_csv("cl.csv")
-#     pass
