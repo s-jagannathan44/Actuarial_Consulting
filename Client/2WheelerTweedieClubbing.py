@@ -117,14 +117,10 @@ def find_separation():
     othering(df_)
 
 
-df = pd.read_csv("2Wheeler_New_Large.csv")
+df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewForecastFile.csv")
 df["Age"] = df["Age"].apply(pd.to_numeric, errors="coerce")
-df["PAID_AMT"].fillna(0, inplace=True)
 df["Zone_new"] = df["Zone"].apply(lambda x: group_zone(x))
 df["body_type_new"] = df["body_type"].apply(lambda x: group_body_type(x))
 df["Make_new"] = df["Make"].apply(lambda x: group_make(x))
 df["cc_new"] = df["ccnew"].apply(lambda x: group_cc(x))
-# df["Insurer_new"] = df["Insurer"].apply(lambda x: group_Insurer(x))
-# df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
-prepare_tweedie_file()
-df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewLargeFile.csv")
+df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFullForecastFile.csv")
