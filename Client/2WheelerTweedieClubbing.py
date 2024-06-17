@@ -4,16 +4,16 @@ import duckdb as db
 
 def prepare_tweedie_file():
     q3 = """select  
-           Zone_new,cc_New,body_type_new, Make_new,
+           Accident_Year_new,Zone_new,cc_New,Make_new,Insurer_new, body_type_new, 
            sum(PAID_AMT) as PAID_AMT,sum(Count) as Claim_Count, 
            sum(LIVES_EXPOSED) as LIVES_EXPOSED                       
             from df            
-            group by  Zone_new,cc_New,body_type_new,   Make_new      
+            group by  Accident_Year_new,Zone_new,cc_New,Make_new,Insurer_new, body_type_new         
      """
 
     output = db.execute(q3).df()
 
-    output.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewLargeFiles.csv")
+    output.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerNewFiles.csv")
 
 
 def group_age(x):
@@ -36,7 +36,7 @@ def group_age(x):
 
 
 def group_zone(x):
-    if x in ["North", "South", "West"]:
+    if x in ["North", "South", "East"]:
         return "1North"
     else:
         return x
@@ -73,13 +73,9 @@ def group_PlanType(x):
 
 
 def group_make(x):
-    if x in ["HONDA", "ROYAL ENFIELD"]:
+    if x in ["HONDA", "Bajaj"]:
         return "1HONDA"
-    elif x in ["BAJAJ", "YAMAHA"]:
-        return "Group 2"
-    elif x in ["HERO MOTOCORP", "TVS"]:
-        return "Group 3"
-    elif x in ["HERO HONDA"]:
+    elif x in ["HERO MOTOCORP", "TVS", "HERO HONDA"]:
         return x
     else:
         return "Others"
@@ -113,14 +109,17 @@ def othering(dataframe):
 
 
 def find_separation():
-    df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewFiles.csv")
+    df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerNewFiles.csv")
     othering(df_)
 
 
-df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewForecastFile.csv")
+df = pd.read_csv("2Wheeler_Inflated.csv")
 df["Age"] = df["Age"].apply(pd.to_numeric, errors="coerce")
 df["Zone_new"] = df["Zone"].apply(lambda x: group_zone(x))
 df["body_type_new"] = df["body_type"].apply(lambda x: group_body_type(x))
 df["Make_new"] = df["Make"].apply(lambda x: group_make(x))
 df["cc_new"] = df["ccnew"].apply(lambda x: group_cc(x))
-df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFullForecastFile.csv")
+df["Insurer_new"] = df["Insurer"].apply(lambda x: group_Insurer(x))
+df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
+df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerInflatedFile.csv")
+

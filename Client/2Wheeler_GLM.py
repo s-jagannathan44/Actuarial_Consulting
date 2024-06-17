@@ -40,9 +40,9 @@ def build_model():
     return df_
 
 
-df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFullForecastFile.csv")
+df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerInflatedFile.csv")
 
-result2 = joblib.load("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerLarge.sav")
+result2 = joblib.load("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerNew.sav")
 print("-----------Summary-----------")
 print(result2.summary2())
 print("-----------GLM simple form relativity-----------")
@@ -51,4 +51,4 @@ print("-----------predict-----------")
 y_pred = result2.predict(df)
 df["Pred"] = y_pred
 df["Pred_Cost"] = df["Pred"] * df["LIVES_EXPOSED"]
-df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2wheelerFullForecast.csv")
+df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2wheelerInflatedOutput.csv")
