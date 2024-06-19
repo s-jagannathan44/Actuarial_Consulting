@@ -45,7 +45,7 @@ def merge_files():
             df.drop(col_, axis=1, inplace=True)
     keys = range(1, 1 + len(df))
     df.insert(0, 'index', keys)
-    df.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\base_file.csv")
+    df.to_csv("Bazaar\\TW\\CSV\\Files\\National\\base_file.csv")
 
 
 def map_zone(state):
@@ -78,7 +78,7 @@ def merge_claims():
         df = pd.concat([df, frame], axis=0)
     df.dropna(subset=['Claim Reference'], inplace=True)
     df["Policy Number"] = df["Policy Number"].apply(lambda x: "PB_" + str(x))
-    df.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\claims_file.csv")
+    df.to_csv("Bazaar\\TW\\CSV\\Files\\National\\claims_file.csv")
 
 
 def add_years(d, years):
@@ -105,7 +105,7 @@ def set_financial_year(year_p):
 
 
 def create_master():
-    base = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\base_file.csv")
+    base = pd.read_csv("Bazaar\\TW\\CSV\\Files\\National\\base_file.csv")
     base.rename(columns={"policy_startdate": "policy_start_date"}, inplace=True)
     base.rename(columns={"policy_enddate": "policy_end_date"}, inplace=True)
     base = transform_data(base)
@@ -115,7 +115,7 @@ def create_master():
         if "Unnamed" in col_:
             base.drop(col_, axis=1, inplace=True)
 
-    base.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\master.csv")
+    base.to_csv("Bazaar\\TW\\CSV\\Files\\National\\master.csv")
 
 
 def transform_data(exposure):
@@ -177,7 +177,7 @@ def group_body_type(x):
 
 def calculate_exposure():
     global year
-    master = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\master.csv")
+    master = pd.read_csv("Bazaar\\TW\\CSV\\Files\\National\\master.csv")
     master['policy_start_date'] = pd.to_datetime(master['policy_start_date'], format="mixed", dayfirst=True)
     master['policy_end_date'] = pd.to_datetime(master['policy_end_date'], format="mixed", dayfirst=True)
 
@@ -208,7 +208,7 @@ def calculate_exposure():
         if "Unnamed" in col_:
             master.drop(col_, axis=1, inplace=True)
 
-    master.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\premium.csv")
+    master.to_csv("Bazaar\\TW\\CSV\\Files\\National\\premium.csv")
 
 
 def convert_premium(prem):
@@ -249,7 +249,7 @@ def transform_premium_file():
     for col_ in norm_policy.columns:
         if "Unnamed" in col_:
             norm_policy.drop(col_, axis=1, inplace=True)
-    norm_policy.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\modified_premium.csv")
+    norm_policy.to_csv("Bazaar\\TW\\CSV\\Files\\National\\modified_premium.csv")
     pass
 
 
@@ -268,7 +268,7 @@ def find_missing(policy_number):
 
 def transform_claim():
     global claims
-    claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\claims_file.csv")
+    claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\National\\claims_file.csv")
     claims.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
     claims.rename(columns={"Claim Reference": "Claim_Reference"}, inplace=True)
     claims['Report Date'] = claims['Report Date'].str.replace('-', '')
@@ -290,7 +290,7 @@ count = 0
 
 
 def extract_missing():
-    data = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\premium.csv")
+    data = pd.read_csv("Bazaar\\TW\\CSV\\Files\\National\\premium.csv")
     # creating bool series True for NaN values
     for col_ in data.columns:
         bool_series = pd.isnull(data[col_])
@@ -301,11 +301,11 @@ def extract_missing():
 # merge_claims()
 # create_master()
 # calculate_exposure()
-# premium = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\premium.csv")
+# premium = pd.read_csv("Bazaar\\TW\\CSV\\Files\\National\\premium.csv")
 # transform_premium_file()
-#
+
 claims = transform_claim()
-norm_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\modified_premium.csv")
+norm_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\National\\modified_premium.csv")
 
 claims["Accident_Year"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
 
@@ -335,11 +335,11 @@ print(count)
 
 # def extract_missing_claims():
 #     global claims_policy, claims, merged
-#     claims_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\merged_claims.csv")
-#     claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\claims_file.csv")
+#     claims_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\National\\merged_claims_analysis.csv")
+#     claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\National\\claims_file.csv")
 #     merged = claims_policy["Claim_Reference"].tolist()
 #     claims["Missing_Claims"] = claims["Claim Reference"].apply(lambda x: find_missing(x))
-#     claims.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\missing_claims.csv")
+#     claims.to_csv("Bazaar\\TW\\CSV\\Files\\National\\missing_claims.csv")
 #
 #
 # extract_missing_claims()
@@ -347,11 +347,11 @@ print(count)
 #
 # def extract_missing_():
 #     global claims_policy, claims, merged
-#     claims_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\merged_claims.csv")
-#     claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Chola\\claims_file.csv")
+#     claims_policy = pd.read_csv("Bazaar\\TW\\CSV\\Files\\National\\merged_claims.csv")
+#     claims = pd.read_csv("Bazaar\\TW\\CSV\\Files\\National\\claims_file.csv")
 #     merged = claims_policy["Policy_Number"].tolist()
 #     claims["Missing_Claims"] = claims["Policy Number"].apply(lambda x: find_missing(x))
-#     claims.to_csv("Bazaar\\TW\\CSV\\Files\\Chola\\missing.csv")
+#     claims.to_csv("Bazaar\\TW\\CSV\\Files\\National\\missing.csv")
 #
 # extract_missing_()
 
