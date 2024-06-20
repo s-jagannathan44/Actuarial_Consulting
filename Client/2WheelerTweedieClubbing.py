@@ -5,15 +5,15 @@ import duckdb as db
 def prepare_tweedie_file():
     q3 = """select  
            Accident_Year_new , cc_New, body_type_new,Zone_new,Make_new,Insurer_new,
-           sum(PAID_AMT) as PAID_AMT,sum(Count) as Claim_Count, 
+           sum(PAID_AMT) as PAID_AMT,sum(Count) as Claim_Count, sum(EP) as EP, 
            sum(LIVES_EXPOSED) as LIVES_EXPOSED                       
             from df            
-            group by  Accident_Year_new , cc_New, body_type_new,Zone_new,Make_new,planType_new,Insurer_new 
+            group by  Accident_Year_new , cc_New, body_type_new,Zone_new,Make_new,Insurer_new 
      """
 
     output = db.execute(q3).df()
 
-    output.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerNewFiles.csv")
+    output.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewFiles.csv")
 
 
 def group_zone(x):
@@ -51,22 +51,22 @@ def group_plan(x):
 
 
 def group_make(x):
-    if x in ["HONDA", "HERO MOTOCORP", "Bajaj"]:
+    if x in ["HERO MOTOCORP", "YAMAHA", "HONDA"]:
         return "1HONDA"
-    elif x in ["TVS", "HERO HONDA"]:
+    elif x in ["TVS", "HERO HONDA", "Bajaj"]:
         return x
     else:
         return "Others"
 
 
 def group_Insurer(x):
-    if x in ["BAGIC 2W COMP+SATP Bookings", "United 2W Comp+SATP Bookings"]:
-        return "1Group 3"
-    elif x in ["ZUNO Comp+SATP Bookings 2", "SGI Comp+SATP Bookings 2", "Oriental SATP +COMP booking",
-               "National 2W Comp+SATP Bookings","NIA Comp+SATP Bookings"]:
+    if x in ["BAGIC 2W COMP+SATP Bookings", "Oriental SATP +COMP booking", "FG 2W Comp+SATP Booking", "SGI Comp+SATP Bookings 2"]:
+        return "1Group 5"
+    elif x in ["United 2W Comp+SATP Bookings",
+               "National 2W Comp+SATP Bookings", "NIA Comp+SATP Bookings"]:
         return x
     else:
-        return "Others"
+        return "1Group 5"  # "Others"
 
 
 def make_pivots(dataframe, columns):
@@ -87,20 +87,20 @@ def othering(dataframe):
 
 
 def find_separation():
-    df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheeleerNewFiles.csv")
+    df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewFiles.csv")
     othering(df_)
 
 
-df = pd.read_csv("2Wheeler_Forecast.csv")
+df = pd.read_csv("2Wheeler_New.csv")
 df["Age"] = df["Age"].apply(pd.to_numeric, errors="coerce")
 df["PAID_AMT"].fillna(0, inplace=True)
 df["Zone_new"] = df["Zone"].apply(lambda x: group_zone(x))
 df["cc_new"] = df["ccnew"].apply(lambda x: group_cc(x))
 df["body_type_new"] = df["body_type"].apply(lambda x: group_body_type(x))
 df["Make_new"] = df["Make"].apply(lambda x: group_make(x))
-df["PlanType_new"] = df["plan_category"].apply(lambda x: group_plan(x))
+# df["PlanType_new"] = df["plan_category"].apply(lambda x: group_plan(x))
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_Insurer(x))
 df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
-# prepare_tweedie_file()
-df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewForecastFile.csv")
-# find_separation()
+prepare_tweedie_file()
+df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNew.csv")
+find_separation()
