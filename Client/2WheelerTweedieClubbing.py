@@ -4,11 +4,11 @@ import duckdb as db
 
 def prepare_tweedie_file():
     q3 = """select  
-           cc_New, body_type_new,Zone_new,Make_new,Insurer_new,
+           cc_large, body_type_large,Zone_large,Make_large,Insurer_large,
            sum(PAID_AMT) as PAID_AMT,sum(Count) as Claim_Count, sum(EP) as EP, 
            sum(LIVES_EXPOSED) as LIVES_EXPOSED                       
             from df            
-            group by cc_New, body_type_new,Zone_new,Make_new,Insurer_new 
+            group by cc_large, body_type_large,Zone_large,Make_large,Insurer_large 
      """
 
     output = db.execute(q3).df()
@@ -80,13 +80,13 @@ def make_pivots(dataframe, columns):
 
 
 def othering(dataframe):
-    make_pivots(dataframe, "Zone_new")
-    make_pivots(dataframe, "body_type_new")
-    make_pivots(dataframe, "Make_new")
-    make_pivots(dataframe, "cc_new")
-    make_pivots(dataframe, "Insurer_new")
-    # make_pivots(dataframe, "PlanType_new")
-    # make_pivots(dataframe, "Accident_Year_new")
+    make_pivots(dataframe, "Zone_large")
+    make_pivots(dataframe, "body_type_large")
+    make_pivots(dataframe, "Make_large")
+    make_pivots(dataframe, "cc_large")
+    make_pivots(dataframe, "Insurer_large")
+    # make_pivots(dataframe, "PlanType_large")
+    # make_pivots(dataframe, "Accident_Year_large")
 
 
 def find_separation():
@@ -94,16 +94,16 @@ def find_separation():
     othering(df_)
 
 
-df = pd.read_csv("2Wheeler_New_Large.csv")
+df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFull.csv")
 df["Age"] = df["Age"].apply(pd.to_numeric, errors="coerce")
 df["PAID_AMT"].fillna(0, inplace=True)
-df["Zone_new"] = df["Zone"].apply(lambda x: group_zone(x))
-df["cc_new"] = df["ccnew"].apply(lambda x: group_cc(x))
-df["body_type_new"] = df["body_type"].apply(lambda x: group_body_type(x))
-df["Make_new"] = df["Make"].apply(lambda x: group_make(x))
+df["Zone_large"] = df["Zone"].apply(lambda x: group_zone(x))
+df["cc_large"] = df["ccnew"].apply(lambda x: group_cc(x))
+df["body_type_large"] = df["body_type"].apply(lambda x: group_body_type(x))
+df["Make_large"] = df["Make"].apply(lambda x: group_make(x))
 # df["PlanType_new"] = df["plan_category"].apply(lambda x: group_plan(x))
-df["Insurer_new"] = df["Insurer"].apply(lambda x: group_Insurer(x))
+df["Insurer_large"] = df["Insurer"].apply(lambda x: group_Insurer(x))
 # df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
-prepare_tweedie_file()
-df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewLargeFile.csv")
-find_separation()
+# prepare_tweedie_file()
+df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFullFile.csv")
+# find_separation()
