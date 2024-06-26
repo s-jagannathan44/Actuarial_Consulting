@@ -4,21 +4,21 @@ import duckdb as db
 
 def prepare_tweedie_file():
     q3 = """select  
-           Accident_Year_new , cc_New, body_type_new,Zone_new,Make_new,Insurer_new,InsurerType_new,
+           Accident_Year_new , cc_New, body_type_new,Zone_new,Make_new,Insurer_new,
            sum(PAID_AMT) as PAID_AMT,sum(Count) as Claim_Count, sum(EP) as EP, 
            sum(LIVES_EXPOSED) as LIVES_EXPOSED                       
             from df            
-            group by  Accident_Year_new , cc_New, body_type_new,Zone_new,Make_new,Insurer_new,InsurerType_new 
+            group by  Accident_Year_new , cc_New, body_type_new,Zone_new,Make_new,Insurer_new 
      """
 
     output = db.execute(q3).df()
 
-    output.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewFiles.csv")
+    output.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFinalFile.csv")
 
 
 def group_zone(x):
-    if x in ["North"]:
-        return "1North"
+    if x in ["South", 'East']:
+        return "1SouthEast"
     else:
         return x
 
@@ -54,21 +54,20 @@ def group_InsurerType(x):
 
 
 def group_make(x):
-    if x in ["SUZUKI", "HONDA", "HERO HONDA"]:
+    if x in ["HONDA","HERO MOTOCORP", "Bajaj"]:
         return "1HONDA"
-    elif x in ["TVS", "YAMAHA"]:
-        return "1HONDA"  # "Group 1"
-    elif x in ["HERO MOTOCORP", "Bajaj"]:
+    elif x in ["HERO HONDA", "TVS"]:
         return x
     else:
         return "Others"
 
 
 def group_Insurer(x):
-    if x in ["United 2W Comp+SATP Bookings",
-             "National 2W Comp+SATP Bookings", "NIA Comp+SATP Bookings", "BAGIC 2W COMP+SATP Bookings",
+    if x in ["National 2W Comp+SATP Bookings", "NIA Comp+SATP Bookings", "BAGIC 2W COMP+SATP Bookings",
              "Oriental SATP +COMP booking"]:
         return x
+    elif x in ["United 2W Comp+SATP Bookings", "Liberty Comp+SATP Bookings 2"]:
+        return "Group 2"
     else:
         return "Others"
 
@@ -86,12 +85,12 @@ def othering(dataframe):
     make_pivots(dataframe, "Make_new")
     make_pivots(dataframe, "cc_new")
     make_pivots(dataframe, "Insurer_new")
-    make_pivots(dataframe, "InsurerType_new")
+  #  make_pivots(dataframe, "InsurerType_new")
     make_pivots(dataframe, "Accident_Year_new")
 
 
 def find_separation():
-    df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewFiles.csv")
+    df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFinalFile.csv")
     othering(df_)
 
 
@@ -105,6 +104,6 @@ df["Make_new"] = df["Make"].apply(lambda x: group_make(x))
 df["InsurerType_new"] = df["InsurerType"].apply(lambda x: group_InsurerType(x))
 df["Insurer_new"] = df["Insurer"].apply(lambda x: group_Insurer(x))
 df["Accident_Year_new"] = df["Accident_Year"].apply(lambda x: group_AY(x))
-prepare_tweedie_file()
-df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNew.csv")
-find_separation()
+# prepare_tweedie_file()
+df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerForecast.csv")
+# find_separation()
