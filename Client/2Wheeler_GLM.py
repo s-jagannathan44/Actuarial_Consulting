@@ -30,33 +30,33 @@ def make_pivots(dataframe, columns):
 
 
 def build_model():
-    df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFinalFile.csv")
+    df_ = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerNewLargeFiles.csv")
     df_["Loss_Cost"] = df_["PAID_AMT"] / df_["LIVES_EXPOSED"]
     result = smf.glm(
-        formula='Loss_Cost ~ cc_new + Make_new + body_type_new + Accident_Year_new + Zone_new + Insurer_new',
+        formula='Loss_Cost ~ cc_large + Make_large + body_type_large + Zone_large + Insurer_large',
         data=df_, family=Tweedie(var_power=1.9), var_weights=df_["LIVES_EXPOSED"]).fit()
-    joblib.dump(result, "Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFinal.sav")
+    joblib.dump(result, "Bazaar\\TW\\CSV\\Files\\Output\\2WheelerLarge.sav")
     return df_
 
 
-df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerForecast.csv")  # build_model()  #
-result2 = joblib.load("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFinal.sav")
+df = pd.read_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerFullFile.csv")  # build_model()  #
+result2 = joblib.load("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerLarge.sav")
 print("-----------Summary-----------")
 print(result2.summary2())
 print("-----------GLM simple form relativity-----------")
 print(np.exp(result2.params))
 print("-----------predict-----------")
 y_pred = result2.predict(df)
-df["Pred"] = y_pred
-df["Pred_Cost"] = df["Pred"] * df["LIVES_EXPOSED"]
-df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerOutputForecast.csv")
+df["Pred_large"] = y_pred
+df["Pred_Cost_large"] = df["Pred_large"] * df["LIVES_EXPOSED"]
+df.to_csv("Bazaar\\TW\\CSV\\Files\\Output\\2WheelerOutputFull.csv")
 
 # make_pivots(df, "Accident_Year_new")
 
-make_pivots(df, "Zone")
-make_pivots(df, "Insurer")
-make_pivots(df, "InsurerType")
-make_pivots(df, "Accident_Year")
-make_pivots(df, "body_type")
-make_pivots(df, "ccnew")
-make_pivots(df, "Make")
+# make_pivots(df, "Zone")
+# make_pivots(df, "Insurer")
+# make_pivots(df, "plan_category")
+# # make_pivots(df, "Accident_Year")
+# make_pivots(df, "body_type")
+# make_pivots(df, "ccnew")
+# make_pivots(df, "Make")
