@@ -41,47 +41,19 @@ def merge_claim_files():
 # # merge_claim_files()
 # p = pd.read_csv("Output\\base_claim_file.csv")
 # c = pd.read_csv("Output\\base_policy_file.csv")
-def group_member_policy_type(x):
-    if x in ["Others"]:
-        return "Any Other Cover Type"
-    else:
+
+
+def group_member_product_type(x):
+    if x in ["Indemnity_Policy", "Both_Indemnity_and_Benefit_Based", "Package_Policy"]:
         return x
+    else:
+        return "Others"
 
 
 def group_claim_product_type(x):
-    if x in ["Any Other Product Type"]:
-        return "Any_Other_Product_type"
-    elif x in ["Benefit Based Policy"]:
-        return "Benefit_Based_Policy"
-    elif x in ["Both Indemnity and Benefit Based"]:
-        return "Both_Indemnity_and_Benefit_Based"
-    elif x in ["Critical Illness Policy"]:
-        return "Critical_Illness_Policy"
-    elif x in ["High Deductible"]:
-        return "High_Deductible"
-    elif x in ["Hybrid Policy (covering other than health also)"]:
-        return "Any_Other_Product_type"
-    elif x in ["Indemnity Policy"]:
-        return "Indemnity_Policy"
-    elif x in ["Loan care product"]:
-        return "Loan_care_product"
-    elif x in ["Micro insurance Policy"]:
-        return "Micro_insurance_Policy"
-    elif x in ["Out Patient Policy"]:
-        return "Out_Patient_Policy"
-    elif x in ["Package Policy (covering more than one type of health above)"]:
-        return "Package_Policy"
-    elif x in ["Specific Disease Cover (For Ex. Cancer, HIV, Diabetes etc.)"]:
-        return "Specific_Disease_Cover"
-    else:
+    if x in ["Indemnity Policy", "Both Indemnity and Benefit Based",
+             "Package Policy (covering more than one type of health above)"]:
         return x
-
-
-def group_claim_gender(x):
-    if x in [1]:
-        return "Male"
-    elif x in [2]:
-        return "Female"
     else:
         return "Others"
 
@@ -94,47 +66,68 @@ def map_pincode(x):
         return ""
 
 
+def map_year(x):
+    try:
+        if pd.isnull(x):
+            return ""
+        else:
+            return x.strftime("%Y")
+    except ValueError:
+        print("Null date ")
+
+
 def group_policy_term(x):
-    if x in [0, 1]:
+    if x in [0, 1, 2]:
         return x
     else:
-        return "Above 1"
+        return "Above 2"
 
 
 def group_Age(x):
-    if x in [0, 1]:
+    if 0 <= x <= 4:
+        return "0 to 4"
+    elif 5 <= x <= 9:
+        return "5 to 9"
+    elif 10 <= x <= 14:
+        return "10 to 14"
+    elif 15 <= x <= 19:
+        return "15 to 19"
+    if 20 <= x <= 24:
+        return "20 to 24"
+    elif 25 <= x <= 29:
+        return "25 to 29"
+    elif 30 <= x <= 34:
+        return "30 to 34"
+    elif 35 <= x <= 39:
+        return "35 to 39"
+    if 40 <= x <= 44:
+        return "40 to 44"
+    elif 45 <= x <= 49:
+        return "45 to 49"
+    elif 50 <= x <= 54:
+        return "50 to 54"
+    elif 55 <= x <= 59:
+        return "55 to 59"
+    if 60 <= x <= 64:
+        return "60 to 64"
+    elif 65 <= x <= 69:
+        return "65 to 69"
+    elif 70 <= x <= 79:
+        return "70 to 79"
+    elif 80 <= x <= 89:
+        return "80 to 89"
+    elif 90 <= x <= 99:
+        return "90 to 99"
+    else:
+        return "Above 100"
+
+
+def group_si(x):
+    if x in [0, 500000, 1000000, 300000, 200000, 1500000, 2000000, 400000, 2500000, 100000, 600000, 800000, 700000,
+             3000000, 5000000, 750000, 9000000, 1000, 1200000]:
         return x
-    elif 2 < x < 20:
-        return "2 to 20"
-    elif 21 < x < 40:
-        return "21 to 40"
-    elif 41 < x < 60:
-        return "41 to 60"
-    elif 61 < x < 80:
-        return "61 to 80"
     else:
-        return "Above 80"
-
-
-def group_SI(x):
-    if 0 < x <= 25000:
-        return "O to 25"
-    elif 25000 < x <= 300000:
-        return "25 to 3 lacs"
-    elif 300000 < x <= 400000:
-        return "3 lacs to 4 lacs"
-    elif 400000 < x <= 500000:
-        return "4 lacs to 5 lacs"
-    elif 500000 < x <= 500000:
-        return "5 lacs to 6 lacs"
-    elif 600000 < x <= 800000:
-        return "6 lacs to 8 lacs"
-    elif 800000 < x <= 1000000:
-        return "8 lacs to 10 lacs"
-    elif 1000000 < x <= 2000000:
-        return "10 lacs to 20 lacs"
-    else:
-        return "Above 20 lacs"
+        return "Other"
 
 
 pincode = pd.read_csv("Output\\pincodes.csv")
@@ -142,37 +135,37 @@ dict_df = pincode.set_index('Pincode')['District'].to_dict()
 m = pd.read_csv("Output\\base_member_file.csv")
 c = pd.read_csv("Output\\base_claim_file.csv")
 c["District_New"] = c["TXT_PIN_CODE_OF_HOSPITAL"].apply(lambda x: map_pincode(x))
-c["Gender_New"] = c["TXT_GENDER"].apply(lambda x: group_claim_gender(x))
 c["Product_Type_New"] = c["TXT_PRODUCT_TYPE"].apply(lambda x: group_claim_product_type(x))
-c["SI_New"] = c["Sum_Insured"].apply(lambda x: group_SI(x))
 c["Policy_Term_New"] = c["Policy_Term"].apply(lambda x: group_policy_term(x))
 c["Age_New"] = c["Age"].apply(lambda x: group_Age(x))
-c["Key"] = c["Insurer_Type"] + "_" + c["Policy_Type"] + c["District_New"] + "_" + c["Product_Type_New"] + \
-           str(c["Policy_Term_New"]) + "_" + str(c["Age_New"]) + c["Gender_New"] + "_" + str(c["SI_New"])
+c["SI_New"] = c["Sum_Insured"].apply(lambda x: group_si(x))
+c['Date_of_Payment'] = pd.to_datetime(c['Date_of_Payment'], format="mixed", dayfirst=True)
+c["Year_OfPayment"] = c["Date_of_Payment"].apply(lambda x: map_year(x))
 
-m["SI_New"] = m["NUM_SUM_INSURED"].apply(lambda x: map_pincode(x))
+m["District_New"] = m["Pincode"].apply(lambda x: map_pincode(x))
+m["Product_Type_New"] = m["txt_product_type"].apply(lambda x: group_member_product_type(x))
 m["Policy_Term_New"] = m["Policy_Term"].apply(lambda x: group_policy_term(x))
 m["Age_New"] = m["age"].apply(lambda x: group_Age(x))
-m["District_New"] = m["Pincode"].apply(lambda x: map_pincode(x))
-m["SI_New"] = m["NUM_SUM_INSURED"].apply((lambda x: group_SI(x)))
-m["Policy_Type_New"] = m['Policy_Type'].apply(lambda x: group_member_policy_type(x))
-m["Key"] = m["Business_Type"] + "_" + m["Policy_Type_New"] + m["District_New"] + "_" + m["txt_product_type"] + \
-           str(m["Policy_Term_New"]) + "_" + str(m["Age_New"]) + m["Gender"] + "_" + str(m["SI_New"])
+m["SI_New"] = m["NUM_SUM_INSURED"].apply(lambda x: group_si(x))
 
-q3 = """select sum(Total_Amount_Claimed), sum(Number_of_Claims), Key, Insurer_Type, Policy_Type, District_New,
-               Product_Type_New, Policy_Term_New, Age_New, Gender_New, SI_New 
+# m["Key"] = m["Business_Type"] + "_" + m["Policy_Type_New"] + m["District_New"] + "_" + m["txt_product_type"] + \
+#            str(m["Policy_Term_New"]) + "_" + str(m["Age_New"]) + m["Gender"] + "_" + str(m["SI_New"])
+
+q3 = """select sum(Total_Amount_Claimed) as Claimed_Amount, sum(Number_of_Claims) as Claim_Count, sum(Total_Claim_Paid) as PAID_AMT,
+               Insurer_Type, Policy_Type, District_New,
+               Product_Type_New, Policy_Term_New, Age_New, TXT_GENDER, SI_New,file_name  
             from c
-            group by Key, Insurer_Type, Policy_Type, District_New,
-               Product_Type_New, Policy_Term_New, Age_New, Gender_New, SI_New 
+            group by  Insurer_Type, Policy_Type, District_New,
+               Product_Type_New, Policy_Term_New, Age_New, TXT_GENDER, SI_New,file_name 
      """
 
 claims = db.execute(q3).df()
 
-q4 = """select sum(NOM), Key, Business_Type, Policy_Type, District_New,
-               txt_product_type, Policy_Term_New, Age_New, Gender, SI_New 
+q4 = """select sum(NOM) as Member_Count, Business_Type, Policy_Type, District_New,
+               Product_Type_New, Policy_Term_New, Age_New, Gender, SI_New,file_name 
             from m
-            group by Key, Business_Type, Policy_Type, District_New,
-               txt_product_type, Policy_Term_New, Age_New, Gender, SI_New 
+            group by Business_Type, Policy_Type, District_New,
+               Product_Type_New, Policy_Term_New, Age_New, Gender, SI_New,file_name 
      """
 
 members = db.execute(q4).df()
