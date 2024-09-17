@@ -25,22 +25,22 @@ def merge_policy_files():
     # df.to_csv("Output\\base_policy_file.csv")
 
 
+# noinspection PyUnusedLocal
 def merge_claim_files():
-    path = "C:\\Users\\jvpra\\Desktop\\IIB-Narayana\\Narayana Bespoke_Claims_Dataset/*.csv"
+    path = "C:\\Users\\jvpra\\OneDrive\\Desktop\\Narayana\\IIB-Narayana\\Narayana Bespoke_Claims_Dataset/*.csv"
     df = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
         frame = pd.read_csv(file_name)
         frame["file_name"] = file_name[-11:-3]
+        frame["ICD_Code_New"] = frame["ICD_CODE"].str[:3]
         df = pd.concat([df, frame], axis=0)
-    # df.to_csv("Output\\base_claim_file.csv")
 
+    icd_master = pd.read_csv("C:\\SHAI\\Revised 11-12-23\\ICD_Ver10cm 2019 V1.csv")
+    claim_master = db.sql("""select df.*, icd_master.ICD_category,ICD_Group,Description from df left join 
+                               icd_master on icd_master.icd_code =  df.ICD_Code_New """).df()
 
-# # merge_policy_files()
-# merge_member_files()
-# # merge_claim_files()
-# p = pd.read_csv("Output\\base_claim_file.csv")
-# c = pd.read_csv("Output\\base_policy_file.csv")
+    claim_master.to_csv("Output\\base_claim_file_v2.csv")
 
 
 def group_member_product_type(x):
@@ -130,45 +130,57 @@ def group_si(x):
         return "Other"
 
 
-pincode = pd.read_csv("Output\\pincodes.csv")
-dict_df = pincode.set_index('Pincode')['District'].to_dict()
-m = pd.read_csv("Output\\base_member_file.csv")
-c = pd.read_csv("Output\\base_claim_file.csv")
-c["District_New"] = c["TXT_PIN_CODE_OF_HOSPITAL"].apply(lambda x: map_pincode(x))
-c["Product_Type_New"] = c["TXT_PRODUCT_TYPE"].apply(lambda x: group_claim_product_type(x))
-c["Policy_Term_New"] = c["Policy_Term"].apply(lambda x: group_policy_term(x))
-c["Age_New"] = c["Age"].apply(lambda x: group_Age(x))
-c["SI_New"] = c["Sum_Insured"].apply(lambda x: group_si(x))
-c['Date_of_Payment'] = pd.to_datetime(c['Date_of_Payment'], format="mixed", dayfirst=True)
-c["Year_OfPayment"] = c["Date_of_Payment"].apply(lambda x: map_year(x))
+def group_files():
+    m = pd.read_csv("Output\\base_member_file.csv")
+    c = pd.read_csv("Output\\base_claim_file.csv")
+    c["District_New"] = c["TXT_PIN_CODE_OF_HOSPITAL"].apply(lambda x: map_pincode(x))
+    c["Product_Type_New"] = c["TXT_PRODUCT_TYPE"].apply(lambda x: group_claim_product_type(x))
+    c["Policy_Term_New"] = c["Policy_Term"].apply(lambda x: group_policy_term(x))
+    c["Age_New"] = c["Age"].apply(lambda x: group_Age(x))
+    c["SI_New"] = c["Sum_Insured"].apply(lambda x: group_si(x))
+    c['Date_of_Payment'] = pd.to_datetime(c['Date_of_Payment'], format="mixed", dayfirst=True)
+    c["Year_OfPayment"] = c["Date_of_Payment"].apply(lambda x: map_year(x))
 
-m["District_New"] = m["Pincode"].apply(lambda x: map_pincode(x))
-m["Product_Type_New"] = m["txt_product_type"].apply(lambda x: group_member_product_type(x))
-m["Policy_Term_New"] = m["Policy_Term"].apply(lambda x: group_policy_term(x))
-m["Age_New"] = m["age"].apply(lambda x: group_Age(x))
-m["SI_New"] = m["NUM_SUM_INSURED"].apply(lambda x: group_si(x))
+    m["District_New"] = m["Pincode"].apply(lambda x: map_pincode(x))
+    m["Product_Type_New"] = m["txt_product_type"].apply(lambda x: group_member_product_type(x))
+    m["Policy_Term_New"] = m["Policy_Term"].apply(lambda x: group_policy_term(x))
+    m["Age_New"] = m["age"].apply(lambda x: group_Age(x))
+    m["SI_New"] = m["NUM_SUM_INSURED"].apply(lambda x: group_si(x))
 
-# m["Key"] = m["Business_Type"] + "_" + m["Policy_Type_New"] + m["District_New"] + "_" + m["txt_product_type"] + \
-#            str(m["Policy_Term_New"]) + "_" + str(m["Age_New"]) + m["Gender"] + "_" + str(m["SI_New"])
+    # m["Key"] = m["Business_Type"] + "_" + m["Policy_Type_New"] + m["District_New"] + "_" + m["txt_product_type"] + \
+    #            str(m["Policy_Term_New"]) + "_" + str(m["Age_New"]) + m["Gender"] + "_" + str(m["SI_New"])
 
-q3 = """select sum(Total_Amount_Claimed) as Claimed_Amount, sum(Number_of_Claims) as Claim_Count, sum(Total_Claim_Paid) as PAID_AMT,
-               Insurer_Type, Policy_Type, District_New,
-               Product_Type_New, Policy_Term_New, Age_New, TXT_GENDER, SI_New,file_name  
-            from c
-            group by  Insurer_Type, Policy_Type, District_New,
-               Product_Type_New, Policy_Term_New, Age_New, TXT_GENDER, SI_New,file_name 
-     """
+    q3 = """select sum(Total_Amount_Claimed) as Claimed_Amount, sum(Number_of_Claims) as Claim_Count, sum(Total_Claim_Paid) as PAID_AMT,
+                   Insurer_Type, Policy_Type, District_New,
+                   Product_Type_New, Policy_Term_New, Age_New, TXT_GENDER, SI_New,file_name  
+                from c
+                group by  Insurer_Type, Policy_Type, District_New,
+                   Product_Type_New, Policy_Term_New, Age_New, TXT_GENDER, SI_New,file_name 
+         """
 
-claims = db.execute(q3).df()
+    claims_ = db.execute(q3).df()
 
-q4 = """select sum(NOM) as Member_Count, Business_Type, Policy_Type, District_New,
-               Product_Type_New, Policy_Term_New, Age_New, Gender, SI_New,file_name 
-            from m
-            group by Business_Type, Policy_Type, District_New,
-               Product_Type_New, Policy_Term_New, Age_New, Gender, SI_New,file_name 
-     """
+    q4 = """select sum(NOM) as Member_Count, Business_Type, Policy_Type, District_New,
+                   Product_Type_New, Policy_Term_New, Age_New, Gender, SI_New,file_name 
+                from m
+                group by Business_Type, Policy_Type, District_New,
+                   Product_Type_New, Policy_Term_New, Age_New, Gender, SI_New,file_name 
+         """
 
-members = db.execute(q4).df()
+    members = db.execute(q4).df()
 
-members.to_csv("Output\\grouped_member.csv")
-claims.to_csv("Output\\grouped_claim.csv")
+    members.to_csv("Output\\grouped_member.csv")
+    claims_.to_csv("Output\\grouped_claim.csv")
+
+
+# merge_policy_files()
+# merge_member_files()
+# merge_claim_files()
+
+claims = pd.read_csv("Output\\base_claim_file_v2.csv")
+claims["Age_New"] = claims["Age"].apply(lambda x: group_Age(x))
+claims.to_csv("Output\\base_claim_file_v3_AgeBands.csv")
+
+# pincode = pd.read_csv("Output\\pincodes.csv")
+# dict_df = pincode.set_index('Pincode')['District'].to_dict()
+dict_df = ""
