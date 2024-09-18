@@ -1,0 +1,44 @@
+from datetime import datetime
+import pandas as pd
+
+opening_os = 0
+opening_paid = 0
+
+
+# def print_row(row):
+#     global opening_os
+#     global opening_paid
+#     closing_paid = row["PaidClaimAmount"]
+#     closing_os = row["Outstanding_Amount"]
+#     incurred = (closing_os - opening_os) + (closing_paid - opening_paid)
+#     opening_paid = closing_paid
+#     opening_os = closing_os
+#     return incurred
+
+
+claims = pd.read_csv("Output\\trail.csv")
+claims['Intimation_Date'] = pd.to_datetime(claims['Intimation_Date'], format="mixed", dayfirst=True)
+claims['File'] = pd.to_datetime(claims['File'], format="mixed", dayfirst=True)
+for claim_reference in claims["Claim_Reference"].unique().tolist():
+    claim_reference_ = claim_reference
+    cr = claims[claims["Claim_Reference"] == claim_reference].sort_values(by=["File"])
+    intimation_date = cr["Intimation_Date"][0]
+    if intimation_date >= datetime.strptime("01/03/2023", "%d/%m/%Y"):
+        opening_paid = 0
+        opening_os = 0
+    else:
+        opening_paid = int(cr["PaidClaimAmount"].head(1))
+        opening_os = int(cr["Outstanding_Amount"].head(1))
+        # incurred = cr.apply(lambda x: print_row(x), axis=1)
+        # print(incurred)
+    for index, row in cr.iterrows():
+        closing_paid = row["PaidClaimAmount"]
+        closing_os = row["Outstanding_Amount"]
+        incurred = (closing_os - opening_os) + (closing_paid - opening_paid)
+        # row["incurred"] =
+        opening_paid = closing_paid
+        opening_os = closing_os
+        print(incurred)
+        cr.at[index, 'incurred'] = incurred
+        pass
+    cr.to_csv("Output\\Incurred.csv")
