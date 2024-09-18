@@ -25,6 +25,7 @@ claims["PaidClaimAmount"] = claims["PaidClaimAmount"].str.replace("-", "0")
 list_claims = claims["Claim_Reference"].unique().tolist()
 print(len(list_claims))
 counter = 0
+in_current_period = False
 for claim_reference in list_claims:
     counter = counter + 1
     print(counter)
@@ -34,27 +35,20 @@ for claim_reference in list_claims:
     if intimation_date >= datetime.strptime("01/03/2023", "%d/%m/%Y"):
         opening_paid = 0
         opening_os = 0
+        in_current_period = True
     else:
         opening_paid = int(cr["PaidClaimAmount"].iloc[0])
         opening_os = int(cr["Outstanding_Amount"].iloc[0])
+
     incurred = cr.apply(lambda x: print_row(x), axis=1)
-    count =0
+    count = 0
     for amount in incurred:
         index_ = incurred.index[count]
         claims.at[index_, "Incurred"] = amount
-        count = count +1
-    # claims.to_csv("Output\\Inc.csv")
-    # break
-    # print(incurred)
-    # for index, row in cr.iterrows():
-    #     closing_paid = row["PaidClaimAmount"]
-    #     closing_os = row["Outstanding_Amount"]
-    #     incurred = (closing_os - opening_os) + (closing_paid - opening_paid)
-    #     # row["incurred"] =
-    #     opening_paid = closing_paid
-    #     opening_os = closing_os
-    #     print(incurred)
-    #     cr.at[index, 'incurred'] = incurred
-    #     pass
-    #cr.to_csv("Output\\Incurred.csv")
+        if count == 0 and in_current_period and cr["File"].iloc[0].month == intimation_date.month:
+            claims.at[index_, "Claim_Count"] = 1
+        else:
+            claims.at[index_, "Claim_Count"] = 0
+        count = count + 1
+
 claims.to_csv("Output\\Inc.csv")
