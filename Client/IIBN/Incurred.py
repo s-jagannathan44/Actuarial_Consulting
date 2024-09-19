@@ -16,23 +16,23 @@ def print_row(row):
     return incurred_
 
 
-# claims = pd.read_csv("Output\\trail.csv")
-claims = pd.read_csv("Output\\ClaimsData.csv")
+claims = pd.read_csv("Output\\RSA_Combined_Claims.csv")
 claims['Intimation_Date'] = pd.to_datetime(claims['Intimation_Date'], format="mixed", dayfirst=True)
 claims['File'] = pd.to_datetime(claims['File'], format="mixed", dayfirst=True)
-claims["PaidClaimAmount"] = claims["PaidClaimAmount"].str.replace("-", "0")
+
 
 list_claims = claims["Claim_Reference"].unique().tolist()
 print(len(list_claims))
 counter = 0
-in_current_period = False
 for claim_reference in list_claims:
+    in_current_period = False
     counter = counter + 1
     print(counter)
     claim_reference_ = claim_reference
     cr = claims[claims["Claim_Reference"] == claim_reference].sort_values(by=["File"])
     intimation_date = cr["Intimation_Date"].iloc[0]
-    if intimation_date >= datetime.strptime("01/03/2023", "%d/%m/%Y"):
+    start_of_time = "07/03/2023"
+    if intimation_date >= datetime.strptime(start_of_time, "%d/%m/%Y"):
         opening_paid = 0
         opening_os = 0
         in_current_period = True
@@ -51,4 +51,4 @@ for claim_reference in list_claims:
             claims.at[index_, "Claim_Count"] = 0
         count = count + 1
 
-claims.to_csv("Output\\Inc.csv")
+claims.to_csv("Output\\RSA_Incurred_Claims.csv")
