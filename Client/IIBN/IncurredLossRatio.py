@@ -1,0 +1,145 @@
+import pandas as pd
+from datetime import datetime, timedelta
+
+mdays = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+# Constants for months referenced later
+February = 2
+month = ""
+
+
+def is_leap(year):
+    """Return True for leap years, False for non-leap years."""
+    return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
+
+def month_len(year, month_):
+    return mdays[month_] + (month_ == February and is_leap(year))
+
+
+def get_months():
+    df = pd.read_csv("Bazaar\\Month_list.csv")
+    return df["Months"].unique().tolist()
+
+
+def func(xy):
+    test_date = datetime.strptime(month, "%m-%d-%Y")
+    days_in_month = month_len(test_date.year, test_date.month)
+    days_in_year = 365
+
+    if is_leap(test_date.year):
+        days_in_year = 366
+
+    end_date = (test_date + timedelta(days_in_month - 1))
+    exposure = ((end_date - xy).days + 1) / days_in_year
+    return exposure
+
+
+def funct(xy):
+    test_date = datetime.strptime(month, "%m-%d-%Y")
+    days_in_month = month_len(test_date.year, test_date.month)
+    days_in_year = 365
+
+    if is_leap(test_date.year):
+        days_in_year = 366
+
+    end_date = (test_date + timedelta(days_in_month - 1))
+
+    exposure = ((xy - test_date).days + 1) / days_in_year
+    return exposure
+
+
+def funcs(xz):
+    test_date = datetime.strptime(month, "%m-%d-%Y")
+    days_in_month = month_len(test_date.year, test_date.month)
+    days_in_year = 365
+
+    if is_leap(test_date.year):
+        days_in_year = 366
+
+    exposure = days_in_month / days_in_year
+    return exposure
+
+
+def calculate_exposure():
+    # master = pd.read_csv("Bazaar\\Bajaj_Booking Dump.csv")
+    master = pd.read_csv("Bazaar\\Trial.csv")
+    master['uw_startdate'] = pd.to_datetime(master['uw_startdate'], format="mixed", dayfirst=True)
+    master["uw_enddate"] = pd.to_datetime(master['uw_enddate'], format="mixed", dayfirst=True)
+    # exposure["od_ao"] = exposure['od_ao'].apply(lambda x: convert_premium(x))
+    master = master[
+        master['uw_enddate'] > '2023-01-01']  # 1st step to exclude all policies with end date before Jan 23
+    month_list = get_months()
+
+    for month_ in month_list:
+        global month
+        month = month_
+        print(month)
+        test_date = datetime.strptime(month, "%m-%d-%Y")
+        days_in_month = month_len(test_date.year, test_date.month)
+
+        # 2nd  step to find policies with start date in current month
+        df1 = master[
+            (master["uw_startdate"] >= month) & (master["uw_startdate"] <= (test_date + timedelta(days_in_month - 1)))]
+
+        # 3rd step is to find policies with end date in current month
+        df2 = master[ (master["uw_enddate"] >= month) & (master["uw_enddate"] <= (test_date + timedelta(days_in_month - 1)))]
+
+        # 4th step is to find policies which pass through the month
+        df3 = master[ (master["uw_startdate"] < month) & (master["uw_enddate"] > (test_date + timedelta(days_in_month - 1)))]
+
+
+
+
+
+        start_exposure = df1["uw_startdate"].apply(lambda xz: func(xz))
+        end_exposure = df2["uw_enddate"].apply(lambda xx: funct(xx))
+        passthrough_exposure = df3["uw_startdate"].apply(lambda xz: funcs(xz))
+        exposure_month = str(test_date.year) + "_" + str(test_date.month)
+        count = 0
+        for exposure in start_exposure:
+            index_ = start_exposure.index[count]
+            master.at[index_, exposure_month] = exposure
+            master.at[index_, exposure_month + "_EP"] = master.at[index_, exposure_month] * master.at[index_, "od_ao"]
+            count = count + 1
+
+
+
+        count = 0
+        for exposure in end_exposure:
+            index_ = end_exposure.index[count]
+            master.at[index_, exposure_month] = exposure
+            master.at[index_, exposure_month + "_EP"] = master.at[index_, exposure_month] * master.at[index_, "od_ao"]
+            count = count + 1
+
+        count = 0
+        for exposure in passthrough_exposure:
+            index_ = passthrough_exposure.index[count]
+            master.at[index_, exposure_month] = exposure
+            master.at[index_, exposure_month + "_EP"] = master.at[index_, exposure_month] * master.at[index_, "od_ao"]
+            count = count + 1
+
+    master.to_csv("Bazaar\\Output\\ILR.csv")
+
+
+# def transform_premium_file():
+#     global norm_policy
+#     frames = pd.DataFrame()
+#     years = premium["Financial_Year"].unique().tolist()
+#     years.append(2026)
+#     years.append(2027)
+#     for yearn in years:
+#         yearly_frame = pd.DataFrame(pd.DataFrame(columns=["PolicyID", "Exposure", "EP"]))
+#         exp_name = "FY" + str(yearn)
+#         ep_name = "FY" + str(yearn) + "_EP"
+#         yearly_frame[["PolicyID", "Exposure", "EP"]] = premium[["PolicyID", exp_name, ep_name]]
+#         yearly_frame["Accident_Year"] = yearn
+#         frames = pd.concat([frames, yearly_frame], axis=0)
+#     nep = db.sql("select * from frames where Exposure is not null and EP is not null").df().sort_values(by="PolicyID")
+#     # policy.to_csv("modified.csv")
+#     norm_policy = premium.merge(nep, on="PolicyID")
+#     norm_policy = norm_policy.loc[:, ~norm_policy.columns.str.startswith('FY20')]
+#     norm_policy.to_csv("modified_premium_07_04.csv")
+#
+
+
+calculate_exposure()
