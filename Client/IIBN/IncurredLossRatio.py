@@ -129,7 +129,7 @@ def prefix_pb(policy_no):
         return "PB_" + policy_no
 
 
-calculate_exposure()
+# calculate_exposure()
 norm_policy = pd.read_csv("Bazaar\\Output\\ILR_v4.csv")
 df3 = pd.read_csv("Bazaar\\Output\\Combined_Incurred_Claims_v4.csv")
 
@@ -145,5 +145,10 @@ claims = db.execute(q3).df()
 claims.to_csv("Bazaar\\Output\\grouped_claims.csv")
 policy_claims = norm_policy.merge(claims, on=["Policy_Number"], how="left")
 policy_claims["Claim_Reference"].fillna(0, inplace=True)
-policy_claims.to_csv("Bazaar\\Output\\combined_claims_final.csv")
+claim_count = db.sql(
+    """ select Policy_Number, count(Claim_Reference) as count  from policy_claims group by Policy_Number """).df()
+norm_policy = policy_claims.merge(claim_count, on="Policy_Number")
+
+
+norm_policy.to_csv("Bazaar\\Output\\combined_claims_final.csv")
 
