@@ -1,5 +1,6 @@
 import pandas as pd
 from datetime import datetime, timedelta
+import duckdb as db
 
 mdays = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 # Constants for months referenced later
@@ -58,11 +59,11 @@ def funcs():
 
 
 def calculate_exposure():
-    master = pd.read_csv("Bazaar\\Bajaj_Booking Dump.csv")
+    master = pd.read_csv("Bazaar\\Combined_Booking_Dump.csv")
     # master = pd.read_csv("Bazaar\\Trial.csv")
     master['uw_startdate'] = pd.to_datetime(master['uw_startdate'], format="mixed", dayfirst=True)
     master["uw_enddate"] = pd.to_datetime(master['uw_enddate'], format="mixed", dayfirst=True)
-    # exposure["od_ao"] = exposure['od_ao'].apply(lambda x: convert_premium(x))
+
     master = master[
         master['uw_enddate'] > '2023-01-01']  # 1st step to exclude all policies with end date before Jan 23
     month_list = get_months()
@@ -89,14 +90,14 @@ def calculate_exposure():
         start_exposure = df1["uw_startdate"].apply(lambda xz: func(xz))
         end_exposure = df2["uw_enddate"].apply(lambda xx: funct(xx))
         passthrough_exposure = df3["uw_startdate"].apply(lambda xz: funcs())
-        exposure_month = str(test_date.year) + "_" + str(test_date.month)
+        exposure_month = str(test_date.month) + "_" + str(test_date.year)
         count = 0
         for exposure in start_exposure:
             index_ = start_exposure.index[count]
             master.at[index_, exposure_month] = exposure
             master.at[index_, exposure_month + "OD_EP"] = master.at[index_, exposure_month] * master.at[index_, "od_ao"]
             master.at[index_, exposure_month + "TP_EP"] = master.at[index_, exposure_month] * (
-                        master.at[index_, "tp_rate"] + master.at[index_, "tp_addon"])
+                    master.at[index_, "tp_rate"] + master.at[index_, "tp_addon"])
 
             count = count + 1
 
@@ -118,7 +119,31 @@ def calculate_exposure():
                     master.at[index_, "tp_rate"] + master.at[index_, "tp_addon"])
             count = count + 1
 
-    master.to_csv("Bazaar\\Output\\ILR_v2.csv")
+    master.to_csv("Bazaar\\Output\\ILR_v4.csv")
+
+
+def prefix_pb(policy_no):
+    if policy_no.startswith('PB'):
+        return policy_no
+    else:
+        return "PB_" + policy_no
 
 
 calculate_exposure()
+norm_policy = pd.read_csv("Bazaar\\Output\\ILR_v4.csv")
+df3 = pd.read_csv("Bazaar\\Output\\Combined_Incurred_Claims_v4.csv")
+
+df3["Policy_Number"] = df3["Policy_Number"].apply(lambda x: prefix_pb(str(x)))
+
+q3 = """select sum(Incurred) as Incurred, sum(Claim_Count) as Claim_Count,
+            Claim_Reference, Policy_Number, Kind_of_Loss,Loss_Month,Intimation_Month
+            from df3 
+            group by Claim_Reference, Policy_Number, Kind_of_Loss,Loss_Month,Intimation_Month
+     """
+
+claims = db.execute(q3).df()
+claims.to_csv("Bazaar\\Output\\grouped_claims.csv")
+policy_claims = norm_policy.merge(claims, on=["Policy_Number"], how="left")
+policy_claims["Claim_Reference"].fillna(0, inplace=True)
+policy_claims.to_csv("Bazaar\\Output\\combined_claims_final.csv")
+
