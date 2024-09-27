@@ -3,6 +3,23 @@ import pandas as pd
 
 opening_os = 0
 opening_paid = 0
+count = 0
+
+
+def convert_premium(prem):
+    global count
+    if isinstance(prem, str):
+        prem = prem[:-3]
+        try:
+            # noinspection PyTypeChecker
+            digits = ''.join(filter(str.isdigit, prem))
+            return float(digits)
+        except ValueError:
+            count = count + 1
+            print("faced an error with {}".format(str(count) + prem))
+            return 0.0
+    else:
+        return float(prem)
 
 
 def print_row(row):
@@ -16,12 +33,16 @@ def print_row(row):
     return incurred_
 
 
-claims = pd.read_csv("Bazaar\\Bajaj_Claims Combine '23 to sep'24.csv")
+claims = pd.read_csv("Bazaar\\Chola_Consolidated_Claims.csv")
 start_of_time = "01/03/2023"
+claims["PaidClaimAmount"] = claims['PaidClaimAmount'].str.replace(" -   ", "0")
+claims["PaidClaimAmount"] = claims['PaidClaimAmount'].apply(pd.to_numeric)
+# claims["Outstanding_Amount"] = claims['PaidClaimAmount'].str.replace("", "0")
+# claims["PaidClaimAmount"] = claims['PaidClaimAmount'].apply(lambda x: convert_premium(x))
+claims["Outstanding_Amount"] = claims['Outstanding_Amount'].fillna(0)
 claims['Intimation_Date'] = pd.to_datetime(claims['Intimation_Date'], format="mixed", dayfirst=True)
 claims['Loss_Date'] = pd.to_datetime(claims['Loss_Date'], format="mixed", dayfirst=True)
 claims['File'] = pd.to_datetime(claims['File'], format="mixed", dayfirst=True)
-
 
 list_claims = claims["Claim_Reference"].unique().tolist()
 print(len(list_claims))
@@ -57,4 +78,4 @@ for claim_reference in list_claims:
             claims.at[index_, "Claim_Count"] = 0
         count = count + 1
 
-claims.to_csv("Bazaar\\Output\\Bajaj_Incurred_Claims_v2.csv")
+claims.to_csv("Bazaar\\Output\\Chola_Incurred_Claims.csv")
