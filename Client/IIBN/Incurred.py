@@ -24,14 +24,17 @@ def convert_premium(prem):
 
 
 def merge_files():
-    path = "C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Bajaj_Full\\CSV/*.csv"
+    path = "C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Bajaj_Full\\CSV/Bajaj_PC_*.csv"
     df = pd.DataFrame()
     files = glob.glob(path)
     for file_name in files:
         frame = pd.read_csv(file_name)
         frame["file_name"] = file_name[50:-3]
         df = pd.concat([df, frame], axis=0)
-    df.to_csv("Bazaar\\Output\\merged_claims_file_TW.csv")
+
+    df.rename(columns={'Claim Reference': "Claim_Reference", 'Loss Date': "Loss_Date",'Intimation Date': "Intimation_Date",
+                       'Total Paid Claim Amount': "PaidClaimAmount", 'Total Outstanding Amount': 'Outstanding_Amount'}, inplace=True)
+    df.to_csv("Bazaar\\Output\\merged_claims_file_PC.csv")
 
 
 def print_row(row):
@@ -46,12 +49,8 @@ def print_row(row):
 
 
 merge_files()
-claims = pd.read_csv("Bazaar\\Output\\merged_claims_file_TW.csv")
+claims = pd.read_csv("Bazaar\\Output\\merged_claims_file_PC.csv")
 start_of_time = "01/03/2023"
-# claims["PaidClaimAmount"] = claims['PaidClaimAmount'].str.replace(" -   ", "0")
-# claims["PaidClaimAmount"] = claims['PaidClaimAmount'].apply(pd.to_numeric)
-# claims["Outstanding_Amount"] = claims['PaidClaimAmount'].str.replace("", "0")
-# claims["PaidClaimAmount"] = claims['PaidClaimAmount'].apply(lambda x: convert_premium(x))
 claims["PaidClaimAmount"] = claims['PaidClaimAmount'].fillna(0)
 claims["Outstanding_Amount"] = claims['Outstanding_Amount'].fillna(0)
 claims['Intimation_Date'] = pd.to_datetime(claims['Intimation_Date'], format="mixed", dayfirst=True)
@@ -92,4 +91,4 @@ for claim_reference in list_claims:
             claims.at[index_, "Claim_Count"] = 0
         count = count + 1
 
-claims.to_csv("Bazaar\\Output\\Bajaj_TW_Incurred_Claims.csv")
+claims.to_csv("Bazaar\\Output\\Bajaj_PC_Incurred_Claims.csv")
