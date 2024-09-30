@@ -1,5 +1,6 @@
 from datetime import datetime
 import pandas as pd
+import glob
 
 opening_os = 0
 opening_paid = 0
@@ -22,6 +23,17 @@ def convert_premium(prem):
         return float(prem)
 
 
+def merge_files():
+    path = "C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Bajaj_Full\\CSV/*.csv"
+    df = pd.DataFrame()
+    files = glob.glob(path)
+    for file_name in files:
+        frame = pd.read_csv(file_name)
+        frame["file_name"] = file_name[50:-3]
+        df = pd.concat([df, frame], axis=0)
+    df.to_csv("Bazaar\\Output\\merged_claims_file_TW.csv")
+
+
 def print_row(row):
     global opening_os
     global opening_paid
@@ -33,12 +45,14 @@ def print_row(row):
     return incurred_
 
 
-claims = pd.read_csv("Bazaar\\Chola_Consolidated_Claims.csv")
+merge_files()
+claims = pd.read_csv("Bazaar\\Output\\merged_claims_file_TW.csv")
 start_of_time = "01/03/2023"
-claims["PaidClaimAmount"] = claims['PaidClaimAmount'].str.replace(" -   ", "0")
-claims["PaidClaimAmount"] = claims['PaidClaimAmount'].apply(pd.to_numeric)
+# claims["PaidClaimAmount"] = claims['PaidClaimAmount'].str.replace(" -   ", "0")
+# claims["PaidClaimAmount"] = claims['PaidClaimAmount'].apply(pd.to_numeric)
 # claims["Outstanding_Amount"] = claims['PaidClaimAmount'].str.replace("", "0")
 # claims["PaidClaimAmount"] = claims['PaidClaimAmount'].apply(lambda x: convert_premium(x))
+claims["PaidClaimAmount"] = claims['PaidClaimAmount'].fillna(0)
 claims["Outstanding_Amount"] = claims['Outstanding_Amount'].fillna(0)
 claims['Intimation_Date'] = pd.to_datetime(claims['Intimation_Date'], format="mixed", dayfirst=True)
 claims['Loss_Date'] = pd.to_datetime(claims['Loss_Date'], format="mixed", dayfirst=True)
@@ -78,4 +92,4 @@ for claim_reference in list_claims:
             claims.at[index_, "Claim_Count"] = 0
         count = count + 1
 
-claims.to_csv("Bazaar\\Output\\Chola_Incurred_Claims.csv")
+claims.to_csv("Bazaar\\Output\\Bajaj_TW_Incurred_Claims.csv")

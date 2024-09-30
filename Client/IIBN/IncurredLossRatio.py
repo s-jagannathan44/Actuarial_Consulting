@@ -130,9 +130,10 @@ def prefix_pb(policy_no):
         return "PB_" + policy_no
 
 
-calculate_exposure()
-norm_policy = pd.read_csv("Bazaar\\Output\\ILR_v4.csv")
-df3 = pd.read_csv("Bazaar\\Output\\Combined_Incurred_Claims_v4.csv")
+# calculate_exposure()
+norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_TW_v1.csv")
+df3 = pd.read_csv("Bazaar\\Output\\Bajaj_TW_Incurred_Claims.csv")
+norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
 
 df3["Policy_Number"] = df3["Policy_Number"].apply(lambda x: prefix_pb(str(x)))
 
@@ -143,7 +144,7 @@ q3 = """select sum(Incurred) as Incurred, sum(Claim_Count) as Claim_Count,
      """
 
 claims = db.execute(q3).df()
-claims.to_csv("Bazaar\\Output\\grouped_claims.csv")
+claims.to_csv("Bazaar\\Output\\Bajaj_TW_grouped_claims.csv")
 policy_claims = norm_policy.merge(claims, on=["Policy_Number"], how="left")
 policy_claims["Claim_Reference"].fillna(0, inplace=True)
 claim_count = db.sql(
@@ -151,5 +152,5 @@ claim_count = db.sql(
 norm_policy = policy_claims.merge(claim_count, on="Policy_Number")
 
 
-norm_policy.to_csv("Bazaar\\Output\\combined_claims_final.csv")
+norm_policy.to_csv("Bazaar\\Output\\Bajaj_TW_claims_final.csv")
 
