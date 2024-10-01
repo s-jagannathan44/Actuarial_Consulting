@@ -32,9 +32,9 @@ def merge_files():
         frame["file_name"] = file_name[50:-3]
         df = pd.concat([df, frame], axis=0)
 
-    df.rename(columns={'Claim Reference': "Claim_Reference", 'Loss Date': "Loss_Date",'Intimation Date': "Intimation_Date",
-                       'Total Paid Claim Amount': "PaidClaimAmount", 'Total Outstanding Amount': 'Outstanding_Amount'}, inplace=True)
-    df.to_csv("Bazaar\\Output\\merged_claims_file_PC.csv")
+    # df.rename(columns={'Claim Reference': "Claim_Reference", 'Loss Date': "Loss_Date",'Intimation Date': "Intimation_Date",
+    #                    'Total Paid Claim Amount': "PaidClaimAmount", 'Total Outstanding Amount': 'Outstanding_Amount'}, inplace=True)
+    df.to_csv("Bazaar\\merged_claims_file_PC.csv")
 
 
 def print_row(row):
@@ -48,9 +48,9 @@ def print_row(row):
     return incurred_
 
 
-merge_files()
-claims = pd.read_csv("Bazaar\\Output\\merged_claims_file_PC.csv")
-start_of_time = "01/03/2023"
+# merge_files()
+claims = pd.read_csv("Bazaar\\merged_claims_file_PC.csv")
+start_of_time = "01/04/2021"
 claims["PaidClaimAmount"] = claims['PaidClaimAmount'].fillna(0)
 claims["Outstanding_Amount"] = claims['Outstanding_Amount'].fillna(0)
 claims['Intimation_Date'] = pd.to_datetime(claims['Intimation_Date'], format="mixed", dayfirst=True)
