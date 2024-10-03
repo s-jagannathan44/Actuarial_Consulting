@@ -131,29 +131,17 @@ def calculate_exposure():
 
 
 # calculate_exposure()
-norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_TW_v1.csv")
-df3 = pd.read_csv("Bazaar\\Output\\Bajaj_TW_Incurred_Claims.csv")
+norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_PC_v1.csv")
+df3 = pd.read_csv("Bazaar\\Output\\Bajaj_PC_Incurred_Claims.csv")
 norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
-# df3.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
-# df3.rename(columns={"Kind of Loss": "Kind_of_Loss"}, inplace=True)
+norm_policy = norm_policy[
+    ["Policy_Number", "cor_spectrum", "uw_month", "bookingdate"]]
 
-# df3["Policy_Number"] = df3["Policy_Number"].apply(lambda x: prefix_pb(str(x)))
+policy_claims = df3.merge(norm_policy, on=["Policy_Number"], how="left")
+# policy_claims["Claim_Reference"].fillna(0, inplace=True)
+# claim_count = db.sql(
+#     """ select Policy_Number, count(Claim_Reference) as count  from policy_claims group by Policy_Number """).df()
+# norm_policy = policy_claims.merge(claim_count, on="Policy_Number")
 
-q3 = """select sum(Incurred) as Incurred, sum(Claim_Count) as Claim_Count,
-            Claim_Reference, Policy_Number, Kind_of_Loss,Loss_Month,Intimation_Month,
-            PaidClaimAmount, Outstanding_Amount, File
-            from df3
-            group by Claim_Reference, Policy_Number, Kind_of_Loss,Loss_Month,Intimation_Month,
-            PaidClaimAmount, Outstanding_Amount, File
-     """
-
-claims = db.execute(q3).df()
-claims.to_csv("Bazaar\\Output\\Bajaj_TW_grouped_claims.csv")
-policy_claims = norm_policy.merge(claims, on=["Policy_Number"], how="left")
-policy_claims["Claim_Reference"].fillna(0, inplace=True)
-claim_count = db.sql(
-    """ select Policy_Number, count(Claim_Reference) as count  from policy_claims group by Policy_Number """).df()
-norm_policy = policy_claims.merge(claim_count, on="Policy_Number")
-
-norm_policy.to_csv("Bazaar\\Output\\Bajaj_TW_claims_final_v2.csv")
+policy_claims.to_csv("Bazaar\\Output\\Bajaj_PC_claims_final_v4.csv")
 
