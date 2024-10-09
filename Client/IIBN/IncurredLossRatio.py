@@ -130,6 +130,20 @@ def prefix_pb(policy_no):
         return "PB_" + policy_no
 
 
+def calculate_earned_loss_cost():
+    master = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_loss_cost.csv")
+    month_list = []
+    for col in master.columns:
+        if '_202' in col:
+            month_list.append(col)
+
+    for month_ in month_list:
+        master[month_ + "OD_LC"] = master[month_] * master["LossCost"]
+        master[month_ + "TP_LC"] = master[month_] * master["TPLossCost"]
+
+    master.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_elc.csv")
+
+
 # MERGING POLICY  INTO CLAIMS TWO WHEElER
 # calculate_exposure()
 # norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_TW_v1.csv")
@@ -161,30 +175,46 @@ def prefix_pb(policy_no):
 
 # MERGING CLAIMS INTO  POLICY PRIVATE CAR
 
-norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_PC_v1.csv")
-df4 = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_Incurred_Claims.csv")
-norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
-df4.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
-df4.rename(columns={"Kind of Loss": "Kind_of_Loss"}, inplace=True)
-df4["Policy_Number"] = df4["Policy_Number"].apply(lambda x: prefix_pb(str(x)))
-q3 = """select sum(Incurred) as Incurred, sum(Claim_Count) as Claim_Count,
+def merge_claims_policy():
+    norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_PC_v1.csv")
+    df4 = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_Incurred_Claims.csv")
+    norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
+    df4.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
+    df4.rename(columns={"Kind of Loss": "Kind_of_Loss"}, inplace=True)
+    df4["Policy_Number"] = df4["Policy_Number"].apply(lambda x: prefix_pb(str(x)))
+    q3 = """select sum(Incurred) as Incurred, sum(Claim_Count) as Claim_Count,
             Claim_Reference, Policy_Number, Kind_of_Loss,Loss_Month,Intimation_Month,
             PaidClaimAmount, Outstanding_Amount, File
             from df4
             group by Claim_Reference, Policy_Number, Kind_of_Loss,Loss_Month,Intimation_Month,
             PaidClaimAmount, Outstanding_Amount, File
      """
+    claims = db.execute(q3).df()
+    claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_grouped_claims.csv")
+    policy_claims = norm_policy.merge(claims, on=["Policy_Number"], how="left")
+    policy_claims["Claim_Reference"].fillna(0, inplace=True)
+    policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_merge_v2.csv")
 
-claims = db.execute(q3).df()
-claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_grouped_claims.csv")
-policy_claims = norm_policy.merge(claims, on=["Policy_Number"], how="left")
-policy_claims["Claim_Reference"].fillna(0, inplace=True)
-# claim_count = db.sql(
-#     """ select Policy_Number, count(Claim_Reference) as count  from policy_claims group by Policy_Number """).df()
-# norm_policy = policy_claims.merge(claim_count, on="Policy_Number")
 
-policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_merge_v2.csv")
+def merge_loss_cost():
+    df = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_merge_v2.csv")
+    df = df.drop_duplicates(subset=["Policy_Number"])
+    for col in df.columns:
+        if 'OD_EP' in col:
+            del df[col]
+        if 'TP_EP' in col:
+            del df[col]
+    od_lc = pd.read_csv(
+        "C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Bajaj_Full\\CSV\\PC\\Loss Cost Bajaj_Booking_Dump 4th Jun'21 to 23th Sep'24.csv")
+    tp_lc = pd.read_csv("C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Bajaj_Full\\CSV\\PC\\Bajaj_TP LossCost.csv")
+    od_df = df.merge(od_lc, on=["leadid"], how="left")
+    tp_df = od_df.merge(tp_lc, on=["leadid"], how="left")
+    tp_df.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_loss_cost.csv")
 
+
+# merge_claims_policy()
+# merge_loss_cost()
+calculate_earned_loss_cost()
 
 # EXTRACTING 5000  SAMPLE CLAIMS
 # df_pc =  pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\merged_claims_new_PC.csv")
