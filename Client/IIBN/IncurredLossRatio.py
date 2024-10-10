@@ -173,7 +173,25 @@ def calculate_earned_loss_cost():
 #
 # policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_claims_final_v5.csv")
 
-# MERGING CLAIMS INTO  POLICY PRIVATE CAR
+def merge_tw_claims_policy():
+    norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_TW_v1.csv")
+    df4 = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_TW_Incurred_Claims.csv")
+    norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
+    df4.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
+    df4.rename(columns={"Kind of Loss": "Kind_of_Loss"}, inplace=True)
+    q3 = """select sum(Incurred) as Incurred, sum(Claim_Count) as Claim_Count,
+            Claim_Reference, Policy_Number, Kind_of_Loss,Loss_Month,Intimation_Month,
+            PaidClaimAmount, Outstanding_Amount, File
+            from df4
+            group by Claim_Reference, Policy_Number, Kind_of_Loss,Loss_Month,Intimation_Month,
+            PaidClaimAmount, Outstanding_Amount, File
+     """
+    claims = db.execute(q3).df()
+    claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_TW_grouped_claims.csv")
+    policy_claims = norm_policy.merge(claims, on=["Policy_Number"], how="left")
+    policy_claims["Claim_Reference"].fillna(0, inplace=True)
+    policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_TW_policy_claims_merge.csv")
+
 
 def merge_claims_policy():
     norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_PC_v1.csv")
@@ -214,7 +232,8 @@ def merge_loss_cost():
 
 # merge_claims_policy()
 # merge_loss_cost()
-calculate_earned_loss_cost()
+# calculate_earned_loss_cost()
+merge_tw_claims_policy()
 
 # EXTRACTING 5000  SAMPLE CLAIMS
 # df_pc =  pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\merged_claims_new_PC.csv")
