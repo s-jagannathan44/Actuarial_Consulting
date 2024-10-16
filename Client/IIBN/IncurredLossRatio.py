@@ -60,13 +60,10 @@ def funcs():
 
 def calculate_exposure():
     master = pd.read_csv("Bazaar\\TW_Bookings.csv")
-    # master = pd.read_csv("Bazaar\\Trial.csv")
     master['uw_startdate'] = pd.to_datetime(master['uw_startdate'], format="mixed", dayfirst=True)
     master["uw_enddate"] = pd.to_datetime(master['uw_enddate'], format="mixed", dayfirst=True)
     master["tp_addon"] = 0
 
-    # master = master[
-    #     master['uw_enddate'] > '2023-01-01']  # 1st step to exclude all policies with end date before Jan 23
     month_list = get_months()
 
     for month_ in month_list:
@@ -131,47 +128,18 @@ def prefix_pb(policy_no):
 
 
 def calculate_earned_loss_cost():
-    master = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_loss_cost.csv")
+    master = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_loss_cost_updated_v2.csv")
     month_list = []
     for col in master.columns:
         if '_202' in col:
             month_list.append(col)
 
     for month_ in month_list:
-        master[month_ + "OD_LC"] = master[month_] * master["LossCost"]
+        master[month_ + "OD_LC"] = master[month_] * master["Updated_LossCost"]
         master[month_ + "TP_LC"] = master[month_] * master["TPLossCost"]
 
-    master.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_elc.csv")
+    master.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_elc_updated_v2.csv")
 
-
-# MERGING POLICY  INTO CLAIMS TWO WHEElER
-# calculate_exposure()
-# norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_TW_v1.csv")
-# df3 = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_TW_Incurred_Claims.csv")
-# norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
-# # df3["Policy_Number"] = df3["Policy_Number"].apply(lambda x: prefix_pb(str(x)))
-# norm_policy = norm_policy[
-#     ["Policy_Number", "cor_flag", "uw_month", "booking_date"]]
-#
-# policy_claims = df3.merge(norm_policy, on=["Policy_Number"], how="left")
-# # policy_claims["Claim_Reference"].fillna(0, inplace=True)
-# # claim_count = db.sql(
-# #     """ select Policy_Number, count(Claim_Reference) as count  from policy_claims group by Policy_Number """).df()
-# # norm_policy = policy_claims.merge(claim_count, on="Policy_Number")
-#
-# policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_TW_claims_final_v5.csv")
-
-# MERGING POLICY  INTO CLAIMS PRIVATE CAR
-# norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_PC_v1.csv")
-# df3 = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_Incurred_Claims.csv")
-# norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
-# df3["Policy_Number"] = df3["Policy_Number"].apply(lambda x: prefix_pb(str(x)))
-# norm_policy = norm_policy[
-#     ["Policy_Number", "cor_spectrum", "uw_month", "bookingdate"]]
-#
-# policy_claims = df3.merge(norm_policy, on=["Policy_Number"], how="left")
-#
-# policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_claims_final_v5.csv")
 
 def merge_tw_claims_policy():
     norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_TW_v1.csv")
@@ -195,7 +163,7 @@ def merge_tw_claims_policy():
 
 def merge_claims_policy():
     norm_policy = pd.read_csv("Bazaar\\Output\\Bajaj_PC_v1.csv")
-    df4 = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_Incurred_Claims.csv")
+    df4 = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_Incurred_Claims_update.csv")
     norm_policy.rename(columns={"policyno": "Policy_Number"}, inplace=True)
     df4.rename(columns={"Policy Number": "Policy_Number"}, inplace=True)
     df4.rename(columns={"Kind of Loss": "Kind_of_Loss"}, inplace=True)
@@ -211,11 +179,11 @@ def merge_claims_policy():
     claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_grouped_claims.csv")
     policy_claims = norm_policy.merge(claims, on=["Policy_Number"], how="left")
     policy_claims["Claim_Reference"].fillna(0, inplace=True)
-    policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_merge_v2.csv")
+    policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_merge_v3.csv")
 
 
 def merge_loss_cost():
-    df = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_merge_v2.csv")
+    df = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_merge_v3.csv")
     df = df.drop_duplicates(subset=["Policy_Number"])
     for col in df.columns:
         if 'OD_EP' in col:
@@ -223,42 +191,15 @@ def merge_loss_cost():
         if 'TP_EP' in col:
             del df[col]
     od_lc = pd.read_csv(
-        "C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Bajaj_Full\\CSV\\PC\\Loss Cost Bajaj_Booking_Dump 4th Jun'21 to 23th Sep'24.csv")
+        "C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Bajaj_Full\\CSV\\PC\\PC Loss Cost Bajaj 20241011.csv")
     tp_lc = pd.read_csv("C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Bajaj_Full\\CSV\\PC\\Bajaj_TP LossCost.csv")
     od_df = df.merge(od_lc, on=["leadid"], how="left")
     tp_df = od_df.merge(tp_lc, on=["leadid"], how="left")
-    tp_df.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_loss_cost.csv")
+    tp_df.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_loss_cost_updated_v2.csv")
 
 
-# merge_claims_policy()
-# merge_loss_cost()
-# calculate_earned_loss_cost()
+merge_claims_policy()
+merge_loss_cost()
+calculate_earned_loss_cost()
 merge_tw_claims_policy()
 
-# EXTRACTING 5000  SAMPLE CLAIMS
-# df_pc =  pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\merged_claims_new_PC.csv")
-# df_tw = pd.read_csv("Bazaar\\merged_claims_file_TW.csv")
-# df_pc = df_pc[df_pc["PaidClaimAmount"] > 0]
-# df_tw = df_tw[df_tw["PaidClaimAmount"] > 0]
-
-# df1 = df_pc[~ df_pc["Kind of Loss"].isin(["TP", "PA"])]
-# df_pc["PaidClaimAmount"].sample(n=5000).to_csv("SampleODPCAmounts.csv")
-# df2 = df_tw[~ df_tw["Kind_of_Loss"].isin(["TP", "PA"])]
-# df2["PaidClaimAmount"].sample(n=5000).to_csv("SampleTWODAmounts.csv")
-
-
-# EXTRACTING 5000  SAMPLE CLAIM COUNTS
-# df_pc =  pd.read_csv("Bazaar\\Output\\Bajaj_PC_claims_final.csv")
-# df_tw = pd.read_csv("Bazaar\\Output\\Bajaj_TW_claims_final.csv")
-#
-# df_pc["Claim_Count"].sample(n=5000).to_csv("SamplePCCounts.csv")
-# df_tw["Claim_Count"].sample(n=5000).to_csv("SampleTWCounts.csv")
-
-
-# EXTRACTING MONTHS WITH lARGE DIFFERENCE BETWEEN OUR INCURRED AND THEIR BENCHMARK
-# df =  pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_claims_final_v5.csv")
-# df["uw_month"].fillna("_", inplace=True)
-# df1 = df[ df["uw_month"].str.contains("2023_06")]
-# df2 = df[ df["uw_month"].str.contains("2024_01")]
-# df1.to_csv("2023_06.csv")
-# df2.to_csv("2024_01.csv")
