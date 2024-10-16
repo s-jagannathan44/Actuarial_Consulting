@@ -50,6 +50,8 @@ def print_row(row):
 
 merge_files()
 claims = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\merged_claims_new_PC.csv")
+claims["Key"] = claims["File"].astype(str) + claims["Claim_Reference"]
+claims = claims.drop_duplicates(subset=["Key"])
 start_of_time = "01/04/2021"
 claims["PaidClaimAmount"] = claims['PaidClaimAmount'].fillna(0)
 claims["Outstanding_Amount"] = claims['Outstanding_Amount'].fillna(0)
@@ -91,4 +93,4 @@ for claim_reference in list_claims:
             claims.at[index_, "Claim_Count"] = 0
         count = count + 1
 
-claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_Incurred_Claims.csv")
+claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_Incurred_Claims_update.csv")
