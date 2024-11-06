@@ -184,7 +184,7 @@ def merge_tw_claims_policy():
     claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_TW_grouped_claims.csv")
     policy_claims = norm_policy.merge(claims, on=["Policy_Number"], how="left")
     policy_claims["Claim_Reference"].fillna(0, inplace=True)
-    policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_TW_policy_claims_merge.csv")
+    policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_TW_policy_claims_merge_v2.csv")
 
 
 def merge_claims_policy():
@@ -226,9 +226,15 @@ def merge_loss_cost():
 
 # calculate_exposure()
 # merge_claims_policy()
-merge_loss_cost()
+# merge_loss_cost()
 # calculate_earned_loss_cost()
 # merge_tw_claims_policy()
+
+# df = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_claims_final_v6.csv")
+# df1 = df[df["uw_month"] == "2021_11"]
+# df2 = df[df["uw_month"] == "2023_01"]
+# # df1.to_csv("2021_11.csv")
+# df2.to_csv("2023_01.csv")
 
 # EXTRACTING 5000  SAMPLE CLAIMS
 # df_pc =  pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\merged_claims_new_PC.csv")
