@@ -2,6 +2,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import duckdb as db
 
+
 mdays = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 # Constants for months referenced later
 February = 2
@@ -18,7 +19,7 @@ def month_len(year, month_):
 
 
 def get_months():
-    df = pd.read_csv("Bazaar\\Month_list.csv")
+    df = pd.read_csv("Bazaar\\Kotak_Month_list.csv")
     return df["Months"].unique().tolist()
 
 
@@ -59,7 +60,8 @@ def funcs():
 
 
 def calculate_exposure():
-    master = pd.read_csv("Bazaar\\Bajaj_Booking_Dump 4th Jun'21 to 23th Sep'24.csv")
+    master = pd.read_csv(
+        "C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Kotak\\CSV\\Kotak COR Monitoring 29th Aug'21 to 31st Aug'24.csv")
     # master = pd.read_csv("Bazaar\\Trial.csv")
     master['uw_startdate'] = pd.to_datetime(master['uw_startdate'], format="mixed", dayfirst=True)
     master["uw_enddate"] = pd.to_datetime(master['uw_enddate'], format="mixed", dayfirst=True)
@@ -120,7 +122,7 @@ def calculate_exposure():
                     master.at[index_, "tp_rate"] + master.at[index_, "tp_addon"])
             count = count + 1
 
-    master.to_csv("Bazaar\\Output\\Bajaj_PC_v2.csv")
+    # master.to_csv("Bazaar\\Output\\Kotak_COR.csv")
 
 
 def prefix_pb(policy_no):
@@ -165,6 +167,18 @@ def calculate_earned_loss_cost():
 # policy_claims = df3.merge(norm_policy, on=["Policy_Number"], how="left")
 #
 # policy_claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_claims_final_v6.csv")
+
+
+# MERGING POLICY  INTO CLAIMS KOTAK
+# norm_policy = pd.read_csv("Bazaar\\Output\\Kotak_COR.csv")
+# df3 = pd.read_csv("Bazaar\\Output\\Kotak\\Kotak_COR_Incurred_Claims_v3.csv")
+# df3.rename(columns={"Partner application no": "Policy_Number"}, inplace=True)
+# df3.rename(columns={"Claim_Cover_Description": "Kind_of_Loss"}, inplace=True)
+# norm_policy = norm_policy[
+#     ["Policy_Number", "uw_month", "correconflag", " od_incurred "]]
+#
+# policy_claims = df3.merge(norm_policy, on=["Policy_Number"], how="left")
+# policy_claims.to_csv("Bazaar\\Output\\Kotak\\Kotak_cp_merge_v2.csv")
 
 
 def merge_tw_claims_policy():
@@ -224,8 +238,26 @@ def merge_loss_cost():
     tp_df.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_loss_cost.csv")
 
 
+def merge_claims_policy_kotak():
+    norm_policy = pd.read_csv("Bazaar\\Output\\Kotak_COR.csv")
+    df4 = pd.read_csv("Bazaar\\Output\\Kotak\\Kotak_COR_Incurred_Claims_v3.csv")
+    df4.rename(columns={"Partner application no": "Policy_Number"}, inplace=True)
+    df4.rename(columns={"Claim_Cover_Description": "Kind_of_Loss"}, inplace=True)
+    q3 = """select sum(Incurred) as Incurred, sum(Claim_Count) as Claim_Count,
+                Claim_Reference, Policy_Number, Kind_of_Loss,Loss_Month,Intimation_Month,
+                PaidClaimAmount, Outstanding_Amount, File
+                from df4
+                group by Claim_Reference, Policy_Number, Kind_of_Loss,Loss_Month,Intimation_Month,
+                PaidClaimAmount, Outstanding_Amount, File
+         """
+    claims = db.execute(q3).df()
+    policy_claims = norm_policy.merge(claims, on=["Policy_Number"], how="left")
+    policy_claims["Claim_Reference"].fillna(0, inplace=True)
+    policy_claims.to_csv("Bazaar\\Output\\Kotak\\Kotak_COR_policy_claims_merge_v2.csv")
+
+
 # calculate_exposure()
-# merge_claims_policy()
+merge_claims_policy_kotak()
 # merge_loss_cost()
 # calculate_earned_loss_cost()
 # merge_tw_claims_policy()
@@ -263,3 +295,36 @@ def merge_loss_cost():
 # df2 = df[ df["uw_month"].str.contains("2024_01")]
 # df1.to_csv("2023_06.csv")
 # df2.to_csv("2024_01.csv")
+
+
+#  WHERE SOME CLAIMS HAVE BLANK POLICY NUMBERS FIND THOSE POLICY NUMBERS IN OTHER INSTANCES OF SAME CLAIM
+#  AND THEN FILL THE BLANKS WITH THE POLICY NUMBER. THIS WAS DONE TO ENSURE ALL CLAIMS MERGE INTO POLICY
+#  AND NO CLAIMS ARE DROPPED DUE TO BLANK POLICY NUMBER
+
+# def print_row(row):
+#     if str(row["Policy_Number"]) == 'nan':
+#         return ""
+#     return row["Policy_Number"]
+#
+#
+# listing = pd.read_csv("cl.csv")
+# source = pd.read_csv("C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Kotak\\CSV\\Kotak_COR Claims Data(14 Nov'24).csv")
+# source.rename(columns={"Partner application no": "Policy_Number"}, inplace=True)
+# list_claims = listing["Claim_Reference"].unique().tolist()
+# print(len(list_claims))
+# retval = ''
+# for claim_reference in list_claims:
+#     drow = source[source["Claim_Reference"] == claim_reference]
+#     pno = drow.apply(lambda x: print_row(x), axis=1)
+#     count = 0
+#     for policy_num in pno:
+#         if  policy_num != '':
+#             retval = policy_num
+#     for policy_num in pno:
+#         index_ = pno.index[count]
+#         if retval != '':
+#           source.at[index_, "Policy_Number"] = retval
+#         count = count + 1
+#
+# source.to_csv("filled.csv")
+

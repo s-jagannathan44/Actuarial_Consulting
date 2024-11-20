@@ -1,41 +1,25 @@
 from datetime import datetime
 import pandas as pd
-import glob
+
 
 opening_os = 0
 opening_paid = 0
 count = 0
 
 
-def convert_premium(prem):
-    global count
-    if isinstance(prem, str):
-        prem = prem[:-3]
-        try:
-            # noinspection PyTypeChecker
-            digits = ''.join(filter(str.isdigit, prem))
-            return float(digits)
-        except ValueError:
-            count = count + 1
-            print("faced an error with {}".format(str(count) + prem))
-            return 0.0
-    else:
-        return float(prem)
-
-
-def merge_files():
-    path = "C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Bajaj_Full\\CSV\\PC/Bajaj_PC_*.csv"
-    df = pd.DataFrame()
-    files = glob.glob(path)
-    for file_name in files:
-        frame = pd.read_csv(file_name)
-        frame["file_name"] = file_name[50:-3]
-        df = pd.concat([df, frame], axis=0)
-
-    # df.rename(columns={'Claim Reference': "Claim_Reference", 'Loss Date': "Loss_Date",'Intimation Date': "Intimation_Date",
-    #                    'Total Paid': "PaidClaimAmount", 'Total OS': 'Outstanding_Amount'}, inplace=True)
-    df.to_csv("Bazaar\\Output\\FinalRun_03_10\\merged_claims_new_PC.csv")
-
+# def merge_files():
+#     path = "C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Bajaj_Full\\CSV\\PC/Bajaj_PC_*.csv"
+#     df = pd.DataFrame()
+#     files = glob.glob(path)
+#     for file_name in files:
+#         frame = pd.read_csv(file_name)
+#         frame["file_name"] = file_name[50:-3]
+#         df = pd.concat([df, frame], axis=0)
+#
+#     # df.rename(columns={'Claim Reference': "Claim_Reference", 'Loss Date': "Loss_Date",'Intimation Date': "Intimation_Date",
+#     #                    'Total Paid': "PaidClaimAmount", 'Total OS': 'Outstanding_Amount'}, inplace=True)
+#     df.to_csv("Bazaar\\Output\\FinalRun_03_10\\merged_claims_new_PC.csv")
+#
 
 def print_row(row):
     global opening_os
@@ -47,12 +31,11 @@ def print_row(row):
     opening_os = closing_os
     return incurred_
 
+# Kotak Code. First run OD and  TP separately and then concatenate both manfully into 1 file before merging claims into policy
 
-merge_files()
-claims = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\merged_claims_new_PC.csv")
-claims["Key"] = claims["File"].astype(str) + claims["Claim_Reference"]
-claims = claims.drop_duplicates(subset=["Key"])
-start_of_time = "01/04/2021"
+# claims = pd.read_csv("Bazaar\\Output\\Kotak\\Kotak_COR Claims Data(14 Nov'24).csv")
+claims = pd.read_csv("C:\\Data\\PB\\Incurred_Sep_2024\\Files\\Kotak\\CSV\\New TP Claims_Kotak.csv")
+start_of_time = "01/01/2022"
 claims["PaidClaimAmount"] = claims['PaidClaimAmount'].fillna(0)
 claims["Outstanding_Amount"] = claims['Outstanding_Amount'].fillna(0)
 claims['Intimation_Date'] = pd.to_datetime(claims['Intimation_Date'], format="mixed", dayfirst=True)
@@ -93,4 +76,4 @@ for claim_reference in list_claims:
             claims.at[index_, "Claim_Count"] = 0
         count = count + 1
 
-claims.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_Incurred_Claims_update.csv")
+claims.to_csv("Bazaar\\Output\\Kotak\\Kotak_COR_Incurred_Claims_TP.csv")
