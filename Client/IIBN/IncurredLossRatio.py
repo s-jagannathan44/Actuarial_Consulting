@@ -133,17 +133,23 @@ def prefix_pb(policy_no):
 
 
 def calculate_earned_loss_cost():
-    master = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_loss_cost.csv")
+    master = pd.read_csv("Bazaar\\Output\\Kotak\\Kotak_COR_loss_cost.csv")
+    for col in master.columns:
+        if 'OD_EP' in col:
+            del master[col]
+        if 'TP_EP' in col:
+            del master[col]
+
     month_list = []
     for col in master.columns:
         if '_202' in col:
             month_list.append(col)
 
     for month_ in month_list:
-        master[month_ + "OD_LC"] = master[month_] * master["LossCost"]
+        master[month_ + "OD_LC"] = master[month_] * master["OD_LossCost"]
         master[month_ + "TP_LC"] = master[month_] * master["TPLossCost"]
 
-    master.to_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_policy_claims_elc.csv")
+    master.to_csv("Bazaar\\Output\\Kotak\\Kotak_COR_elc.csv")
 
 
 # MERGING POLICY  INTO CLAIMS TWO WHEElER
@@ -257,9 +263,9 @@ def merge_claims_policy_kotak():
 
 
 # calculate_exposure()
-merge_claims_policy_kotak()
+# merge_claims_policy_kotak()
 # merge_loss_cost()
-# calculate_earned_loss_cost()
+calculate_earned_loss_cost()
 # merge_tw_claims_policy()
 
 # df = pd.read_csv("Bazaar\\Output\\FinalRun_03_10\\Bajaj_PC_claims_final_v6.csv")
