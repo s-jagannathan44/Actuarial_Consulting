@@ -1,7 +1,11 @@
 import pandas as pd
 import glob
+import fiscalyear
+import duckdb as db
+import math
 
 count = 0
+year = 0
 
 
 def merge_files():
@@ -11,7 +15,7 @@ def merge_files():
     for file_name in files:
         frame = pd.read_csv(file_name)
         df = pd.concat([df, frame], axis=0)
-    df.to_csv("base_file.csv")
+    df.to_csv("CSV\\base_file.csv")
 
 
 def merge_claims():
@@ -69,6 +73,14 @@ def merge_claims():
     df.to_csv("claims_file.csv")
 
 
+def prefix_pb(pno):
+    policy_no = str(pno)
+    if policy_no.startswith('PB'):
+        return policy_no
+    else:
+        return "PB_" + policy_no
+
+
 def set_financial_year(year_p):
     global count
     try:
@@ -84,14 +96,120 @@ def transform_claim():
     claims['Loss Date'] = pd.to_datetime(claims['Loss Date'], format="mixed", dayfirst=True)
     claims['Report Date'] = pd.to_datetime(claims['Report Date'], format="mixed", dayfirst=True)
     claims['Claim Closed Date'] = pd.to_datetime(claims['Claim Closed Date'], format="mixed", dayfirst=True)
-    claims["Loss_FY"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
+    claims["Accident_Year"] = claims["Loss Date"].apply(lambda x: set_financial_year(x))
     claims["Reported_FY"] = claims["Report Date"].apply(lambda x: set_financial_year(x))
     claims["Paid_FY"] = claims["Claim Closed Date"].apply(lambda x: set_financial_year(x))
+    claims["Policy_Number"] = claims["Policy_Number"].apply(lambda x: prefix_pb(x))
     return claims
 
 
+def create_master():
+    base = pd.read_csv("base_file.csv")
+    base['policy_start_date'] = pd.to_datetime(base['policy_start_date'], format="mixed", dayfirst=True)
+    base = base.sort_values(by='policy_start_date')
+    base["Financial_Year"] = base["policy_start_date"].apply(lambda x: set_financial_year(x))
+    base.to_csv("CSV\\master.csv")
+
+
+def func(xy):
+    fy = fiscalyear.FiscalYear(int(year))
+    date_diff = fy.end - xy
+    exposure = date_diff / (fy.end - fy.start)
+    return exposure
+
+
+def funct(xy):
+    fy = fiscalyear.FiscalYear(int(year) + 1)
+    date_diff = xy - fy.start
+    exposure = date_diff / (fy.end - fy.start)
+    return exposure
+
+
+def calculate_exposure():
+    global year
+    master = pd.read_csv("CSV\\master.csv")
+    master['policy_start_date'] = pd.to_datetime(master['policy_start_date'], format="mixed", dayfirst=True)
+    master['policy_end_date'] = pd.to_datetime(master['policy_end_date'], format="mixed", dayfirst=True)
+    fiscalyear.setup_fiscal_calendar(start_month=4)
+    fy_l = master["Financial_Year"].unique().tolist()
+
+    for year_ in fy_l:
+        year = year_
+        if math.isnan(year):
+            break
+        df = master[master["Financial_Year"] == year_]
+        x = df["policy_start_date"].apply(lambda xz: func(xz))
+        y = df["policy_end_date"].apply(lambda xx: funct(xx))
+        master.loc[master.Financial_Year == year_, "FY" + str(year_)] = x
+        master.loc[master.Financial_Year == year_, "FY" + str(year_ + 1)] = y
+
+        master.loc[master.Financial_Year == year_, "FY" + str(year_) + "_EP"] = (master.loc[master.Financial_Year ==
+                                                                                            year_, "FY" + str(year_)]
+                                                                                 * master.loc[master.Financial_Year ==
+                                                                                              year_, "final_premium"])
+        master.loc[master.Financial_Year == year_, "FY" + str(year_ + 1) + "_EP"] = (master.loc[master.Financial_Year ==
+                                                                                                year_, "FY" + str(
+            year_ + 1)]
+                                                                                     * master.loc[
+                                                                                         master.Financial_Year ==
+                                                                                         year_, "final_premium"])
+
+        print(year_)
+    for col_ in master.columns:
+        if "Unnamed" in col_:
+            master.drop(col_, axis=1, inplace=True)
+
+    master.to_csv("CSV\\premium.csv")
+
+
+def transform_premium_file():
+    global norm_policy
+    frames = pd.DataFrame()
+    years = premium["Financial_Year"].unique().tolist()
+    for yearn in years:
+        if math.isnan(yearn):
+            break
+        yearly_frame = pd.DataFrame(pd.DataFrame(columns=["index", "Exposure", "EP"]))
+        exp_name = "FY" + str(yearn)
+        ep_name = "FY" + str(yearn) + "_EP"
+        yearly_frame[["index", "Exposure", "EP"]] = premium[["index", exp_name, ep_name]]
+        yearly_frame["Accident_Year"] = yearn
+        frames = pd.concat([frames, yearly_frame], axis=0)
+        print(yearn)
+    nep = premium.merge(frames, on="index")
+    norm_policy = db.sql("select * from nep where Exposure is not null and EP is not null").df()
+    for col_ in norm_policy.columns:
+        if "Unnamed" in col_:
+            norm_policy.drop(col_, axis=1, inplace=True)
+    norm_policy.to_csv("CSV\\modified_premium.csv")
+
+
 # merge_claims()
-transform_claim().to_csv("claims_file_v2.csv")
+# claims = transform_claim()
+# claims.to_csv("CSV\\claims_file_v2.csv")
+claims = pd.read_csv("CSV\\claims_file_v2.csv")
+# create_master()
+# calculate_exposure()
+# premium = pd.read_csv("CSV\\premium.csv")
+# premium.rename(columns={"Unnamed: 0": "index"}, inplace=True)
+# transform_premium_file()
+norm_policy = pd.read_csv("CSV\\modified_premium.csv")
+for col__ in norm_policy.columns:
+    if "Unnamed" in col__:
+        norm_policy.drop(col__, axis=1, inplace=True)
+norm_policy.rename(columns={"policy_no": "Policy_Number"}, inplace=True)
+policy_claims = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
+policy_claims["Claim_Reference"].fillna(0, inplace=True)
+policy_claims["Claim count"] = policy_claims["Claim_Reference"].apply(lambda x: 0 if x == 0 else 1)
+policy_claims["Policy Count"] = 0.5
+policy_claims["Adjusted final premium"] = policy_claims["final_premium"] / 2.0
+
+for col__ in policy_claims.columns:
+    if "Unnamed" in col__:
+        policy_claims.drop(col__, axis=1, inplace=True)
+
+policy_claims.to_csv("CSV\\policy_claims_analysis.csv")
+
 # Code to read all column headers dump them to a file  we can Identify files where headers are spelt differently
 # path = "Claims/*.csv"
 # df = pd.DataFrame()
@@ -110,3 +228,13 @@ transform_claim().to_csv("claims_file_v2.csv")
 #
 #     df = pd.concat([df, frame], axis=0)
 #     df.to_csv("cols.csv")
+
+
+# path = "Booking/*.csv"
+# df = pd.DataFrame()
+# files = glob.glob(path)
+# for file_name in files:
+#     frame = pd.read_csv(file_name)
+#     df[file_name[8:-4]] = frame.columns
+#
+# df.to_csv("booking.csv")
