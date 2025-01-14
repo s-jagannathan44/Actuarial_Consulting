@@ -198,17 +198,50 @@ for col__ in norm_policy.columns:
     if "Unnamed" in col__:
         norm_policy.drop(col__, axis=1, inplace=True)
 norm_policy.rename(columns={"policy_no": "Policy_Number"}, inplace=True)
-policy_claims = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
-policy_claims["Claim_Reference"].fillna(0, inplace=True)
-policy_claims["Claim count"] = policy_claims["Claim_Reference"].apply(lambda x: 0 if x == 0 else 1)
-policy_claims["Policy Count"] = 0.5
-policy_claims["Adjusted final premium"] = policy_claims["final_premium"] / 2.0
+policy = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
+policy["Claim_Reference"].fillna(0, inplace=True)
+policy["Claim count"] = policy["Claim_Reference"].apply(lambda x: 0 if x == 0 else 1)
+claim_count = db.sql(
+    """ select Policy_number, Accident_Year, count(Claim_Reference) as count  from policy group by Policy_number, Accident_Year """).df()
 
-for col__ in policy_claims.columns:
+q2 = """select policy.Policy_number, policy.Accident_Year,  EP/count  as Normalized_Earned_Premium,
+         Exposure/count as Normalized_LIVES_EXPOSED,
+        from policy join claim_count
+        on policy.Policy_number =claim_count.Policy_number and policy.Accident_Year = claim_count.Accident_Year"""
+nep = db.execute(q2).df()
+norm_policy = policy.merge(nep, on=["Policy_Number", "Accident_Year"])
+norm_policy = norm_policy.drop_duplicates(subset=['Policy_Number', 'Accident_Year', "Claim_Reference"])
+
+for col__ in norm_policy.columns:
     if "Unnamed" in col__:
-        policy_claims.drop(col__, axis=1, inplace=True)
+        norm_policy.drop(col__, axis=1, inplace=True)
 
-policy_claims.to_csv("CSV\\policy_claims_analysis.csv")
+norm_policy.to_csv("CSV\\policy_claims_analysis.csv")
+
+# df = pd.read_csv("CSV\\policy_claims_analysis.csv")
+#
+# df = df[~ df["supplier_name"].str.contains("Oriental")]
+# df.head(9000).to_csv("Output\\OrientalPremium.csv")
+
+# policy = pd.read_csv("CSV\\policy_claims_analysis.csv")
+# # df = pd.read_csv("Output\\OrientalPremium.csv")
+# claim_count = db.sql(
+#     """ select Policy_number, Accident_Year, count(Claim_Reference) as count  from policy group by Policy_number, Accident_Year """).df()
+#
+# q2 = """select policy.Policy_number, policy.Accident_Year,  EP/count  as Normalized_Earned_Premium,
+#          Exposure/count as Normalized_LIVES_EXPOSED,
+#         from policy join claim_count
+#         on policy.Policy_number =claim_count.Policy_number and policy.Accident_Year = claim_count.Accident_Year"""
+# nep = db.execute(q2).df()
+# # nep.to_csv("Output\\count.csv")
+# norm_policy = policy.merge(nep, on=["Policy_Number", "Accident_Year"])
+# norm_policy = norm_policy.drop_duplicates(subset=['Policy_Number', 'Accident_Year', "Claim_Reference"])
+# norm_policy.to_csv("Output\\nep.csv")
+
+# claim_count = db.sql(
+#     """ select Policy_number, Accident_Year, sum(Exposure), count(Claim_Reference) as count  from df group by Policy_number, Accident_Year """).df()
+# claim_count.to_csv("Output\\cc.csv")
+
 
 # Code to read all column headers dump them to a file  we can Identify files where headers are spelt differently
 # path = "Claims/*.csv"
