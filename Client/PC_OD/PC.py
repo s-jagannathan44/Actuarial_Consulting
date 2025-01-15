@@ -104,7 +104,17 @@ def transform_claim():
 
 
 def create_master():
-    base = pd.read_csv("base_file.csv")
+    col_list = ("vehicle_age  registered_state_name  registered_city_name  zone  registration_rto_code  make_name  model_name  variant_name  transmission_type  fuel_type  "
+                "cubic_capacity  vehicle_details_segment  sum_insured  is_bi_fuel_kit  t_booking  t_parent  t_booking_slot  t_parent_slots  is_pg  is_paid  is_zd  is_ep  "
+                "is_lpb  is_coc  is_pa  is_rsa  is_daily_ac  is_key_rep  is_ncb_pr  is_windshield  is_inpc  is_electrical_accessories  is_non_electrical_accessories  "
+                "is_bi_fuel_kit  is_bi_fuel_kit_liability  is_pa_for_unnamed_passenger  is_compulsory_pa_cover_for_owner_driver  is_legal_liability_to_paid_driver  i"
+                "s_tp_pd_liability  is_voluntary_discount  previous_policy_type  previous_ncb  is_claims_made_in_previous_policy  t_booking  is_zd  lead_day_slot  "
+                "is_health_pb_customer  is_travel_pb_customer  is_two_wheeler_pb_customer  is_term_life_pb_customer  owner_sr  is_investment_pb_customer  final_premium"
+                "  uw_start_date  uw_end_date  pb_date  ncb  lead_id  policy_no  policy_type  policy_start_date  policy_end_date  opted_kms  previous_policy_expiry_date  "
+                "manufacturing_date  registration_date  is_cng_fitted  type_of_cng_kit  seating_capacity  previous_supplier_name  cc_range  new_plan_category  expiry_type  "
+                "age_range  idv_slot  booking_month  uw_month  uw_year")
+
+    base = pd.read_csv("base_file.csv", usecols=col_list.split())
     base['policy_start_date'] = pd.to_datetime(base['policy_start_date'], format="mixed", dayfirst=True)
     base = base.sort_values(by='policy_start_date')
     base["Financial_Year"] = base["policy_start_date"].apply(lambda x: set_financial_year(x))
@@ -187,36 +197,37 @@ def transform_premium_file():
 # merge_claims()
 # claims = transform_claim()
 # claims.to_csv("CSV\\claims_file_v2.csv")
-claims = pd.read_csv("CSV\\claims_file_v2.csv")
-# create_master()
-# calculate_exposure()
-# premium = pd.read_csv("CSV\\premium.csv")
-# premium.rename(columns={"Unnamed: 0": "index"}, inplace=True)
-# transform_premium_file()
-norm_policy = pd.read_csv("CSV\\modified_premium.csv")
-for col__ in norm_policy.columns:
-    if "Unnamed" in col__:
-        norm_policy.drop(col__, axis=1, inplace=True)
-norm_policy.rename(columns={"policy_no": "Policy_Number"}, inplace=True)
-policy = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
-policy["Claim_Reference"].fillna(0, inplace=True)
-policy["Claim count"] = policy["Claim_Reference"].apply(lambda x: 0 if x == 0 else 1)
-claim_count = db.sql(
-    """ select Policy_number, Accident_Year, count(Claim_Reference) as count  from policy group by Policy_number, Accident_Year """).df()
+# claims = pd.read_csv("CSV\\claims_file_v2.csv")
+create_master()
+calculate_exposure()
+premium = pd.read_csv("CSV\\premium.csv")
+premium.rename(columns={"Unnamed: 0": "index"}, inplace=True)
+transform_premium_file()
 
-q2 = """select policy.Policy_number, policy.Accident_Year,  EP/count  as Normalized_Earned_Premium,
-         Exposure/count as Normalized_LIVES_EXPOSED,
-        from policy join claim_count
-        on policy.Policy_number =claim_count.Policy_number and policy.Accident_Year = claim_count.Accident_Year"""
-nep = db.execute(q2).df()
-norm_policy = policy.merge(nep, on=["Policy_Number", "Accident_Year"])
-norm_policy = norm_policy.drop_duplicates(subset=['Policy_Number', 'Accident_Year', "Claim_Reference"])
-
-for col__ in norm_policy.columns:
-    if "Unnamed" in col__:
-        norm_policy.drop(col__, axis=1, inplace=True)
-
-norm_policy.to_csv("CSV\\policy_claims_analysis.csv")
+# norm_policy = pd.read_csv("CSV\\modified_premium.csv")
+# for col__ in norm_policy.columns:
+#     if "Unnamed" in col__:
+#         norm_policy.drop(col__, axis=1, inplace=True)
+# norm_policy.rename(columns={"policy_no": "Policy_Number"}, inplace=True)
+# policy = norm_policy.merge(claims, on=["Policy_Number", "Accident_Year"], how="left")
+# policy["Claim_Reference"].fillna(0, inplace=True)
+# policy["Claim count"] = policy["Claim_Reference"].apply(lambda x: 0 if x == 0 else 1)
+# claim_count = db.sql(
+#     """ select Policy_number, Accident_Year, count(Claim_Reference) as count  from policy group by Policy_number, Accident_Year """).df()
+#
+# q2 = """select policy.Policy_number, policy.Accident_Year,  EP/count  as Normalized_Earned_Premium,
+#          Exposure/count as Normalized_LIVES_EXPOSED,
+#         from policy join claim_count
+#         on policy.Policy_number =claim_count.Policy_number and policy.Accident_Year = claim_count.Accident_Year"""
+# nep = db.execute(q2).df()
+# norm_policy = policy.merge(nep, on=["Policy_Number", "Accident_Year"])
+# norm_policy = norm_policy.drop_duplicates(subset=['Policy_Number', 'Accident_Year', "Claim_Reference"])
+#
+# for col__ in norm_policy.columns:
+#     if "Unnamed" in col__:
+#         norm_policy.drop(col__, axis=1, inplace=True)
+#
+# norm_policy.to_csv("CSV\\policy_claims_analysis.csv")
 
 # df = pd.read_csv("CSV\\policy_claims_analysis.csv")
 #
@@ -271,3 +282,12 @@ norm_policy.to_csv("CSV\\policy_claims_analysis.csv")
 #     df[file_name[8:-4]] = frame.columns
 #
 # df.to_csv("booking.csv")
+
+
+# claims = pd.read_csv("Claims\\Chola_JV_Final.csv")
+# base = pd.read_csv("Booking\\Chola_Bkgs_2021_09_2024_12.csv")
+# base['Key'] = base["policy_no"].str[-6:]
+# claims['Key'] = claims["policy_num"].str[-6:]
+# claim_policy = pd.merge(claims, base[['Key', 'policy_no']], on=['Key'], how='left')
+# # claim_policy = claims.merge(base, on="Key")
+# claim_policy.to_csv("Output\\Chola.csv")
