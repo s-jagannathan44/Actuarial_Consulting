@@ -1,24 +1,17 @@
 import pandas as pd
 import duckdb as db
 
-#
-# q3 = """select cc_range, make_name_new, revised_plan_category_new, fuel_type_new, supplier_name_new,ncb,vehicle_details_segment_new,
-#            seating_capacity_new, transmission_type, policy_type,model_name_new, age_range,
-#            sum(Ultimate_PAID) as PAID_AMT,sum(Claim_Count) as Claim_Count,
-#            sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED
-#            from df
-#             group by cc_range, make_name_new, revised_plan_category_new, fuel_type_new,supplier_name_new,ncb,
-#             vehicle_details_segment_new,transmission_type, seating_capacity_new,policy_type,model_name_new ,age_range
-#      """
-
 
 def prepare_tweedie_file():
-    q3 = """select cc_range, make_name_new, revised_plan_category_new, fuel_type_new, supplier_name_new,
-           sum(Ultimate_PAID) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
-           sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED                
-           from df            
-            group by cc_range, make_name_new, revised_plan_category_new, fuel_type_new,supplier_name_new           
-     """
+    q3 = """select cc_range, make_name_new, revised_plan_category_new, fuel_type_new, supplier_name_new,ncb, 
+               policy_type,model_name_new, age_range, registration_rto_code_new,
+               sum(Ultimate_PAID) as PAID_AMT,sum(Claim_Count) as Claim_Count,
+               sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED
+               from df
+                group by cc_range, make_name_new, revised_plan_category_new, fuel_type_new, supplier_name_new,ncb, 
+                         policy_type,model_name_new, age_range, registration_rto_code_new
+         """
+
     output = db.execute(q3).df()
     output.to_csv("Output\\4WheelerFile.csv")
 
