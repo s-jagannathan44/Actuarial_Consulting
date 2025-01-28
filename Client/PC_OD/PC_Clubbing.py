@@ -1,21 +1,23 @@
 import pandas as pd
 import duckdb as db
 
+#
+# q3 = """select cc_range, make_name_new, revised_plan_category_new, fuel_type_new, supplier_name_new,ncb,vehicle_details_segment_new,
+#            seating_capacity_new, transmission_type, policy_type,model_name_new, age_range,
+#            sum(Ultimate_PAID) as PAID_AMT,sum(Claim_Count) as Claim_Count,
+#            sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED
+#            from df
+#             group by cc_range, make_name_new, revised_plan_category_new, fuel_type_new,supplier_name_new,ncb,
+#             vehicle_details_segment_new,transmission_type, seating_capacity_new,policy_type,model_name_new ,age_range
+#      """
+
 
 def prepare_tweedie_file():
-    q3 = """select make_name_new,model_name_new,transmission_type,fuel_type_new,previous_supplier_name_new,
-           vehicle_details_segment_new,supplier_name_new,policy_type,registration_rto_code_new,seating_capacity_new,
-           cc_range,revised_plan_category_new,ncb,age_range,idv_slot_new, revised_is_cng_fitted_new,
-           is_health_pb_customer,is_claims_made_in_previous_policy,is_two_wheeler_pb_customer,is_travel_pb_customer, is_term_life_pb_customer,
-           lead_day_slot_new,expiry_type_new,is_ep,is_coc,is_rsa,is_key_rep,is_inpc,is_bi_fuel_kit_liability,is_tp_pd_liability,                  
+    q3 = """select cc_range, make_name_new, revised_plan_category_new, fuel_type_new, supplier_name_new,
            sum(Ultimate_PAID) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
            sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED                
            from df            
-            group by make_name_new,model_name_new,transmission_type,fuel_type_new,previous_supplier_name_new,
-           vehicle_details_segment_new,supplier_name_new,policy_type,registration_rto_code_new,seating_capacity_new,
-           cc_range,revised_plan_category_new,ncb,age_range,idv_slot_new, revised_is_cng_fitted_new,
-           is_health_pb_customer,is_claims_made_in_previous_policy,is_two_wheeler_pb_customer,is_travel_pb_customer, is_term_life_pb_customer,
-           lead_day_slot_new,expiry_type_new,is_ep,is_coc,is_rsa,is_key_rep,is_inpc,is_bi_fuel_kit_liability,is_tp_pd_liability            
+            group by cc_range, make_name_new, revised_plan_category_new, fuel_type_new,supplier_name_new           
      """
     output = db.execute(q3).df()
     output.to_csv("Output\\4WheelerFile.csv")
@@ -132,7 +134,7 @@ def group_make(x):
     elif x in ["FORD", "HONDA", "TATA"]:
         return "Group 1"
     elif x in ["RENAULT", "HYUNDAI"]:
-        return "Group 2"
+        return "1Group 2"
     else:
         return "Others"
 
@@ -157,7 +159,7 @@ def group_insurer(x):
     elif x in ["Iffco Tokio General Insurance Company Ltd", "Royal Sundaram Alliance Insurance Company Ltd"]:
         return "Group 2"
     elif x in ["The New India Assurance Co. Ltd.", "SBI General Insurance Company Ltd"]:
-        return "Group 3"
+        return "1Group 3"
     if x in ["Raheja QBE General Insurance Company", "Liberty General Insurance Co. Ltd"]:
         return "Group 4"
     elif x in ["Zuno General Insurance", "The Oriental Insurance Company Ltd", "Future Generali"]:
@@ -170,13 +172,10 @@ def group_insurer(x):
         return "Group 7"
 
 
-def group_transmission_type(x):
-    if x in ["Chola Pvt Car Comp+SATP", "Oriental Pvt Car SATP", "Bajaj Pvt Car SATP", "Oriental Pvt Car Comp"]:
-        return "1Insurer_Group 5"
-
-
 def group_fuel_type(x):
-    if x in ["Petrol", "Diesel"]:
+    if x in ["Petrol"]:
+        return "1 Petrol"
+    elif x in ["Diesel"]:
         return x
     else:
         return "CNG+"
@@ -226,7 +225,7 @@ def group_plan(x):
     if x in ["02. Comp With ZD", "05. SAOD + ZD", "07. PAYD_High usage"]:
         return x
     elif x in ["01. Comp", "08. PAYD + SAOD_Low Usage"]:
-        return "Group 1"
+        return "01. Group 1"
     elif x in ["09. PAYD + ZD_Low Usage", "06. SAOD + PG"]:
         return "Group 3"
     elif x in ["04. SAOD", "09. PAYD + ZD_Medium Usage", "10. PAYD + SAOD + ZD_Medium Usage",
