@@ -3,15 +3,20 @@ import duckdb as db
 
 
 def prepare_tweedie_file():
-    q3 = """select cc_range, make_name_new, revised_plan_category_new, fuel_type_new, supplier_name_new,ncb, 
-               policy_type,model_name_new, age_range, registration_rto_code_new,
-               sum(Ultimate_PAID) as PAID_AMT,sum(Claim_Count) as Claim_Count,
-               sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED
-               from df
-                group by cc_range, make_name_new, revised_plan_category_new, fuel_type_new, supplier_name_new,ncb, 
-                         policy_type,model_name_new, age_range, registration_rto_code_new
-         """
-
+    q3 = """select make_name_new,model_name_new,transmission_type,fuel_type_new,previous_supplier_name_new,
+             vehicle_details_segment_new,supplier_name_new,policy_type,registration_rto_code_new,seating_capacity_new,
+             cc_range,revised_plan_category_new,ncb,age_range,idv_slot_new, revised_is_cng_fitted_new,
+             is_health_pb_customer,is_claims_made_in_previous_policy,is_two_wheeler_pb_customer,is_travel_pb_customer, is_term_life_pb_customer,
+             lead_day_slot_new,expiry_type_new,is_ep,is_coc,is_rsa,is_key_rep,is_inpc,is_bi_fuel_kit_liability,is_tp_pd_liability,                  
+             sum(Ultimate_PAID) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
+             sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED                
+             from df            
+              group by make_name_new,model_name_new,transmission_type,fuel_type_new,previous_supplier_name_new,
+             vehicle_details_segment_new,supplier_name_new,policy_type,registration_rto_code_new,seating_capacity_new,
+             cc_range,revised_plan_category_new,ncb,age_range,idv_slot_new, revised_is_cng_fitted_new,
+             is_health_pb_customer,is_claims_made_in_previous_policy,is_two_wheeler_pb_customer,is_travel_pb_customer, is_term_life_pb_customer,
+             lead_day_slot_new,expiry_type_new,is_ep,is_coc,is_rsa,is_key_rep,is_inpc,is_bi_fuel_kit_liability,is_tp_pd_liability            
+       """
     output = db.execute(q3).df()
     output.to_csv("Output\\4WheelerFile.csv")
 
