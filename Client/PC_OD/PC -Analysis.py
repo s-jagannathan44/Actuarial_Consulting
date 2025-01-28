@@ -1,13 +1,8 @@
 import pandas as pd
-
-
-# import duckdb as db
-
-count = 0
+# import glob
 
 
 def set_financial_year(year_p):
-    global count
     try:
         year = year_p.to_period('Q-MAR').qyear
         quarter = year_p.to_period('Q-MAR').quarter
@@ -16,7 +11,6 @@ def set_financial_year(year_p):
         return retval
         # return year_p.to_period('Q-MAR').quarter
     except AttributeError:
-        count = count + 1
         print("error occurred in set_financial_year")
         return ""
 
@@ -49,7 +43,39 @@ df["Accident_Quarter"] = df["Loss Date"].apply(lambda x: set_financial_year(x))
 df["Ultimate_PAID"] = df["total_paid"] * df["Accident_Quarter"].apply(lambda x: apply_multiplier(x))
 df.to_csv("CSV\\Ultimate.csv")
 
-# df['Report Date'] = pd.to_datetime(df['Report Date'], format="mixed", dayfirst=True)
-# df['Claim Closed Date'] = pd.to_datetime(df['Claim Closed Date'], format="mixed", dayfirst=True)
-# df["Reported_Quarter"] = df["Report Date"].apply(lambda x: set_financial_year(x))
-# df["Paid_Quarter"] = df["Claim Closed Date"].apply(lambda x: set_financial_year(x))
+
+# def merge_ncb():
+#     path = "CSV/NCB/ncb*.csv"
+#     df = pd.DataFrame()
+#     files = glob.glob(path)
+#     for file_name in files:
+#         frame = pd.read_csv(file_name)
+#         df = pd.concat([df, frame], axis=0)
+#     df.to_csv("CSV\\NCB\\NCB_file.csv")
+#
+#
+# def merge_booking():
+#     path = "CSV/NCB/t*.csv"
+#     df = pd.DataFrame()
+#     files = glob.glob(path)
+#     for file_name in files:
+#         frame = pd.read_csv(file_name)
+#         df = pd.concat([df, frame], axis=0)
+#     df.to_csv("CSV\\NCB\\t_booking_file.csv")
+#
+
+# ncb = pd.read_csv("CSV\\NCB\\NCB_file.csv")
+# booking = pd.read_csv("CSV\\NCB\\t_booking_file.csv")
+# ncb.drop(["lead_id", "bookingdate", "Unnamed: 0"], axis=1, inplace=True)
+# booking.drop(["lead_id", "bookingdate", "Unnamed: 0"], axis=1, inplace=True)
+# ncb.rename(columns={"policy_no": "Policy_Number"}, inplace=True)
+# booking.rename(columns={"policy_no": "Policy_Number"}, inplace=True)
+# df_final = ncb.merge(booking, on=["Policy_Number"], how="left")
+# df_final.to_csv("CSV\\Consolidated_fixed.csv")
+
+# pol = pd.read_csv("CSV\\Ultimate.csv")
+# fixed = pd.read_csv("CSV\\Consolidated_fixed.csv")
+# pol.drop(["Unnamed: 0.1", "Unnamed: 0"], axis=1, inplace=True)
+# fixed.drop(["Unnamed: 0"], axis=1, inplace=True)
+# df_final = pol.merge(fixed, on=["Policy_Number"], how="left")
+# df_final.to_csv("CSV\\Ultimate_fixed.csv")
