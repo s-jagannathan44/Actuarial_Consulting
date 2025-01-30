@@ -3,8 +3,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
-# import scipy.stats as stats
 from statsmodels.stats.outliers_influence import variance_inflation_factor
+import duckdb as db
 
 
 def ConvertCategoricalToNumeric():
@@ -79,6 +79,10 @@ df = pd.read_csv("CSV\\Ultimate_fixed.csv", usecols="vehicle_age transmission_ty
                                                     "is_term_life_pb_customer  type_of_cng_kit lead_day_slot".split())
 
 df = df.dropna(subset=['vehicle_age', 'ncb_y', 'previous_ncb_y', 'transmission_type', 'type_of_cng_kit'])
+
+addons = db.sql("select is_ep, is_coc, is_rsa, is_key_rep, is_inpc    from df where is_ep = 1 or is_coc =1 or is_rsa =1 or is_key_rep =1 or is_inpc = 1 ").df()
+addons.to_csv("Output\\addons.csv")
+
 # df.corr(method='pearson').to_csv("Output\\corr.csv")
 # ----------------------------   VIF  ------------------------------------
 
@@ -95,4 +99,3 @@ df = df.dropna(subset=['vehicle_age', 'ncb_y', 'previous_ncb_y', 'transmission_t
 # crosstab = pd.crosstab(df["type_of_cng_kit"], df["opted_kms"])
 # val = stats.chi2_contingency(crosstab)
 # pass
-
