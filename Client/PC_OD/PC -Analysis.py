@@ -17,87 +17,144 @@ def set_financial_year(year_p):
         return ""
 
 
-def apply_multiplier(quarter):
+def apply_non_large_multiplier(quarter):
     if quarter in ["2023_Q1"]:
-        return 0.996
+        return 1.000
     elif quarter == "2023_Q2":
-        return 1.0002
+        return 1.000
     elif quarter == "2023_Q3":
-        return 1.0033
+        return 1.000
     elif quarter == "2023_Q4":
-        return 1.0018
+        return 1.0002
     elif quarter == "2024_Q1":
-        return 1.0071
+        return 1.0006
     elif quarter == "2024_Q2":
-        return 1.0084
+        return 1.0001
     elif quarter == "2024_Q3":
-        return 1.0479
+        return 1.0020
     elif quarter == "2024_Q4":
-        return 1.1965
+        return 1.0214
 
 
-# df = pd.read_csv("CSV\\policy_claims_analysis.csv")
-# df = df[df["Accident_Year"].isin([2023, 2024])]
-# df['Loss Date'] = pd.to_datetime(df['Loss Date'], format="mixed", dayfirst=True)
-# df['registration_rto_code'] = df['registration_rto_code'].str.replace('DL01', 'DL1')
-# df['registration_rto_code'] = df['registration_rto_code'].str.replace('RJ01', 'RJ1')
-# df["Accident_Quarter"] = df["Loss Date"].apply(lambda x: set_financial_year(x))
-# df["Ultimate_PAID"] = df["total_paid"] * df["Accident_Quarter"].apply(lambda x: apply_multiplier(x))
-# df.to_csv("CSV\\Ultimate.csv")
+def apply_large_multiplier(quarter):
+    if quarter in ["2023_Q1"]:
+        return 1.000
+    elif quarter == "2023_Q2":
+        return 1.0115
+    elif quarter == "2023_Q3":
+        return 1.0023
+    elif quarter == "2023_Q4":
+        return 1.0294
+    elif quarter == "2024_Q1":
+        return 1.0483
+    elif quarter == "2024_Q2":
+        return 1.0248
+    elif quarter == "2024_Q3":
+        return 1.0228
+    elif quarter == "2024_Q4":
+        return 1.1337
 
 
-# df = pd.read_csv("CSV\\Ultimate_fixed.csv")
-# missing = pd.read_csv("CSV\\Iffco Missing Data.csv")
-# df.drop(["Unnamed: 0.1", "Unnamed: 0", ], axis=1, inplace=True)
-# missing.drop(['lead_id', 'bookingdate'], axis=1, inplace=True)
-# df_final = df.merge(missing, on=["Policy_Number"], how="left")
-# df_final.to_csv("Output\\Missing_merged.csv")
-df = pd.read_csv("Output\\Missing_merged.csv")
-# iffco = pd.read_csv("Output\\Iffco.csv")
-# df.drop(["Unnamed: 0", ], axis=1, inplace=True)
-# # df[df["supplier_name"]== "Iffco Tokio General Insurance Company Ltd"].to_csv("Output\\Iffco.csv")
-# df = df[~ df["supplier_name"].str.contains("Iffco Tokio General Insurance Company Ltd")]
-# df = pd.concat([df, iffco], axis=0)
-df.drop(["t_booking", "t_parent", "is_paid", "NCB", "previous_ncb"], axis=1, inplace=True)
-df.rename(columns={'t_booking_y': "t_booking", 't_parent_y': "t_parent",
-                   'is_paid_y': 'is_paid', 'ncb_y': 'NCB', 'previous_ncb_y': 'previous_ncb'
-                   }, inplace=True)
-df.to_csv("CSV\\Ultimate_fixed.csv")
+def apply_theft_tl_multiplier(quarter):
+    if quarter in ["2023_Q1"]:
+        return 1.00
+    elif quarter == "2023_Q2":
+        return 1.000
+    elif quarter == "2023_Q3":
+        return 1.00
+    elif quarter == "2023_Q4":
+        return 1.00
+    elif quarter == "2024_Q1":
+        return 1.00
+    elif quarter == "2024_Q2":
+        return 1.00
+    elif quarter == "2024_Q3":
+        return 1.0353
+    elif quarter == "2024_Q4":
+        return 1.3999
 
 
+def split_into_3(frame):
+    theft_tl_ = frame[frame["cause_of_loss"].isin(
+        ["Theft of entire vehicle", "Theft", "Theft of Entire Vehicle", "THEFT-VEHICLE", "Theft - Vehicle",
+         "Theft of Vehicle", "Total Loss"])]
+    non_theft = frame[~ frame["cause_of_loss"].str.contains("Theft of entire vehicle", na=False)]
+    non_theft = non_theft[~ non_theft["cause_of_loss"].str.contains("Theft", na=False)]
+    non_theft = non_theft[~ non_theft["cause_of_loss"].str.contains("Theft of Entire Vehicle", na=False)]
+    non_theft = non_theft[~ non_theft["cause_of_loss"].str.contains("THEFT-VEHICLE", na=False)]
+    non_theft = non_theft[~ non_theft["cause_of_loss"].str.contains("Theft - Vehicle", na=False)]
+    non_theft = non_theft[~ non_theft["cause_of_loss"].str.contains("Theft of Vehicle", na=False)]
+    non_theft = non_theft[~ non_theft["cause_of_loss"].str.contains("Total Loss", na=False)]
+    large_ = non_theft[non_theft["is_non_large"] == 'N']
+    non_large_ = non_theft[non_theft["is_non_large"] == 'Y']
+    return theft_tl_, large_, non_large_
 
-# def merge_ncb():
-#     path = "CSV/NCB/ncb*.csv"
-#     df = pd.DataFrame()
-#     files = glob.glob(path)
-#     for file_name in files:
-#         frame = pd.read_csv(file_name)
-#         df = pd.concat([df, frame], axis=0)
-#     df.to_csv("CSV\\NCB\\NCB_file.csv")
-#
-#
-# def merge_booking():
-#     path = "CSV/NCB/t*.csv"
-#     df = pd.DataFrame()
-#     files = glob.glob(path)
-#     for file_name in files:
-#         frame = pd.read_csv(file_name)
-#         df = pd.concat([df, frame], axis=0)
-#     df.to_csv("CSV\\NCB\\t_booking_file.csv")
-#
 
-# ncb = pd.read_csv("CSV\\NCB\\NCB_file.csv")
-# booking = pd.read_csv("CSV\\NCB\\t_booking_file.csv")
-# ncb.drop(["lead_id", "bookingdate", "Unnamed: 0"], axis=1, inplace=True)
-# booking.drop(["lead_id", "bookingdate", "Unnamed: 0"], axis=1, inplace=True)
-# ncb.rename(columns={"policy_no": "Policy_Number"}, inplace=True)
-# booking.rename(columns={"policy_no": "Policy_Number"}, inplace=True)
-# df_final = ncb.merge(booking, on=["Policy_Number"], how="left")
-# df_final.to_csv("CSV\\Consolidated_fixed.csv")
+def extract_8cos():
+    # Step 3  Separate out 8 companies  which have paid and OS til Q1 2025 hence need no multiplier from  theft and total loss
+    df_8cos = theft_tl[theft_tl["supplier_name"].isin(
+        ["Bajaj Allianz General Insurance Company Ltd", "Cholamandalam MS General Insurance Company Ltd",
+         "National Insurance Company Ltd", "Reliance General Insurance Company Ltd",
+         "Shriram General Insurance Company Ltd", "The New India Assurance Co. Ltd.",
+         "The Oriental Insurance Company Ltd", "United India Insurance Company Ltd"])]
+    df_8cos["Ultimate_PAID"] = df_8cos["total_paid"] * df_8cos["Accident_Quarter"].apply(
+        lambda x: apply_theft_tl_multiplier(x))
+    df_8cos.to_csv("CSV\\FixedMultiplier\\theft_total_loss_8cos.csv")
+    # Step 4  Separate out 8 companies   which have paid and OS til Q1 2025 hence need no multiplier from large
+    df_8cos = large[large["supplier_name"].isin(
+        ["Bajaj Allianz General Insurance Company Ltd", "Cholamandalam MS General Insurance Company Ltd",
+         "National Insurance Company Ltd", "Reliance General Insurance Company Ltd",
+         "Shriram General Insurance Company Ltd", "The New India Assurance Co. Ltd.",
+         "The Oriental Insurance Company Ltd", "United India Insurance Company Ltd"])]
+    df_8cos["Ultimate_PAID"] = df_8cos["total_paid"] * df_8cos["Accident_Quarter"].apply(
+        lambda x: apply_large_multiplier(x))
+    df_8cos.to_csv("CSV\\FixedMultiplier\\large_8cos.csv")
+    # Step 5  Separate out 8 companies   which have paid and OS til Q1 2025 hence need no multiplier  from non-large
+    df_8cos = df[df["supplier_name"].isin(
+        ["Bajaj Allianz General Insurance Company Ltd", "Cholamandalam MS General Insurance Company Ltd",
+         "National Insurance Company Ltd", "Reliance General Insurance Company Ltd",
+         "Shriram General Insurance Company Ltd", "The New India Assurance Co. Ltd.",
+         "The Oriental Insurance Company Ltd", "United India Insurance Company Ltd"])]
+    df_8cos["Ultimate_PAID"] = df_8cos["total_paid"] * df_8cos["Accident_Quarter"].apply(
+        lambda x: apply_non_large_multiplier(x))
+    df_8cos.to_csv("CSV\\FixedMultiplier\\non_large_8cos.csv")
 
-# pol = pd.read_csv("CSV\\Ultimate.csv")
-# fixed = pd.read_csv("CSV\\Consolidated_fixed.csv")
-# pol.drop(["Unnamed: 0.1", "Unnamed: 0"], axis=1, inplace=True)
-# fixed.drop(["Unnamed: 0"], axis=1, inplace=True)
-# df_final = pol.merge(fixed, on=["Policy_Number"], how="left")
-# df_final.to_csv("CSV\\Ultimate_fixed.csv")
+
+def extract_6cos():
+    # Step 6 Separate out 6 companies which have paid till Q1 2025 hence need 3 different multipliers for each quarter
+    # Step 6.1
+    df_6cos = theft_tl[theft_tl["supplier_name"].isin(
+        ["Future Generali", "Liberty General Insurance Co. Ltd", "Magma HDI General Insurance",
+         "Royal Sundaram Alliance Insurance Company Ltd", "Zuno General Insurance", "Zurich Kotak General Insurance"])]
+    df_6cos["Ultimate_PAID"] = df_6cos["total_paid"] * df_6cos["Accident_Quarter"].apply(
+        lambda x: apply_theft_tl_multiplier(x))
+    df_6cos.to_csv("CSV\\FixedMultiplier\\theft_total_loss_6cos.csv")
+    # Step 6.2
+    df_6cos = large[large["supplier_name"].isin(
+        ["Future Generali", "Liberty General Insurance Co. Ltd", "Magma HDI General Insurance",
+         "Royal Sundaram Alliance Insurance Company Ltd", "Zuno General Insurance", "Zurich Kotak General Insurance"])]
+    df_6cos["Ultimate_PAID"] = df_6cos["total_paid"] * df_6cos["Accident_Quarter"].apply(
+        lambda x: apply_large_multiplier(x))
+    df_6cos.to_csv("CSV\\FixedMultiplier\\large_6cos.csv")
+    # Step 6.3
+    df_6cos = non_large[non_large["supplier_name"].isin(
+        ["Future Generali", "Liberty General Insurance Co. Ltd", "Magma HDI General Insurance",
+         "Royal Sundaram Alliance Insurance Company Ltd", "Zuno General Insurance", "Zurich Kotak General Insurance"])]
+    df_6cos["Ultimate_PAID"] = df_6cos["total_paid"] * df_6cos["Accident_Quarter"].apply(
+        lambda x: apply_non_large_multiplier(x))
+    df_6cos.to_csv("CSV\\FixedMultiplier\\non_large_6cos.csv")
+
+
+df = pd.read_csv("CSV\\Ultimate_fixed.csv")
+df["IDV_Ratio"] = df["incurred"] / df["sum_insured"]
+df["is_non_large"] = df["IDV_Ratio"].apply(lambda x: "Y" if x <= 0.4 else "N")
+
+# Step 1 remove 3 problematic companies
+df = df[~ df["supplier_name"].str.contains("Iffco Tokio General Insurance Company Ltd", na=False)]
+df = df[~ df["supplier_name"].str.contains("Raheja QBE General Insurance Company", na=False)]
+df = df[~ df["supplier_name"].str.contains("SBI General Insurance Company Ltd", na=False)]
+
+# Step 2 Split  file into Non-large, large , theft and total loss
+theft_tl, large, non_large = split_into_3(df)
+extract_8cos()
+extract_6cos()
