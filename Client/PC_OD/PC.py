@@ -43,6 +43,8 @@ def merge_claims():
             new_frame["product_type"] = frame["product_type"]
         if "loss_date" in frame.columns:
             new_frame["Loss Date"] = frame["loss_date"]
+        elif "Loss_Date" in frame.columns:
+            new_frame["Loss Date"] = frame["loss_date"]
         if "intimation_date" in frame.columns:
             new_frame["Report Date"] = frame["intimation_date"]
         if "claim_close_date" in frame.columns:
@@ -103,15 +105,16 @@ def transform_claim():
 
 
 def create_master():
-    col_list = ("vehicle_age  registered_state_name  registered_city_name  zone  registration_rto_code  make_name  model_name  variant_name  transmission_type  fuel_type  "
-                "cubic_capacity  vehicle_details_segment  sum_insured  is_bi_fuel_kit  t_booking  t_parent  t_booking_slot  t_parent_slots  is_pg  is_paid  is_zd  is_ep  "
-                "is_lpb  is_coc  is_pa  is_rsa  is_daily_ac  is_key_rep  is_ncb_pr  is_windshield  is_inpc  is_electrical_accessories  is_non_electrical_accessories  "
-                "is_bi_fuel_kit  is_bi_fuel_kit_liability  is_pa_for_unnamed_passenger  is_compulsory_pa_cover_for_owner_driver  is_legal_liability_to_paid_driver  i"
-                "s_tp_pd_liability  is_voluntary_discount  previous_policy_type  previous_ncb  is_claims_made_in_previous_policy  t_booking  is_zd  lead_day_slot  "
-                "is_health_pb_customer  is_travel_pb_customer  is_two_wheeler_pb_customer  is_term_life_pb_customer  owner_sr  is_investment_pb_customer  final_premium"
-                "  uw_start_date  uw_end_date  pb_date  ncb  lead_id  policy_no  policy_type  policy_start_date  policy_end_date  opted_kms  previous_policy_expiry_date  "
-                "manufacturing_date  registration_date  is_cng_fitted  type_of_cng_kit  seating_capacity  previous_supplier_name  cc_range  new_plan_category  expiry_type  "
-                "age_range  idv_slot  booking_month  uw_month  uw_year previous_supplier_name supplier_name")
+    col_list = (
+        "vehicle_age  registered_state_name  registered_city_name  zone  registration_rto_code  make_name  model_name  variant_name  transmission_type  fuel_type  "
+        "cubic_capacity  vehicle_details_segment  sum_insured  is_bi_fuel_kit  t_booking  t_parent  t_booking_slot  t_parent_slots  is_pg  is_paid  is_zd  is_ep  "
+        "is_lpb  is_coc  is_pa  is_rsa  is_daily_ac  is_key_rep  is_ncb_pr  is_windshield  is_inpc  is_electrical_accessories  is_non_electrical_accessories  "
+        "is_bi_fuel_kit  is_bi_fuel_kit_liability  is_pa_for_unnamed_passenger  is_compulsory_pa_cover_for_owner_driver  is_legal_liability_to_paid_driver  i"
+        "s_tp_pd_liability  is_voluntary_discount  previous_policy_type  previous_ncb  is_claims_made_in_previous_policy  t_booking  is_zd  lead_day_slot  "
+        "is_health_pb_customer  is_travel_pb_customer  is_two_wheeler_pb_customer  is_term_life_pb_customer  owner_sr  is_investment_pb_customer  final_premium"
+        "  uw_start_date  uw_end_date  pb_date  ncb  lead_id  policy_no  policy_type  policy_start_date  policy_end_date  opted_kms  previous_policy_expiry_date  "
+        "manufacturing_date  registration_date  is_cng_fitted  type_of_cng_kit  seating_capacity  previous_supplier_name  cc_range  new_plan_category  expiry_type  "
+        "age_range  idv_slot  booking_month  uw_month  uw_year previous_supplier_name supplier_name")
 
     base = pd.read_csv("CSV\\base_file.csv", usecols=col_list.split())
     base['policy_start_date'] = pd.to_datetime(base['policy_start_date'], format="mixed", dayfirst=True)
@@ -231,8 +234,8 @@ norm_policy.to_csv("CSV\\policy_claims_analysis.csv")
 
 # df = pd.read_csv("CSV\\policy_claims_analysis.csv")
 #
-# df = df[~ df["supplier_name"].str.contains("Oriental")]
-# df.head(9000).to_csv("Output\\OrientalPremium.csv")
+# df = df[df["supplier_name"].str.contains("United")]
+# df.to_csv("Output\\United.csv")
 
 # policy = pd.read_csv("CSV\\policy_claims_analysis.csv")
 # # df = pd.read_csv("Output\\OrientalPremium.csv")
@@ -284,11 +287,11 @@ norm_policy.to_csv("CSV\\policy_claims_analysis.csv")
 #
 # df.to_csv("Output\\claims.csv")
 
-
-# claims = pd.read_csv("Claims\\Chola_JV_Final.csv")
-# base = pd.read_csv("Booking\\Chola_Bkgs_2021_09_2024_12.csv")
+#
+# claims = pd.read_csv("Claims\\Final United Claims_JV.csv")
+# base = pd.read_csv("Booking\\United_Bkgs_2021_04_2024_03.csv")
 # base['Key'] = base["policy_no"].str[-6:]
 # claims['Key'] = claims["policy_num"].str[-6:]
 # claim_policy = pd.merge(claims, base[['Key', 'policy_no']], on=['Key'], how='left')
 # # claim_policy = claims.merge(base, on="Key")
-# claim_policy.to_csv("Output\\Chola.csv")
+# claim_policy.to_csv("Output\\United.csv")

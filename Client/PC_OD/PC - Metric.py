@@ -82,7 +82,7 @@ df = df.dropna(subset=['vehicle_age', 'ncb_y', 'previous_ncb_y', 'transmission_t
 
 addons = db.sql("select is_ep, is_coc, is_rsa, is_key_rep, is_inpc    from df where is_ep = 1 or is_coc =1 or is_rsa =1 or is_key_rep =1 or is_inpc = 1 ").df()
 addons.to_csv("Output\\addons.csv")
-
+addons.corr(method='pearson').to_csv("Output\\corr_addons.csv")
 # df.corr(method='pearson').to_csv("Output\\corr.csv")
 # ----------------------------   VIF  ------------------------------------
 

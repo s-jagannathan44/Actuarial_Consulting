@@ -5,7 +5,7 @@ import duckdb as db
 def prepare_tweedie_file():
     q3 = """select make_name_new,model_name_new,transmission_type,fuel_type_new,previous_supplier_name_new,
              vehicle_details_segment_new,supplier_name_new,policy_type,registration_rto_code_new,seating_capacity_new,
-             cc_range,revised_plan_category_new,ncb,age_range,idv_slot_new, revised_is_cng_fitted_new,
+             cc_range,revised_plan_category_new,NCB,age_range,idv_slot_new, revised_is_cng_fitted_new,
              is_health_pb_customer,is_claims_made_in_previous_policy,is_two_wheeler_pb_customer,is_travel_pb_customer, is_term_life_pb_customer,
              lead_day_slot_new,expiry_type_new,is_ep,is_coc,is_rsa,is_key_rep,is_inpc,is_bi_fuel_kit_liability,is_tp_pd_liability,                  
              sum(Ultimate_PAID) as PAID_AMT,sum(Claim_Count) as Claim_Count, 
@@ -13,7 +13,7 @@ def prepare_tweedie_file():
              from df            
               group by make_name_new,model_name_new,transmission_type,fuel_type_new,previous_supplier_name_new,
              vehicle_details_segment_new,supplier_name_new,policy_type,registration_rto_code_new,seating_capacity_new,
-             cc_range,revised_plan_category_new,ncb,age_range,idv_slot_new, revised_is_cng_fitted_new,
+             cc_range,revised_plan_category_new,NCB,age_range,idv_slot_new, revised_is_cng_fitted_new,
              is_health_pb_customer,is_claims_made_in_previous_policy,is_two_wheeler_pb_customer,is_travel_pb_customer, is_term_life_pb_customer,
              lead_day_slot_new,expiry_type_new,is_ep,is_coc,is_rsa,is_key_rep,is_inpc,is_bi_fuel_kit_liability,is_tp_pd_liability            
        """
@@ -211,12 +211,12 @@ def group_idv_slot(x):
 
 
 def group_opted_kms(x):
-    if x in ["0", "2500", "3000", "5000"]:
+    if x in [0, 2500, 3000, 5000]:
         return "_Low Usage"
-    elif x in ["5500", "7000", "7500", "8500"]:
+    elif x in [5500, 7000, 7500, 8500]:
         return "_Medium Usage"
     else:
-        return "_High Usage"
+        return "_null"
 
 
 def group_plan(x):
@@ -244,34 +244,57 @@ def correct_plan_name(x):
         return x.split("_", 1)[0]
 
 
-df = pd.read_csv("CSV\\Ultimate.csv")
+df = pd.read_csv("CSV\\Ultimate_fixed.csv")
+
+df["IDV_Ratio"] = df["incurred"] / df["sum_insured"]
+# df = df[~ df["cause_of_loss"].str.contains("Theft of entire vehicle", na=False)]
+# df = df[~ df["cause_of_loss"].str.contains("Theft", na=False)]
+# df = df[~ df["cause_of_loss"].str.contains("Theft of Entire Vehicle", na=False)]
+# df = df[~ df["cause_of_loss"].str.contains("THEFT-VEHICLE", na=False)]
+# df = df[~ df["cause_of_loss"].str.contains("Theft - Vehicle", na=False)]
+# df = df[~ df["cause_of_loss"].str.contains("Theft of Vehicle", na=False)]
+# df = df[~ df["cause_of_loss"].str.contains("Total Loss", na=False)]
+# df["is_non_large"] = df["IDV_Ratio"].apply(lambda x: "N" if x > 0.399 else "Y")
+df = df[df["cause_of_loss"].isin(["Theft of entire vehicle", "Theft", "Theft of Entire Vehicle", "THEFT-VEHICLE", "Theft - Vehicle", "Theft of Vehicle", "Total Loss"])]
+# df = df[~ df["IDV_Ratio"] > 0.3999]
+# df = df[df["IDV_Ratio"] < 0.47]
+# df = df[df["is_non_large"] == 'N']
+
+df["NCB"] = df["NCB"].astype(str)
+df["previous_ncb"] = df["previous_ncb"].astype(str)
+# df["opted_kms"] = df["opted_kms"].astype(str)
 df.rename(columns={"Claim count": "Claim_Count"}, inplace=True)
 
 df["vehicle_details_segment"] = df["vehicle_details_segment"].fillna("null")
 df["revised_is_cng_fitted"] = df["is_cng_fitted"].apply(lambda x: "Kit_Is" if x > 0 else "No_Kit")
+df["revised_bi_fuel_kit"] = df["is_bi_fuel_kit_liability"].apply(lambda x: "Liability" if x > 0 else "Zero_Liability")
 df["is_cng_fitted"] = df["is_cng_fitted"].fillna("null")
 df["type_of_cng_kit"] = df["type_of_cng_kit"].fillna("null")
-df["revised_is_cng_fitted"] = df["revised_is_cng_fitted"] + df["type_of_cng_kit"]
+df["revised_is_cng_fitted"] = df["revised_is_cng_fitted"] + df["type_of_cng_kit"] + df["revised_bi_fuel_kit"]
+df["ncb_composite"] = df["previous_ncb"] + "_" + df["NCB"]
 
-df["opted_kms_New"] = df["opted_kms"].apply(lambda x: group_opted_kms(x))
+df["opted_kms_New"] = df["opted_kms"].apply(lambda x: group_opted_kms(x) if x < 10000 else "_High Usage")
 df["revised_plan_category"] = df["new_plan_category"] + df["opted_kms_New"]
 df["revised_plan_category"] = df["revised_plan_category"].apply(lambda x: correct_plan_name(x))
-# df["revised_plan_category"] = df["new_plan_category"].apply(
-#     lambda x: df["new_plan_category"] + df["opted_kms"].apply(lambda x: group_opted_kms(x))
-#     if "PAYD" in x else x)
+df.drop(["is_claims_made_in_previous_policy", "type_of_cng_kit", "Unnamed: 0", "Unnamed: 0.1", "NCB", "previous_ncb",
+         "opted_kms",
+         "is_tp_pd_liability", "is_bi_fuel_kit_liability", "is_cng_fitted", "new_plan_category", "opted_kms_New"],
+        axis=1, inplace=True)
 
-df["revised_plan_category_new"] = df["revised_plan_category"].apply(lambda x: group_plan(x))
-df["revised_is_cng_fitted_new"] = df["revised_is_cng_fitted"].apply(lambda x: group_cng(x))
-
-df["lead_day_slot_new"] = df["lead_day_slot"].apply(lambda x: group_lead_day(x))
-df["expiry_type_new"] = df["expiry_type"].apply(lambda x: group_expiry_type(x))
-df["registration_rto_code_new"] = df["registration_rto_code"].apply(lambda x: group_rto(x))
-df["model_name_new"] = df["model_name"].apply(lambda x: group_model(x))
-df["make_name_new"] = df["make_name"].apply(lambda x: group_make(x))
-df["seating_capacity_new"] = df["seating_capacity"].apply(lambda x: group_seating_capacity(x))
-df["supplier_name_new"] = df["supplier_name"].apply(lambda x: group_insurer(x))
-df["fuel_type_new"] = df["fuel_type"].apply(lambda x: group_fuel_type(x))
-df["vehicle_details_segment_new"] = df["vehicle_details_segment"].apply(lambda x: group_vehicle_segment(x))
-df["idv_slot_new"] = df["idv_slot"].apply(lambda x: group_idv_slot(x))
-df["previous_supplier_name_new"] = df["previous_supplier_name"].apply(lambda x: group_previous_insurer(x))
-prepare_tweedie_file()
+df.to_csv("Output\\theft_total_loss_model_file.csv")
+#
+# df["revised_plan_category_new"] = df["revised_plan_category"].apply(lambda x: group_plan(x))
+# df["revised_is_cng_fitted_new"] = df["revised_is_cng_fitted"].apply(lambda x: group_cng(x))
+#
+# df["lead_day_slot_new"] = df["lead_day_slot"].apply(lambda x: group_lead_day(x))
+# df["expiry_type_new"] = df["expiry_type"].apply(lambda x: group_expiry_type(x))
+# df["registration_rto_code_new"] = df["registration_rto_code"].apply(lambda x: group_rto(x))
+# df["model_name_new"] = df["model_name"].apply(lambda x: group_model(x))
+# df["make_name_new"] = df["make_name"].apply(lambda x: group_make(x))
+# df["seating_capacity_new"] = df["seating_capacity"].apply(lambda x: group_seating_capacity(x))
+# df["supplier_name_new"] = df["supplier_name"].apply(lambda x: group_insurer(x))
+# df["fuel_type_new"] = df["fuel_type"].apply(lambda x: group_fuel_type(x))
+# df["vehicle_details_segment_new"] = df["vehicle_details_segment"].apply(lambda x: group_vehicle_segment(x))
+# df["idv_slot_new"] = df["idv_slot"].apply(lambda x: group_idv_slot(x))
+# df["previous_supplier_name_new"] = df["previous_supplier_name"].apply(lambda x: group_previous_insurer(x))
+# prepare_tweedie_file()
