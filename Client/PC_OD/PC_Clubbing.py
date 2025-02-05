@@ -110,7 +110,7 @@ def group_previous_insurer(x):
              ]:
         return "Group 1"
     elif x in ["null", "Reliance General Insurance Company Ltd", "Acko General Insurance", "Magma HDI General Insurance"
-                                                                                        "Cholamandalam MS General Insurance Company Ltd",
+                                                                                           "Cholamandalam MS General Insurance Company Ltd",
                "The Oriental Insurance Company Ltd", "Liberty General Insurance Co. Ltd"
                                                      "HDFC Ergo General Insurance Company Ltd",
                "Tata AIG General Insurance Company ltd."
@@ -228,21 +228,21 @@ def group_plan(x):
 
 
 def group_booking(x):
-    if x in ["0", "1", "2"]:
+    if x in [0, 1, 2]:
         return "0 to 2"
-    if x in ["30", "16", "-50"]:
+    if x in [30, 16, -50]:
         return "Group 1"
-    if x in ["15", " -91", " 7", " 10", " 9", " -3", " -1", " 14", " 12", " -49", " 11", " 3", " 6", " 13", " 17", " 4",
-             " 5", " -2", " 8"]:
+    if x in [15, -91, 7, 10, 9, -3, -1, 14, 12, -49, 11, 3, 6, 13, 17, 4,
+             5, -2, 8]:
         return "Group 2"
     else:
         return "Others"
 
 
 def group_parent(x):
-    if x in ["0"]:
+    if x in [0]:
         return "Zero"
-    if x in ["3", " 6", " 59", " 60", " 7", " 4", " 58", " 57", " 5", " 1", " 2"]:
+    if x in [3, 6, 59, 60, 7, 4, 58, 57, 5, 1, 2]:
         return "Group 1"
     else:
         return "Others"
@@ -294,7 +294,7 @@ df.rename(columns={"Claim count": "Claim_Count"}, inplace=True)
 pre_clubbing_transformation()
 
 # ----------------------------------------------- Clubbing
-df["vehicle_age_new"] = df["vehicle_age"].apply(lambda x:group_age(x))
+df["vehicle_age_new"] = df["vehicle_age"].apply(lambda x: group_age(x))
 df["make_name_new"] = df["make_name"].apply(lambda x: group_make(x))
 df["model_name_new"] = df["model_name"].apply(lambda x: group_model(x))
 df["transmission_type_new"] = df["transmission_type"].apply(lambda x: group_transmission_type(x))
