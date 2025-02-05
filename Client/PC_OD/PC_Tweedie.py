@@ -7,15 +7,28 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 
 
-# variable_lost = ("make_name_new model_name_new transmission_type fuel_type_new previous_supplier_name_new  cc_range "
-#                  "vehicle_details_segment_new supplier_name_new policy_type registration_rto_code_new seating_capacity_new "
-#                  "revised_plan_category_new ncb age_range idv_slot_new  revised_is_cng_fitted_new  is_health_pb_customer "
-#                  "is_claims_made_in_previous_policy is_two_wheeler_pb_customer is_travel_pb_customer    "
-#                  "lead_day_slot_new expiry_type_new is_ep is_coc is_rsa is_key_rep is_inpc is_bi_fuel_kit_liability "
-#                  "is_term_life_pb_customer is_tp_pd_liability").split()
+def get_columns():
+    columns = {}
+    for encoder in transformer.named_transformers_:
+        if transformer.named_transformers_[encoder] != 'passthrough':
+            item = [(encoder, transformer.named_transformers_[encoder].get_feature_names_out().size)]
+            columns.update(item)
+    return columns
 
 
-def build_model(columns):
+def write_output(x_value, column_dict):
+    col_list = []
+    # col_list.insert(0, "AY")
+    for item in column_dict:
+        encoder = transformer.named_transformers_[item]
+        col_names = encoder.get_feature_names_out()
+        for col_name in col_names:
+            col_list.append(col_name)
+    frame = pd.DataFrame(x_value.reshape(1, -1), columns=col_list).T
+    frame.to_csv("Output\\new_inefficient.csv")
+
+
+def build_model(power, iter_, columns):
     column_trans = ColumnTransformer(
         [
             ('OHE', OneHotEncoder(),
@@ -25,14 +38,14 @@ def build_model(columns):
     tweedie_glm = Pipeline(
         [
             ("transform", column_trans),
-            ("regressor", TweedieRegressor(power=1.9, alpha=1e-12, max_iter=300)),
+            ("regressor", TweedieRegressor(power=power, alpha=0.01, max_iter=iter_)),
         ]
     )
     tweedie_glm.fit(
         df_model, df_train["Loss_Cost"], regressor__sample_weight=df_train["LIVES_EXPOSED"]
     )
     joblib.dump(tweedie_glm, "Output\\Tweedie.sav")
-    return tweedie_glm  # , column_trans
+    return tweedie_glm, column_trans
 
 
 def make_multi(dataframe, columns):
@@ -68,28 +81,48 @@ def find_separation(dataframe, columns):
 
 
 df = pd.read_csv("Output\\4WheelerFile.csv")
+# df["IDV_Loss_Cost"] = df["IDV_Loss_Cost"]
+# df["IDV_Loss_Cost"].fillna(0, inplace=True)
+
 df = df[df["LIVES_EXPOSED"] > 0]
 df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
 df["Loss_Cost"].fillna(0, inplace=True)
+
 df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
 # find_separation(df_train, "revised_plan_category_new")
 
-variable_lost = ("make_name_new model_name_new transmission_type fuel_type_new previous_supplier_name_new  cc_range "
-                 "vehicle_details_segment_new supplier_name_new policy_type registration_rto_code_new seating_capacity_new "
-                 "revised_plan_category_new ncb age_range idv_slot_new  revised_is_cng_fitted_new  is_health_pb_customer "
-                 "is_claims_made_in_previous_policy is_two_wheeler_pb_customer is_travel_pb_customer    "
-                 "lead_day_slot_new expiry_type_new is_ep is_coc is_rsa is_key_rep is_inpc is_bi_fuel_kit_liability "
-                 "is_term_life_pb_customer is_tp_pd_liability").split()
+variable_lost = (
+    "vehicle_age_new make_name_new model_name_new  transmission_type_new  fuel_type_new cubic_capacity_new  "
+    "vehicle_details_segment_new supplier_name_new policy_type registration_rto_code_new seating_capacity_new is_health_pb_customer "
+    "revised_plan_category_new ncb_composite_new revised_is_cng_fitted_new is_two_wheeler_pb_customer  is_travel_pb_customer "
+    "is_term_life_pb_customer lead_day_slot_new is_ep is_coc   is_rsa  is_key_rep   is_inpc "
+    "t_booking_new  t_parent_new previous_supplier_name_new Accident_Year").split()
 
 df_model = df_train[variable_lost]
-model = build_model(variable_lost)
 
-# --------------EXECUTE MODEL-----------------------------
-y_pred = model.predict(df_test)
-df_test["Pred"] = y_pred
-df_test["Pred_Cost"] = df_test["Pred"] * df_test["LIVES_EXPOSED"]
-df_test.to_csv("Output\\Tweedie_4wheelerOutput.csv")
-percent = (df_test["Pred_Cost"].sum() / df_test["PAID_AMT"].sum()) - 1
-print("{:.2%}".format(percent))
-for var in variable_lost:
-    make_pivots(df_test, var)
+powers = [1.05]
+iterations = [3000]
+for p_ in powers:
+    for i in iterations:
+        print(p_, i)
+        model, transformer = build_model(p_, i, variable_lost)
+        column_dict = get_columns()
+        write_output(model._final_estimator.coef_, column_dict)
+        y_pred = model.predict(df_test)
+        df_test["Pred"] = y_pred
+        # df_test["Pred_Cost"] = df_test["Pred"] * df_test["IDV"]
+        df_test["Pred_Cost"] = df_test["Pred"] * df_test["LIVES_EXPOSED"]
+        percent = (df_test["Pred_Cost"].sum() / df_test["PAID_AMT"].sum()) - 1
+        print("{:.2%}".format(percent))
+
+# model = build_model(variable_lost)
+#
+# # --------------EXECUTE MODEL-----------------------------
+# y_pred = model.predict(df_test)
+# df_test["Pred"] = y_pred
+# df_test["Pred_Cost"] = df_test["Pred"] * df_test["IDV"]
+# df_test.to_csv("Output\\Tweedie_4wheelerOutput.csv")
+# percent = (df_test["Pred_Cost"].sum() / df_test["PAID_AMT"].sum()) - 1
+# print("{:.2%}".format(percent))
+# for var in variable_lost:
+#     make_pivots(df_test, var)
