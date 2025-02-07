@@ -5,19 +5,15 @@ import duckdb as db
 def prepare_tweedie_file():
     q3 = """select vehicle_age_new, make_name_new, model_name_new,  transmission_type_new,  fuel_type_new, cubic_capacity_new,   
             vehicle_details_segment_new, supplier_name_new, policy_type, registration_rto_code_new, seating_capacity_new,
-            is_health_pb_customer, revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,
-            is_two_wheeler_pb_customer,  is_travel_pb_customer, is_term_life_pb_customer, lead_day_slot_new,
-            is_ep, is_coc,   is_rsa,  is_key_rep,   is_inpc, t_booking_new,  t_parent_new, previous_supplier_name_new, 
-            previous_insurer_type, owner_sr_new, previous_policy_type_new, Accident_Year,                  
+             revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,
+              is_travel_pb_customer,  lead_day_slot_new, t_booking_new, previous_insurer_type, previous_policy_type_new,                   
              sum(ultimate_paid_non_large) as PAID_AMT,sum(Claim_Count) as Claim_Count, sum(sum_insured_in_hundreds) as IDV, 
              sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED , sum(ultimate_paid_non_large) / sum(sum_insured_in_hundreds) as IDV_Loss_Cost            
              from df            
               group by   vehicle_age_new, make_name_new, model_name_new,  transmission_type_new,  fuel_type_new, cubic_capacity_new,   
             vehicle_details_segment_new, supplier_name_new, policy_type, registration_rto_code_new, seating_capacity_new,
-            is_health_pb_customer, revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,
-            is_two_wheeler_pb_customer,  is_travel_pb_customer, is_term_life_pb_customer, lead_day_slot_new,
-            is_ep, is_coc,   is_rsa,  is_key_rep,   is_inpc, t_booking_new,  t_parent_new, previous_supplier_name_new, 
-            previous_insurer_type,owner_sr_new, previous_policy_type_new, Accident_Year
+             revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,
+              is_travel_pb_customer,  lead_day_slot_new, t_booking_new, previous_insurer_type, previous_policy_type_new
        """
     output = db.execute(q3).df()
     output.to_csv("Output\\4WheelerFile.csv")
