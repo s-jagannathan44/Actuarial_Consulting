@@ -70,6 +70,7 @@ def make_pivots(dataframe, columns):
     df2["Error"] = (df2["Predicted"] - df2["Actual"]) / df2["Actual"]
     df2["AbsError"] = df2["Error"].abs()
     df2['%ageError'] = df2['Error'].map('{:.2%}'.format)
+    df2.sort_values(by='LIVES_EXPOSED', ascending=False, inplace=True)
     df2.to_csv("Output\\Errors\\" + columns + ".csv")
 
 
@@ -93,11 +94,11 @@ df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
 
 variable_lost = (
     "vehicle_age_new make_name_new model_name_new  transmission_type_new  fuel_type_new cubic_capacity_new  "
-    "vehicle_details_segment_new supplier_name_new policy_type registration_rto_code_new seating_capacity_new is_health_pb_customer "
-    "revised_plan_category_new ncb_composite_new revised_is_cng_fitted_new is_two_wheeler_pb_customer  is_travel_pb_customer "
-    "is_term_life_pb_customer lead_day_slot_new is_ep is_coc   is_rsa  is_key_rep   is_inpc "
-    "t_booking_new  t_parent_new previous_supplier_name_new "
-    "previous_insurer_type owner_sr_new previous_policy_type_new Accident_Year").split()
+    "vehicle_details_segment_new supplier_name_new policy_type registration_rto_code_new seating_capacity_new  "
+    "revised_plan_category_new ncb_composite_new revised_is_cng_fitted_new   is_travel_pb_customer "
+    " lead_day_slot_new  "
+    "t_booking_new  "
+    "previous_insurer_type  previous_policy_type_new ").split()
 
 df_model = df_train[variable_lost]
 
@@ -125,5 +126,5 @@ for p_ in powers:
 # df_test.to_csv("Output\\Tweedie_4wheelerOutput.csv")
 # percent = (df_test["Pred_Cost"].sum() / df_test["PAID_AMT"].sum()) - 1
 # print("{:.2%}".format(percent))
-# for var in variable_lost:
-#     make_pivots(df_test, var)
+for var in variable_lost:
+    make_pivots(df_test, var)
