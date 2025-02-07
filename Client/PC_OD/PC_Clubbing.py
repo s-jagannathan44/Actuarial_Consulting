@@ -7,7 +7,8 @@ def prepare_tweedie_file():
             vehicle_details_segment_new, supplier_name_new, policy_type, registration_rto_code_new, seating_capacity_new,
             is_health_pb_customer, revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,
             is_two_wheeler_pb_customer,  is_travel_pb_customer, is_term_life_pb_customer, lead_day_slot_new,
-            is_ep, is_coc,   is_rsa,  is_key_rep,   is_inpc, t_booking_new,  t_parent_new, previous_supplier_name_new, Accident_Year,                  
+            is_ep, is_coc,   is_rsa,  is_key_rep,   is_inpc, t_booking_new,  t_parent_new, previous_supplier_name_new, 
+            previous_insurer_type, owner_sr_new, previous_policy_type_new, Accident_Year,                  
              sum(ultimate_paid_non_large) as PAID_AMT,sum(Claim_Count) as Claim_Count, sum(sum_insured_in_hundreds) as IDV, 
              sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED , sum(ultimate_paid_non_large) / sum(sum_insured_in_hundreds) as IDV_Loss_Cost            
              from df            
@@ -15,7 +16,8 @@ def prepare_tweedie_file():
             vehicle_details_segment_new, supplier_name_new, policy_type, registration_rto_code_new, seating_capacity_new,
             is_health_pb_customer, revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,
             is_two_wheeler_pb_customer,  is_travel_pb_customer, is_term_life_pb_customer, lead_day_slot_new,
-            is_ep, is_coc,   is_rsa,  is_key_rep,   is_inpc, t_booking_new,  t_parent_new, previous_supplier_name_new, Accident_Year          
+            is_ep, is_coc,   is_rsa,  is_key_rep,   is_inpc, t_booking_new,  t_parent_new, previous_supplier_name_new, 
+            previous_insurer_type,owner_sr_new, previous_policy_type_new, Accident_Year
        """
     output = db.execute(q3).df()
     output.to_csv("Output\\4WheelerFile.csv")
@@ -134,6 +136,26 @@ def group_lead_day(x):
         return "Group 1"
     else:
         return "Late Night"
+
+
+def group_previous_policy_type(x):
+    if x in [0]:
+        return "None"
+    elif x in [1]:
+        return "Comp"
+    elif x in [2]:
+        return "TP  Cover"
+    else:
+        return "Addon Cover"
+
+
+def group_owner_sr(x):
+    if x in [0, 1]:
+        return "New"
+    elif x in [-1, 2, 3]:
+        return "Group 1"
+    else:
+        return "Others"
 
 
 def group_make(x):
@@ -265,8 +287,7 @@ def correct_plan_name(x):
 
 
 def pre_clubbing_transformation():
-    df.drop(["Unnamed: 0", "Unnamed: 0.1", "Unnamed: 0.2", "Unnamed: 0.3", "Unnamed: 0.4"],
-            axis=1, inplace=True)
+    df.drop("Unnamed: 0", axis=1, inplace=True)
     df["round_age"] = df["vehicle_age"].round(0)
     df["NCB"] = df["NCB"].astype(str)
     df["previous_ncb"] = df["previous_ncb"].astype(str)
@@ -289,7 +310,7 @@ def pre_clubbing_transformation():
             axis=1, inplace=True)
 
 
-df = pd.read_csv("CSV\\FixedMultiplier\\Combined_new_file.csv")
+df = pd.read_csv("CSV\\FixedMultiplier\\Combined_final_file.csv")
 df.rename(columns={"Claim count": "Claim_Count"}, inplace=True)
 pre_clubbing_transformation()
 
@@ -311,5 +332,7 @@ df["lead_day_slot_new"] = df["lead_day_slot"].apply(lambda x: group_lead_day(x))
 df["t_booking_new"] = df["t_booking"].apply(lambda x: group_booking(x))
 df["t_parent_new"] = df["t_parent"].apply(lambda x: group_parent(x))
 df["previous_supplier_name_new"] = df["previous_supplier_name"].apply(lambda x: group_previous_insurer(x))
+df["owner_sr_new"] = df["owner_sr"].apply(lambda x: group_owner_sr(x))
+df["previous_policy_type_new"] = df["previous_policy_type"].apply(lambda x: group_previous_policy_type(x))
 # -----------------------------------------------  Clubbing End
 prepare_tweedie_file()

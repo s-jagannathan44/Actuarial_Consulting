@@ -129,18 +129,27 @@ def check_cause_of_loss(x):
 # df3 = pd.read_csv("CSV\\FixedMultiplier\\theft_total_loss.csv")
 # df = pd.concat([df1, df2, df3], axis=0)
 # df.to_csv("CSV\\FixedMultiplier\\Combined_file.csv")
-df = pd.read_csv("CSV\\FixedMultiplier\\Combined_new_file.csv")
-# df["cause_of_loss"] = df["cause_of_loss"].fillna("NA")
-# df["is_theft_total_loss"] = df["cause_of_loss"].apply(lambda x: check_cause_of_loss(x))
-# df["is_large_loss_non_theft"] = df["IDV_Ratio"].apply(lambda x: 0 if x <= 0.4 else 1) - df["is_theft_total_loss"]
-# df["is_large_loss_non_theft"] = df["is_large_loss_non_theft"].apply(lambda x: 0 if x < 0 else x)
-# df["non_theft_non_large"] = df["IDV_Ratio"].apply(lambda x: 1 if x <= 0.4 else 0) - df["is_theft_total_loss"]
-# df["non_theft_non_large"] = df["non_theft_non_large"].apply(lambda x: 0 if x < 0 else x)
-# df["ultimate_paid_non_large"] = df["Ultimate_PAID"] * df["non_theft_non_large"]
-# df["sum_insured_in_hundreds"] = df["sum_insured"]/1000
-df["large_theft_total_loss"] = df["is_large_loss_non_theft"] + df["is_theft_total_loss"]
-df["large_theft_total_loss"] = df["large_theft_total_loss"].apply(lambda x: 1 if x > 1 else x)
+# df = pd.read_csv("CSV\\FixedMultiplier\\Combined_new_file.csv")
+# # df["cause_of_loss"] = df["cause_of_loss"].fillna("NA")
+# # df["is_theft_total_loss"] = df["cause_of_loss"].apply(lambda x: check_cause_of_loss(x))
+# # df["is_large_loss_non_theft"] = df["IDV_Ratio"].apply(lambda x: 0 if x <= 0.4 else 1) - df["is_theft_total_loss"]
+# # df["is_large_loss_non_theft"] = df["is_large_loss_non_theft"].apply(lambda x: 0 if x < 0 else x)
+# # df["non_theft_non_large"] = df["IDV_Ratio"].apply(lambda x: 1 if x <= 0.4 else 0) - df["is_theft_total_loss"]
+# # df["non_theft_non_large"] = df["non_theft_non_large"].apply(lambda x: 0 if x < 0 else x)
+# # df["ultimate_paid_non_large"] = df["Ultimate_PAID"] * df["non_theft_non_large"]
+# # df["sum_insured_in_hundreds"] = df["sum_insured"]/1000
+# df["large_theft_total_loss"] = df["is_large_loss_non_theft"] + df["is_theft_total_loss"]
+# df["large_theft_total_loss"] = df["large_theft_total_loss"].apply(lambda x: 1 if x > 1 else x)
+#
+# df["ultimate_paid_large_ttl"] = df["Ultimate_PAID"] * df["large_theft_total_loss"]
+#
+# df.to_csv("CSV\\FixedMultiplier\\Combined_ttl_file.csv")
 
-df["ultimate_paid_large_ttl"] = df["Ultimate_PAID"] * df["large_theft_total_loss"]
+df = pd.read_csv("CSV\\FixedMultiplier\\Combined_final_file.csv")
+missing = pd.read_csv("CSV\\base_file.csv", usecols=["policy_no", "previous_insurer_type"])
+missing.rename(columns={"policy_no": "Policy_Number"}, inplace=True)
+df.drop(["Unnamed: 0", "Unnamed: 0.1", "Unnamed: 0.2", "Unnamed: 0.3", "Unnamed: 0.4",  "Unnamed: 0.5"], axis=1, inplace=True)
+df_final = df.merge(missing, on=["Policy_Number"], how="left")
+df_final.to_csv("Output\\Combined_final_file.csv")
 
-df.to_csv("CSV\\FixedMultiplier\\Combined_ttl_file.csv")
+

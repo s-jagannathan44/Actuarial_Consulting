@@ -1,23 +1,38 @@
 import pandas as pd
 import glob
-
+# Sum Insured has been removed as we are normalising by sum insured
+# Accident Year has been added
 master_col_list = (
     "vehicle_age  registered_state_name registered_city_name make_name  model_name variant_name transmission_type  fuel_type   "
     "cubic_capacity  vehicle_details_segment supplier_name  opted_kms policy_type registration_rto_code seating_capacity "
     "is_cng_fitted type_of_cng_kit cc_range previous_ncb new_plan_category NCB  age_range idv_slot is_health_pb_customer "
     "is_claims_made_in_previous_policy is_two_wheeler_pb_customer  is_travel_pb_customer is_term_life_pb_customer lead_day_slot "
     "expiry_type is_ep is_coc   is_rsa  is_key_rep   is_inpc is_bi_fuel_kit_liability is_tp_pd_liability  t_booking  t_parent "    
-    "previous_supplier_name  Accident_Year"
+    "previous_supplier_name is_bi_fuel_kit owner_sr previous_policy_type previous_insurer_type Accident_Year"
 ).split()
 
+# Variables dropped due to co-relation
+#  registered_state_name registered_city_name variant_name opted_kms is_cng_fitted type_of_cng_kit cc_range previous_ncb new_plan_category
+#  NCB  age_range idv_slot is_claims_made_in_previous_policy is_bi_fuel_kit_liability is_tp_pd_liability is_bi_fuel_kit
+
 model_col_list = (
-    "vehicle_age  make_name  model_name  transmission_type  fuel_type   "
-    "cubic_capacity  vehicle_details_segment supplier_name policy_type registration_rto_code seating_capacity "
-    "cc_range age_range is_health_pb_customer revised_plan_category ncb_composite revised_is_cng_fitted "
-    "is_two_wheeler_pb_customer  is_travel_pb_customer is_term_life_pb_customer lead_day_slot "
-    "expiry_type is_ep is_coc   is_rsa  is_key_rep   is_inpc t_booking  t_parent "    
-    "previous_supplier_name  Accident_Year"
+    "vehicle_age  make_name  model_name  transmission_type  fuel_type  cubic_capacity  vehicle_details_segment  "
+    "supplier_name policy_type registration_rto_code seating_capacity is_health_pb_customer revised_plan_category "
+    "ncb_composite revised_is_cng_fitted is_two_wheeler_pb_customer  is_travel_pb_customer is_term_life_pb_customer "
+    "lead_day_slot expiry_type is_ep is_coc   is_rsa  is_key_rep   is_inpc t_booking  t_parent previous_supplier_name "    
+    "owner_sr previous_policy_type previous_insurer_type Accident_Year"
+    
 ).split()
+
+
+def find_ttl_separation(dataframe, columns):
+    df2 = pd.pivot_table(dataframe, values="ultimate_paid_large_ttl sum_insured_in_hundreds  Normalized_LIVES_EXPOSED".split(),
+                         columns=columns,
+                         aggfunc="sum").T
+    df2["IDV_LossCost"] = df2["ultimate_paid_large_ttl"] / df2["sum_insured_in_hundreds"]
+    df2["LossCost"] = df2["ultimate_paid_large_ttl"] / df2["Normalized_LIVES_EXPOSED"]
+    df2.sort_values(by='Normalized_LIVES_EXPOSED', ascending=False, inplace=True)
+    df2.to_csv("Output\\Sep\\ttl_" + columns + ".csv")
 
 
 def find_separation(dataframe, columns):
@@ -25,6 +40,8 @@ def find_separation(dataframe, columns):
                          columns=columns,
                          aggfunc="sum").T
     df2["IDV_LossCost"] = df2["ultimate_paid_non_large"] / df2["sum_insured_in_hundreds"]
+    df2["LossCost"] = df2["ultimate_paid_non_large"] / df2["Normalized_LIVES_EXPOSED"]
+    df2.sort_values(by='Normalized_LIVES_EXPOSED', ascending=False, inplace=True)
     df2.to_csv("Output\\Sep\\" + columns + ".csv")
 
 
@@ -53,8 +70,6 @@ def convert_null_to_na():
     df["t_booking"] = df["t_booking"].astype(str)
     df["t_parent"] = df["t_parent"].astype(str)
     df["vehicle_age"] = df["vehicle_age"].astype(str)
-    # df["opted_kms"] = df["opted_kms"].astype(str)
-    # df["is_bi_fuel_kit_liability"] = df["is_bi_fuel_kit_liability"].astype(str)
     df["vehicle_details_segment"] = df["vehicle_details_segment"].fillna("null")
     df["cubic_capacity"] = df["cubic_capacity"].fillna("null")
     df["NCB"] = df["NCB"].fillna("null")
@@ -69,21 +84,17 @@ def convert_null_to_na():
     df["t_booking"] = df["t_booking"].fillna("null")
     df["t_parent"] = df["t_parent"].fillna("null")
     df["vehicle_age"] = df["vehicle_age"].fillna("null")
-    # df["is_cng_fitted"] = df["is_cng_fitted"].fillna("null")
     df["type_of_cng_kit"] = df["type_of_cng_kit"].fillna("null")
-    # df["opted_kms"] = df["opted_kms"].fillna("null")
-    # df["is_bi_fuel_kit_liability"] = df["is_bi_fuel_kit_liability"].fillna("null")
+    df["owner_sr"] = df["owner_sr"].fillna("-1")
 
 
-df = pd.read_csv("CSV\\FixedMultiplier\\Combined_new_file.csv")
-df.drop(["Unnamed: 0", "Unnamed: 0.1", "Unnamed: 0.2", "Unnamed: 0.3", "Unnamed: 0.4"],
-        axis=1, inplace=True)
+df = pd.read_csv("CSV\\FixedMultiplier\\Combined_final_file.csv")
+df.drop(["Unnamed: 0"], axis=1, inplace=True)
 convert_null_to_na()
 
 df["revised_is_cng_fitted"] = df["is_cng_fitted"].apply(lambda x: "Kit_Is" if x > 0 else "No_Kit")
 df["revised_bi_fuel_kit"] = df["is_bi_fuel_kit_liability"].apply(lambda x: "Liability" if x > 0 else "Zero_Liability")
 df["is_cng_fitted"] = df["is_cng_fitted"].fillna("null")
-# df["type_of_cng_kit"] = df["type_of_cng_kit"].fillna("null")
 df["revised_is_cng_fitted"] = df["revised_is_cng_fitted"] + df["type_of_cng_kit"] + df["revised_bi_fuel_kit"]
 df["ncb_composite"] = df["previous_ncb"] + "_" + df["NCB"]
 
@@ -109,9 +120,3 @@ for file_name in files:
 writer.close()
 
 
-# df2 = pd.pivot_table(df, values="ultimate_paid_non_large sum_insured_in_hundreds  Normalized_LIVES_EXPOSED".split(),
-#                      columns=columns,
-#                      aggfunc="sum").T
-# df2["IDV_LossCost"] = df2["ultimate_paid_non_large"] / df2["sum_insured_in_hundreds"]
-# print(df2["Normalized_LIVES_EXPOSED"].sum())
-# df2.to_csv("Output\\model_file.csv")

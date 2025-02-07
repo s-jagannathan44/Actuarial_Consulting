@@ -25,7 +25,7 @@ def write_output(x_value, column_dict):
         for col_name in col_names:
             col_list.append(col_name)
     frame = pd.DataFrame(x_value.reshape(1, -1), columns=col_list).T
-    frame.to_csv("Output\\new_inefficient.csv")
+    frame.to_csv("Output\\new_efficient.csv")
 
 
 def build_model(power, iter_, columns):
@@ -42,7 +42,7 @@ def build_model(power, iter_, columns):
         ]
     )
     tweedie_glm.fit(
-        df_model, df_train["Loss_Cost"], regressor__sample_weight=df_train["LIVES_EXPOSED"]
+        df_model, df_train["IDV_Loss_Cost"], regressor__sample_weight=df_train["IDV"]
     )
     joblib.dump(tweedie_glm, "Output\\Tweedie.sav")
     return tweedie_glm, column_trans
@@ -81,12 +81,12 @@ def find_separation(dataframe, columns):
 
 
 df = pd.read_csv("Output\\4WheelerFile.csv")
-# df["IDV_Loss_Cost"] = df["IDV_Loss_Cost"]
-# df["IDV_Loss_Cost"].fillna(0, inplace=True)
+df["IDV_Loss_Cost"] = df["IDV_Loss_Cost"]
+df["IDV_Loss_Cost"].fillna(0, inplace=True)
 
-df = df[df["LIVES_EXPOSED"] > 0]
-df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
-df["Loss_Cost"].fillna(0, inplace=True)
+# df = df[df["LIVES_EXPOSED"] > 0]
+# df["Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
+# df["Loss_Cost"].fillna(0, inplace=True)
 
 df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
 # find_separation(df_train, "revised_plan_category_new")
@@ -96,7 +96,8 @@ variable_lost = (
     "vehicle_details_segment_new supplier_name_new policy_type registration_rto_code_new seating_capacity_new is_health_pb_customer "
     "revised_plan_category_new ncb_composite_new revised_is_cng_fitted_new is_two_wheeler_pb_customer  is_travel_pb_customer "
     "is_term_life_pb_customer lead_day_slot_new is_ep is_coc   is_rsa  is_key_rep   is_inpc "
-    "t_booking_new  t_parent_new previous_supplier_name_new Accident_Year").split()
+    "t_booking_new  t_parent_new previous_supplier_name_new "
+    "previous_insurer_type owner_sr_new previous_policy_type_new Accident_Year").split()
 
 df_model = df_train[variable_lost]
 
@@ -110,8 +111,8 @@ for p_ in powers:
         write_output(model._final_estimator.coef_, column_dict)
         y_pred = model.predict(df_test)
         df_test["Pred"] = y_pred
-        # df_test["Pred_Cost"] = df_test["Pred"] * df_test["IDV"]
-        df_test["Pred_Cost"] = df_test["Pred"] * df_test["LIVES_EXPOSED"]
+        df_test["Pred_Cost"] = df_test["Pred"] * df_test["IDV"]
+        # df_test["Pred_Cost"] = df_test["Pred"] * df_test["LIVES_EXPOSED"]
         percent = (df_test["Pred_Cost"].sum() / df_test["PAID_AMT"].sum()) - 1
         print("{:.2%}".format(percent))
 

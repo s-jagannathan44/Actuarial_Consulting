@@ -114,7 +114,7 @@ def create_master():
         "is_health_pb_customer  is_travel_pb_customer  is_two_wheeler_pb_customer  is_term_life_pb_customer  owner_sr  is_investment_pb_customer  final_premium"
         "  uw_start_date  uw_end_date  pb_date  ncb  lead_id  policy_no  policy_type  policy_start_date  policy_end_date  opted_kms  previous_policy_expiry_date  "
         "manufacturing_date  registration_date  is_cng_fitted  type_of_cng_kit  seating_capacity  previous_supplier_name  cc_range  new_plan_category  expiry_type  "
-        "age_range  idv_slot  booking_month  uw_month  uw_year previous_supplier_name supplier_name")
+        "age_range  idv_slot  booking_month  uw_month  uw_year previous_supplier_name supplier_name previous_insurer_type")
 
     base = pd.read_csv("CSV\\base_file.csv", usecols=col_list.split())
     base['policy_start_date'] = pd.to_datetime(base['policy_start_date'], format="mixed", dayfirst=True)

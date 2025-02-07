@@ -28,11 +28,15 @@ def ConvertCategoricalToNumeric():
     df['policy_type'] = df['policy_type'].str.replace('New', "0")
     df['policy_type'] = df['policy_type'].str.replace('Renewal', "1")
     df['policy_type'] = df['policy_type'].str.replace('Rollover', "2")
+    df['previous_insurer_type'] = df['previous_insurer_type'].str.replace('psu', "0")
+    df['previous_insurer_type'] = df['previous_insurer_type'].str.replace('pvt', "1")
     df['fuel_type'] = pd.to_numeric(df['fuel_type'], downcast='integer', errors='coerce')
     df['lead_day_slot'] = pd.to_numeric(df['lead_day_slot'], downcast='integer', errors='coerce')
     df['expiry_type'] = pd.to_numeric(df['expiry_type'], downcast='integer', errors='coerce')
     df['type_of_cng_kit'] = pd.to_numeric(df['type_of_cng_kit'], downcast='integer', errors='coerce')
     df['policy_type'] = pd.to_numeric(df['policy_type'], downcast='integer', errors='coerce')
+    df['previous_insurer_type'] = pd.to_numeric(df['previous_insurer_type'], downcast='integer', errors='coerce')
+    df['owner_sr'] = pd.to_numeric(df['owner_sr'], downcast='integer', errors='coerce')
 
 
 def DumpNullToCSV():
@@ -71,19 +75,17 @@ def compute_vif(considered_features):
     return vif
 
 
-df = pd.read_csv("CSV\\Ultimate_fixed.csv", usecols="vehicle_age transmission_type ncb_y previous_ncb_y  "
-                                                    "is_cng_fitted  is_health_pb_customer sum_insured cubic_capacity expiry_type "
-                                                    "opted_kms seating_capacity t_booking_y t_parent_y fuel_type policy_type "
-                                                    "is_claims_made_in_previous_policy is_two_wheeler_pb_customer is_travel_pb_customer "
-                                                    "is_tp_pd_liability  is_ep is_coc is_rsa is_key_rep is_inpc is_bi_fuel_kit_liability "
-                                                    "is_term_life_pb_customer  type_of_cng_kit lead_day_slot".split())
-
-df = df.dropna(subset=['vehicle_age', 'ncb_y', 'previous_ncb_y', 'transmission_type', 'type_of_cng_kit'])
-
-addons = db.sql("select is_ep, is_coc, is_rsa, is_key_rep, is_inpc    from df where is_ep = 1 or is_coc =1 or is_rsa =1 or is_key_rep =1 or is_inpc = 1 ").df()
-addons.to_csv("Output\\addons.csv")
-addons.corr(method='pearson').to_csv("Output\\corr_addons.csv")
+df = pd.read_csv("CSV\\FixedMultiplier\\Combined_final_file.csv", usecols=(
+    "vehicle_age  transmission_type  fuel_type   cubic_capacity opted_kms policy_type seating_capacity "
+    "is_cng_fitted type_of_cng_kit  previous_ncb  NCB  is_health_pb_customer  previous_insurer_type  previous_policy_type "
+    "is_claims_made_in_previous_policy is_two_wheeler_pb_customer  is_travel_pb_customer is_term_life_pb_customer lead_day_slot "
+    "expiry_type is_ep is_coc sum_insured  is_rsa  is_key_rep   is_inpc is_bi_fuel_kit_liability is_tp_pd_liability  t_booking  t_parent  owner_sr"
+).split())
+ConvertCategoricalToNumeric()
+df = df.dropna(subset=['vehicle_age', 'NCB', 'previous_ncb', 'transmission_type', 'type_of_cng_kit', "owner_sr", "previous_policy_type"])
 # df.corr(method='pearson').to_csv("Output\\corr.csv")
+persons_correlation()
+
 # ----------------------------   VIF  ------------------------------------
 
 # considered_feature = ['vehicle_age', 'expiry_type', "policy_type", 'ncb_y', 'previous_ncb_y', 'is_inpc', 'fuel_type',
