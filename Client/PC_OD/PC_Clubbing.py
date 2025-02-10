@@ -331,4 +331,5 @@ df["previous_supplier_name_new"] = df["previous_supplier_name"].apply(lambda x: 
 df["owner_sr_new"] = df["owner_sr"].apply(lambda x: group_owner_sr(x))
 df["previous_policy_type_new"] = df["previous_policy_type"].apply(lambda x: group_previous_policy_type(x))
 # -----------------------------------------------  Clubbing End
-prepare_tweedie_file()
+df.to_csv("Output\\4WheelerUn_clubbedFile.csv")
+# prepare_tweedie_file()
