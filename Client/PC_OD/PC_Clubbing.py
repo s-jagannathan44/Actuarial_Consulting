@@ -306,6 +306,60 @@ def pre_clubbing_transformation():
             axis=1, inplace=True)
 
 
+def group_age_ttl(x):
+    if x in [0, 2, 5, 6, 8]:
+        return "Group 1"
+    elif x in [1, 3, 7]:
+        return "Group 2"
+    elif x in [4, 9, 12, 13, 16]:
+        return "Group 3"
+    else:
+        return "Group 4"
+
+
+def group_cubic_capacity_ttl(x):
+    if x in [1198]:
+        return "Group 2"
+    elif x in [1199, 1396]:
+        return "Group 2"
+    elif x in [796, 999, 1086, 1493]:
+        return "Group 3"
+    elif x in [814, 1461, 1498]:
+        return "Group 4"
+    else:
+        return "Group 1"
+
+
+def group_state_ttl(x):
+    if x in ["Daman & Diu", "Haryana", "Madhya Pradesh", "Orissa", "Rajasthan", "Tamil Nadu"]:
+        return "Group 1"
+    elif x in ["Chandigarh", "Chattisgarh", "Delhi", "Goa", "Gujarat", "Himachal Pradesh", "Jammu and Kashmir",
+               "Jharkhand", "Punjab", "Uttar Pradesh"]:
+        return "Group 2"
+    elif x in ["Andhra Pradesh", "Assam", "Bihar", "Kerala", "Maharashtra", "UTTARAKHAND"]:
+        return "Group 4"
+    else:
+        return "Group 5"
+
+
+def group_make_ttl(x):
+    if x in ["MARUTI", "KIA", "HONDA"]:
+        return "Maruti +"
+    elif x in ["RENAULT", "FORD", "VOLKSWAGEN"]:
+        return "Group 3"
+    elif x in ["MAHINDRA AND MAHINDRA"]:
+        return "M&M"
+    else:
+        return "Others"
+
+
+def group_fuel_type_ttl(x):
+    if x in ["Petrol", "Electric"]:
+        return "Group 1"
+    elif x in ["Diesel", "CNG", "LPG"]:
+        return "CNG+"
+
+
 df = pd.read_csv("CSV\\FixedMultiplier\\Combined_final_file.csv")
 df.rename(columns={"Claim count": "Claim_Count"}, inplace=True)
 pre_clubbing_transformation()
@@ -330,6 +384,14 @@ df["t_parent_new"] = df["t_parent"].apply(lambda x: group_parent(x))
 df["previous_supplier_name_new"] = df["previous_supplier_name"].apply(lambda x: group_previous_insurer(x))
 df["owner_sr_new"] = df["owner_sr"].apply(lambda x: group_owner_sr(x))
 df["previous_policy_type_new"] = df["previous_policy_type"].apply(lambda x: group_previous_policy_type(x))
+# df.to_csv("Output\\4WheelerUn_clubbedFile.csv")
 # -----------------------------------------------  Clubbing End
-df.to_csv("Output\\4WheelerUn_clubbedFile.csv")
+
+df["vehicle_age_ttl"] = df["round_age"].apply(lambda x: group_age_ttl(x))
+df["make_name_ttl"] = df["make_name"].apply(lambda x: group_make_ttl(x))
+df["state_name_ttl"] = df["registered_state_name"].apply(lambda x: group_state_ttl(x))
+df["fuel_type_ttl"] = df["fuel_type"].apply(lambda x: group_fuel_type_ttl(x))
+df["cubic_capacity_ttl"] = df["cubic_capacity"].apply(lambda x: group_cubic_capacity_ttl(x))
+
+df.to_csv("Output\\4WheelerCombinedFile.csv")
 # prepare_tweedie_file()

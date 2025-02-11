@@ -20,8 +20,11 @@ model_col_list = (
     "supplier_name policy_type registration_rto_code seating_capacity is_health_pb_customer revised_plan_category "
     "ncb_composite revised_is_cng_fitted is_two_wheeler_pb_customer  is_travel_pb_customer is_term_life_pb_customer "
     "lead_day_slot expiry_type is_ep is_coc   is_rsa  is_key_rep   is_inpc t_booking  t_parent previous_supplier_name "    
-    "owner_sr previous_policy_type previous_insurer_type Accident_Year"
-    
+    "owner_sr previous_policy_type previous_insurer_type"
+).split()
+
+large_model_col_list = (
+    "age_range  cc_range  make_name  fuel_type registered_state_name"
 ).split()
 
 
@@ -108,12 +111,12 @@ df.drop(["is_claims_made_in_previous_policy", "type_of_cng_kit",  "NCB", "previo
         axis=1, inplace=True)
 
 
-for var in model_col_list:
-    find_separation(df, var)
+for var in large_model_col_list:
+    find_ttl_separation(df, var)
 
 path = "Output/Sep/*.csv"
 files = glob.glob(path)
-writer = pd.ExcelWriter('Output\\Clubbing.xlsx')
+writer = pd.ExcelWriter('Output\\ttl_Clubbing(2).xlsx')
 for file_name in files:
     frame = pd.read_csv(file_name)
     frame.to_excel(writer, sheet_name=file_name[11:-4])

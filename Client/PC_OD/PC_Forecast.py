@@ -1,18 +1,6 @@
 import pandas as pd
-# import joblib
-
-
-def set_financial_year(year_p):
-    try:
-        year = year_p.to_period('Q-MAR').qyear
-        quarter = year_p.to_period('Q-MAR').quarter
-        retval = str(year) + "_Q" + str(quarter)
-        print(retval)
-        return retval
-        # return year_p.to_period('Q-MAR').quarter
-    except AttributeError:
-        print("error occurred in set_financial_year")
-        return ""
+import joblib
+from sklearn.model_selection import train_test_split
 
 
 def execute_model(tweedie_model, dataframe):
@@ -45,15 +33,23 @@ def make_multi(dataframe, columns):
     df2.sort_values(by='Normalized_LIVES_EXPOSED', ascending=False, inplace=True)
     df2.to_csv("Output\\Errors\\" + "multi" + ".csv")
 
-#
-# df = pd.read_csv("Output\\4WheelerUn_clubbedFile.csv")
-# model = joblib.load("Output\\Tweedie.sav")
-# execute_model(model, df)
 
+df = pd.read_csv("Output\\4WheelerCombinedFile.csv")
+df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
+model = joblib.load("Output\\Tweedie.sav")
+model_ttl = joblib.load("Output\\Tweedie_ttl.sav")
+y_pred = model.predict(df_test)
+df_test["Pred_NL"] = y_pred
+df_test["Pred_Cost_NL"] = df_test["Pred_NL"] * df_test["sum_insured_in_hundreds"]
+
+y_pred = model_ttl.predict(df_test)
+df_test["Pred_ttl"] = y_pred
+df_test["Pred_Cost_ttl"] = df_test["Pred_ttl"] * df_test["sum_insured_in_hundreds"]
+df_test.to_csv("Output\\ModelOutput.csv")
 
 # df = pd.read_csv("Output\\ModelOutput.csv")
 # make_multi(df, "make_name new_plan_category cc_range seating_capacity previous_insurer_type".split())
-
+#
 # master_col_list = (
 #     "vehicle_age  registered_state_name registered_city_name make_name  model_name variant_name transmission_type  fuel_type   "
 #     "cubic_capacity  vehicle_details_segment supplier_name  opted_kms policy_type registration_rto_code seating_capacity "
@@ -66,15 +62,3 @@ def make_multi(dataframe, columns):
 # for var in master_col_list:
 #     make_pivots(df, var)
 
-df = pd.read_csv("CSV\\policy_claims_analysis.csv")
-df = df[~ df["supplier_name"].str.contains("Iffco Tokio General Insurance Company Ltd", na=False)]
-df = df[~ df["supplier_name"].str.contains("Raheja QBE General Insurance Company", na=False)]
-df = df[~ df["supplier_name"].str.contains("SBI General Insurance Company Ltd", na=False)]
-df['Loss Date'] = pd.to_datetime(df['Loss Date'], format="mixed", dayfirst=True)
-df['registration_rto_code'] = df['registration_rto_code'].str.replace('DL01', 'DL1')
-df['registration_rto_code'] = df['registration_rto_code'].str.replace('RJ01', 'RJ1')
-df["Accident_Quarter"] = df["Loss Date"].apply(lambda x: set_financial_year(x))
-
-
-df = df[df["Accident_Quarter"].isin(["2022_Q4"])]
-df.to_csv("Output\\OutOfTimeQ42022.csv")
