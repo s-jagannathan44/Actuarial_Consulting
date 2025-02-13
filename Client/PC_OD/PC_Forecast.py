@@ -1,6 +1,5 @@
 import pandas as pd
 import joblib
-# from sklearn.model_selection import train_test_split
 
 
 def execute_model(tweedie_model, dataframe):
@@ -38,33 +37,37 @@ def make_multi(dataframe, columns):
     df2.to_csv("Output\\Errors\\" + "multi" + ".csv")
 
 
-df = pd.read_csv("Output\\4WheelerLossCostCombinedFile.csv")
-# df = pd.read_csv("Output\\4WheelerUnClubbedLossCostFile.csv")
-# df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
+def CombineModels():
+    df_ = pd.read_csv("Output\\4WheelerLossCostCombinedFile.csv")
+    # df = pd.read_csv("Output\\4WheelerUnClubbedLossCostFile.csv")
+    # df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
+    df_train, df_test = df_, df_
+    model = joblib.load("Output\\TweedieLossCost.sav")
+    model_ttl = joblib.load("Output\\Tweedie_ttl.sav")
+    y_pred = model.predict(df_test)
+    df_test["Pred_NL"] = y_pred
+    df_test["Pred_Cost_NL"] = df_test["Pred_NL"] * df_test["Normalized_LIVES_EXPOSED"]
+    y_pred = model_ttl.predict(df_test)
+    df_test["Pred_ttl"] = y_pred
+    df_test["Pred_Cost_ttl"] = df_test["Pred_ttl"] * df_test["sum_insured_in_hundreds"]
+    df_test.to_csv("Output\\ModelGammaInputCombined.csv")
 
-df_train, df_test = df, df
-model = joblib.load("Output\\TweedieLossCost.sav")
-model_ttl = joblib.load("Output\\Tweedie_ttl.sav")
-y_pred = model.predict(df_test)
-df_test["Pred_NL"] = y_pred
-df_test["Pred_Cost_NL"] = df_test["Pred_NL"] * df_test["Normalized_LIVES_EXPOSED"]
 
-y_pred = model_ttl.predict(df_test)
-df_test["Pred_ttl"] = y_pred
-df_test["Pred_Cost_ttl"] = df_test["Pred_ttl"] * df_test["sum_insured_in_hundreds"]
-df_test.to_csv("Output\\ModelGammaInputCombined.csv")
+df = pd.read_csv("Output\\ModelGammaInputCombined.csv")
+df["Pred_total"] = df["Pred_Cost_NL"] + df["Pred_Cost_ttl"]
 
-# df = pd.read_csv("Output\\ModelOutput.csv")
-# make_multi(df, "make_name new_plan_category cc_range seating_capacity previous_insurer_type".split())
-#
-# master_col_list = (
-#     "vehicle_age  registered_state_name registered_city_name make_name  model_name variant_name transmission_type  fuel_type   "
-#     "cubic_capacity  vehicle_details_segment supplier_name  opted_kms policy_type registration_rto_code seating_capacity "
-#     "is_cng_fitted type_of_cng_kit cc_range previous_ncb new_plan_category NCB  age_range idv_slot is_health_pb_customer "
-#     "is_claims_made_in_previous_policy is_two_wheeler_pb_customer  is_travel_pb_customer is_term_life_pb_customer lead_day_slot "
-#     "expiry_type is_ep is_coc   is_rsa  is_key_rep   is_inpc is_bi_fuel_kit_liability is_tp_pd_liability  t_booking  t_parent "
-#     "previous_supplier_name is_bi_fuel_kit owner_sr previous_policy_type previous_insurer_type Accident_Year"
-# ).split()
-#
-# for var in master_col_list:
-#     make_pivots(df, var)
+model_g = joblib.load("Output\\GammaLossCost.sav")
+y_pred_ = model_g.predict(df)
+df["Pred_Gamma"] = y_pred_
+df["Pred_Cost_Gamma"] = df["Pred_Gamma"] * df["Normalized_LIVES_EXPOSED"]
+
+model_t = joblib.load("Output\\TweedieSingleModelLossCost.sav")
+y_pred_ = model_t.predict(df)
+df["Pred_Tweedie"] = y_pred_
+df["Pred_Cost_Tweedie"] = df["Pred_Tweedie"] * df["Normalized_LIVES_EXPOSED"]
+
+df.to_csv("Output\\FinalOutput.csv")
+print(df["Pred_Cost_Gamma"].sum()/10000000)
+print(df["Pred_total"].sum()/10000000)
+print(df["Pred_Cost_Tweedie"].sum()/10000000)
+print(df["Ultimate_PAID"].sum()/10000000)

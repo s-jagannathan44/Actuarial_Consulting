@@ -28,7 +28,7 @@ def prepare_tweedie_file():
            """
 
     output = db.execute(q3).df()
-    output.to_csv("Output\\4WheelerLossCostCombinedFile.csv")
+    output.to_csv("Output\\4WheelerLossCostTweedieFile.csv")
 
 
 def group_age(x):
@@ -392,8 +392,9 @@ df = pd.read_csv("Output\\ModelGammaInputCombined.csv")
 # df = pd.read_csv("Output\\ModelGammaInput.csv")
 # df = pd.read_csv("CSV\\FixedMultiplier\\Combined_final_file.csv")
 # df.rename(columns={"Claim count": "Claim_Count"}, inplace=True)
-df["Pred_total"] = df["Pred_Cost_NL"] + df["Pred_Cost_ttl"]
+# df["Pred_total"] = df["Pred_Cost_NL"] + df["Pred_Cost_ttl"]
 # df["Pred_total"] = df["Pred_Cost_NL"]
+df["Pred_total"] = df["Ultimate_PAID"]
 pre_clubbing_transformation()
 
 # ----------------------------------------------- Clubbing

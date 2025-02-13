@@ -47,7 +47,7 @@ def build_model(power, iter_, columns):
     tweedie_glm.fit(
         df_model, df_train["Loss_Cost"], regressor__sample_weight=df_train["LIVES_EXPOSED"]
     )
-    joblib.dump(tweedie_glm, "Output\\TweedieLossCost.sav")
+    joblib.dump(tweedie_glm, "Output\\TweedieSingleModelLossCost.sav")
     return tweedie_glm, column_trans
 
 
@@ -85,7 +85,7 @@ def find_separation(dataframe, columns):
     df2.to_csv("Output\\Sep\\" + columns + ".csv")
 
 
-df = pd.read_csv("Output\\4WheelerLossCostFile.csv")
+df = pd.read_csv("Output\\4WheelerLossCostTweedieFile.csv")
 # df["IDV_Loss_Cost"] = df["IDV_Loss_Cost"]
 # df["IDV_Loss_Cost"].fillna(0, inplace=True)
 df = df[df["LIVES_EXPOSED"] > 0]

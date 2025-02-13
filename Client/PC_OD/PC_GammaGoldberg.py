@@ -1,5 +1,5 @@
 import pandas as pd
-# import joblib
+import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import GammaRegressor
 from sklearn.preprocessing import OneHotEncoder
@@ -43,6 +43,7 @@ def build_model(columns):
     )
     tweedie_glm.fit(
         df_model, df_train["Targeted_Loss_Cost"])
+    joblib.dump(tweedie_glm, "Output\\GammaLossCost.sav")
     return tweedie_glm, column_trans
 
 
