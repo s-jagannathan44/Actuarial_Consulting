@@ -365,7 +365,7 @@ df.rename(columns={"Claim count": "Claim_Count"}, inplace=True)
 pre_clubbing_transformation()
 
 # ----------------------------------------------- Clubbing
-df["vehicle_age_new"] = df["vehicle_age"].apply(lambda x: group_age(x))
+df["vehicle_age_new"] = df["round_age"].apply(lambda x: group_age(x))
 df["make_name_new"] = df["make_name"].apply(lambda x: group_make(x))
 df["model_name_new"] = df["model_name"].apply(lambda x: group_model(x))
 df["transmission_type_new"] = df["transmission_type"].apply(lambda x: group_transmission_type(x))
@@ -393,5 +393,5 @@ df["state_name_ttl"] = df["registered_state_name"].apply(lambda x: group_state_t
 df["fuel_type_ttl"] = df["fuel_type"].apply(lambda x: group_fuel_type_ttl(x))
 df["cubic_capacity_ttl"] = df["cubic_capacity"].apply(lambda x: group_cubic_capacity_ttl(x))
 
-df.to_csv("Output\\4WheelerCombinedFile.csv")
-# prepare_tweedie_file()
+# df.to_csv("Output\\4WheelerCombinedFile.csv")
+prepare_tweedie_file()

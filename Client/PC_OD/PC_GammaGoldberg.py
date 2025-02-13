@@ -46,8 +46,8 @@ def build_model(columns):
     return tweedie_glm, column_trans
 
 
-df = pd.read_csv("Output\\4WheelerGammaFile.csv")
-df = df[df["LIVES_EXPOSED"] > 1]
+df = pd.read_csv("Output\\4WheelerLossCostCombinedFile.csv")
+df = df[df["LIVES_EXPOSED"] > 0.15]
 df = df[df["PAID_AMT"] > 0]
 
 df["Targeted_Loss_Cost"] = df["PAID_AMT"] / df["LIVES_EXPOSED"]
@@ -70,6 +70,7 @@ df_test["Pred"] = y_pred
 df_test["Pred_Cost"] = df_test["Pred"] * df_test["LIVES_EXPOSED"]
 percent = (df_test["Pred_Cost"].sum() / df_test["PAID_AMT"].sum()) - 1
 print("{:.2%}".format(percent))
+print(df["LIVES_EXPOSED"].sum())
 
 
 def make_pivots(dataframe, columns):

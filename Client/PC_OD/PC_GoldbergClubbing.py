@@ -3,24 +3,32 @@ import duckdb as db
 
 
 def prepare_tweedie_file():
+    # q3 = """select vehicle_age_new, make_name_new, model_name_new,  transmission_type_new,  fuel_type_new, cubic_capacity_new,
+    #         vehicle_details_segment_new, supplier_name_new, policy_type, registration_rto_code_new, seating_capacity_new,
+    #          revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new, owner_sr_new,
+    #           is_travel_pb_customer,  lead_day_slot_new, t_booking_new, previous_insurer_type, previous_policy_type_new,
+    #          sum(ultimate_paid_non_large) as PAID_AMT,sum(Claim_Count) as Claim_Count, sum(sum_insured_in_hundreds) as IDV,
+    #          sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED , sum(ultimate_paid_non_large) / sum(sum_insured_in_hundreds) as IDV_Loss_Cost
+    #          from df
+    #           group by   vehicle_age_new, make_name_new, model_name_new,  transmission_type_new,  fuel_type_new, cubic_capacity_new,
+    #         vehicle_details_segment_new, supplier_name_new, policy_type, registration_rto_code_new, seating_capacity_new,
+    #          revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,owner_sr_new,
+    #           is_travel_pb_customer,  lead_day_slot_new, t_booking_new, previous_insurer_type, previous_policy_type_new
+    #    """
     q3 = """select vehicle_age_new, make_name_new, model_name_new,  transmission_type_new,  fuel_type_new, cubic_capacity_new,
-            vehicle_details_segment_new, supplier_name_new, policy_type, registration_rto_code_new, seating_capacity_new,
-             revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,
-              is_travel_pb_customer,  lead_day_slot_new, t_booking_new, previous_insurer_type, previous_policy_type_new,
-             sum(Pred_total) as PAID_AMT,sum(Claim_Count) as Claim_Count, sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED
-             from df
-              group by   vehicle_age_new, make_name_new, model_name_new,  transmission_type_new,  fuel_type_new, cubic_capacity_new,
-            vehicle_details_segment_new, supplier_name_new, policy_type, registration_rto_code_new, seating_capacity_new,
-             revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,
-              is_travel_pb_customer,  lead_day_slot_new, t_booking_new, previous_insurer_type, previous_policy_type_new
-       """
-    # q3 = """select vehicle_age_new, make_name_new, fuel_type_new,
-    # #           sum(Pred_total) as PAID_AMT,sum(Claim_Count) as Claim_Count, sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED
-    # #           from df
-    # #         group by   vehicle_age_new, make_name_new, fuel_type_new"""
+                vehicle_details_segment_new, supplier_name_new, policy_type, registration_rto_code_new, seating_capacity_new,
+                 revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,owner_sr_new,
+                  is_travel_pb_customer,  lead_day_slot_new, t_booking_new, previous_insurer_type, previous_policy_type_new,
+                 sum(Pred_total) as PAID_AMT,sum(Claim_Count) as Claim_Count, sum(Normalized_LIVES_EXPOSED) as LIVES_EXPOSED
+                 from df
+                  group by   vehicle_age_new, make_name_new, model_name_new,  transmission_type_new,  fuel_type_new, cubic_capacity_new,
+                vehicle_details_segment_new, supplier_name_new, policy_type, registration_rto_code_new, seating_capacity_new,
+                 revised_plan_category_new, ncb_composite_new, revised_is_cng_fitted_new,owner_sr_new,
+                  is_travel_pb_customer,  lead_day_slot_new, t_booking_new, previous_insurer_type, previous_policy_type_new
+           """
 
     output = db.execute(q3).df()
-    output.to_csv("Output\\4WheelerGammaFile.csv")
+    output.to_csv("Output\\4WheelerLossCostCombinedFile.csv")
 
 
 def group_age(x):
@@ -295,16 +303,97 @@ def correct_plan_name(x):
     else:
         return x.split("_", 1)[0]
 
+def group_age_ttl(x):
+    if x in [0, 2, 5, 6, 8]:
+        return "Group 1"
+    elif x in [1, 3, 7]:
+        return "Group 2"
+    elif x in [4, 9, 12, 13, 16]:
+        return "Group 3"
+    else:
+        return "Group 4"
+
+
+def group_cubic_capacity_ttl(x):
+    if x in [1198]:
+        return "Group 2"
+    elif x in [1199, 1396]:
+        return "Group 2"
+    elif x in [796, 999, 1086, 1493]:
+        return "Group 3"
+    elif x in [814, 1461, 1498]:
+        return "Group 4"
+    else:
+        return "Group 1"
+
+
+def group_state_ttl(x):
+    if x in ["Daman & Diu", "Haryana", "Madhya Pradesh", "Orissa", "Rajasthan", "Tamil Nadu"]:
+        return "Group 1"
+    elif x in ["Chandigarh", "Chattisgarh", "Delhi", "Goa", "Gujarat", "Himachal Pradesh", "Jammu and Kashmir",
+               "Jharkhand", "Punjab", "Uttar Pradesh"]:
+        return "Group 2"
+    elif x in ["Andhra Pradesh", "Assam", "Bihar", "Kerala", "Maharashtra", "UTTARAKHAND"]:
+        return "Group 4"
+    else:
+        return "Group 5"
+
+
+def group_make_ttl(x):
+    if x in ["MARUTI", "KIA", "HONDA"]:
+        return "Maruti +"
+    elif x in ["RENAULT", "FORD", "VOLKSWAGEN"]:
+        return "Group 3"
+    elif x in ["MAHINDRA AND MAHINDRA"]:
+        return "M&M"
+    else:
+        return "Others"
+
+
+def group_fuel_type_ttl(x):
+    if x in ["Petrol", "Electric"]:
+        return "Group 1"
+    elif x in ["Diesel", "CNG", "LPG"]:
+        return "CNG+"
+
+
 
 def pre_clubbing_transformation():
     df.drop(["Unnamed: 0", "Unnamed: 0.1"], axis=1, inplace=True)
     df["round_owner"] = round(pd.to_numeric(df['owner_sr'], downcast='integer', errors='coerce'), 0)
     df["vehicle_details_segment"] = df["vehicle_details_segment"].fillna("null")
     df["previous_supplier_name"] = df["previous_supplier_name"].fillna("null")
+# def pre_clubbing_transformation():
+#     df.drop("Unnamed: 0", axis=1, inplace=True)
+#     df["round_age"] = df["vehicle_age"].round(0)
+#     df["round_owner"] = round(pd.to_numeric(df['owner_sr'], downcast='integer', errors='coerce'), 0)
+#     df["NCB"] = df["NCB"].astype(str)
+#     df["previous_ncb"] = df["previous_ncb"].astype(str)
+#     df["vehicle_details_segment"] = df["vehicle_details_segment"].fillna("null")
+#     df["previous_supplier_name"] = df["previous_supplier_name"].fillna("null")
+#     df["type_of_cng_kit"] = df["type_of_cng_kit"].fillna("null")
+#
+#     df["revised_is_cng_fitted"] = df["is_cng_fitted"].apply(lambda x: "Kit_Is" if x > 0 else "No_Kit")
+#     df["revised_bi_fuel_kit"] = df["is_bi_fuel_kit_liability"].apply(
+#         lambda x: "Liability" if x > 0 else "Zero_Liability")
+#     df["revised_is_cng_fitted"] = df["revised_is_cng_fitted"] + df["type_of_cng_kit"] + df["revised_bi_fuel_kit"]
+#     df["ncb_composite"] = df["previous_ncb"] + "_" + df["NCB"]
+#     df["opted_kms_New"] = df["opted_kms"].apply(lambda x: group_opted_kms(x) if x < 10000 else "_High Usage")
+#     df["opted_kms_New"] = df["opted_kms_New"].fillna("null")
+#     df["revised_plan_category"] = df["new_plan_category"] + df["opted_kms_New"]
+#     df["revised_plan_category"] = df["revised_plan_category"].apply(lambda x: correct_plan_name(x))
+#     df.drop(["is_claims_made_in_previous_policy", "type_of_cng_kit", "NCB", "previous_ncb",
+#              "opted_kms",
+#              "is_tp_pd_liability", "is_bi_fuel_kit_liability", "is_cng_fitted", "new_plan_category", "opted_kms_New"],
+#             axis=1, inplace=True)
 
 
-df = pd.read_csv("Output\\ModelGammaInput.csv")
+df = pd.read_csv("Output\\ModelGammaInputCombined.csv")
+# df = pd.read_csv("Output\\ModelGammaInput.csv")
+# df = pd.read_csv("CSV\\FixedMultiplier\\Combined_final_file.csv")
+# df.rename(columns={"Claim count": "Claim_Count"}, inplace=True)
 df["Pred_total"] = df["Pred_Cost_NL"] + df["Pred_Cost_ttl"]
+# df["Pred_total"] = df["Pred_Cost_NL"]
 pre_clubbing_transformation()
 
 # ----------------------------------------------- Clubbing
@@ -327,8 +416,16 @@ df["t_parent_new"] = df["t_parent"].apply(lambda x: group_parent(x))
 df["previous_supplier_name_new"] = df["previous_supplier_name"].apply(lambda x: group_previous_insurer(x))
 df["owner_sr_new"] = df["round_owner"].apply(lambda x: group_owner_sr(x))
 df["previous_policy_type_new"] = df["previous_policy_type"].apply(lambda x: group_previous_policy_type(x))
+df = df[~ df["vehicle_age_new"].str.contains("-0.0_years", na=False)]
 # -----------------------------------------------  Clubbing End
 
+df["vehicle_age_ttl"] = df["round_age"].apply(lambda x: group_age_ttl(x))
+df["make_name_ttl"] = df["make_name"].apply(lambda x: group_make_ttl(x))
+df["state_name_ttl"] = df["registered_state_name"].apply(lambda x: group_state_ttl(x))
+df["fuel_type_ttl"] = df["fuel_type"].apply(lambda x: group_fuel_type_ttl(x))
+df["cubic_capacity_ttl"] = df["cubic_capacity"].apply(lambda x: group_cubic_capacity_ttl(x))
 
-# df.to_csv("Output\\4WheelerCombinedFile.csv")
+# df.to_csv("Output\\4WheelerLossCostCombinedFile.csv")
+
+# df.to_csv("Output\\4WheelerUnClubbedLossCostFile.csv")
 prepare_tweedie_file()

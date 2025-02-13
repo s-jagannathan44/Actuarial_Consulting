@@ -28,6 +28,15 @@ large_model_col_list = (
 ).split()
 
 
+def find_gamma_separation(dataframe, columns):
+    df2 = pd.pivot_table(dataframe, values="Pred_total  Normalized_LIVES_EXPOSED".split(),
+                         columns=columns,
+                         aggfunc="sum").T
+    df2["LossCost"] = df2["Pred_total"] / df2["Normalized_LIVES_EXPOSED"]
+    df2.sort_values(by='Normalized_LIVES_EXPOSED', ascending=False, inplace=True)
+    df2.to_csv("Output\\Sep\\gamma_" + columns + ".csv")
+
+
 def find_ttl_separation(dataframe, columns):
     df2 = pd.pivot_table(dataframe, values="ultimate_paid_large_ttl sum_insured_in_hundreds  Normalized_LIVES_EXPOSED".split(),
                          columns=columns,
@@ -91,32 +100,33 @@ def convert_null_to_na():
     df["owner_sr"] = df["owner_sr"].fillna("-1")
 
 
-df = pd.read_csv("CSV\\FixedMultiplier\\Combined_final_file.csv")
-df.drop(["Unnamed: 0"], axis=1, inplace=True)
-convert_null_to_na()
+df = pd.read_csv("Output\\ModelGammaInput.csv")
+df["Pred_total"] = df["Pred_Cost_NL"] + df["Pred_Cost_ttl"]
+df.drop(["Unnamed: 0", "Unnamed: 0.1"], axis=1, inplace=True)
+# convert_null_to_na()
+#
+# df["revised_is_cng_fitted"] = df["is_cng_fitted"].apply(lambda x: "Kit_Is" if x > 0 else "No_Kit")
+# df["revised_bi_fuel_kit"] = df["is_bi_fuel_kit_liability"].apply(lambda x: "Liability" if x > 0 else "Zero_Liability")
+# df["is_cng_fitted"] = df["is_cng_fitted"].fillna("null")
+# df["revised_is_cng_fitted"] = df["revised_is_cng_fitted"] + df["type_of_cng_kit"] + df["revised_bi_fuel_kit"]
+# df["ncb_composite"] = df["previous_ncb"] + "_" + df["NCB"]
+#
+# df["opted_kms_New"] = df["opted_kms"].apply(lambda x: group_opted_kms(x) if x < 10000 else "_High Usage")
+# df["opted_kms_New"] = df["opted_kms_New"].fillna("null")
+# df["revised_plan_category"] = df["new_plan_category"] + df["opted_kms_New"]
+# df["revised_plan_category"] = df["revised_plan_category"].apply(lambda x: correct_plan_name(x))
+# df.drop(["is_claims_made_in_previous_policy", "type_of_cng_kit",  "NCB", "previous_ncb",
+#          "opted_kms",
+#          "is_tp_pd_liability", "is_bi_fuel_kit_liability", "is_cng_fitted", "new_plan_category", "opted_kms_New"],
+#         axis=1, inplace=True)
 
-df["revised_is_cng_fitted"] = df["is_cng_fitted"].apply(lambda x: "Kit_Is" if x > 0 else "No_Kit")
-df["revised_bi_fuel_kit"] = df["is_bi_fuel_kit_liability"].apply(lambda x: "Liability" if x > 0 else "Zero_Liability")
-df["is_cng_fitted"] = df["is_cng_fitted"].fillna("null")
-df["revised_is_cng_fitted"] = df["revised_is_cng_fitted"] + df["type_of_cng_kit"] + df["revised_bi_fuel_kit"]
-df["ncb_composite"] = df["previous_ncb"] + "_" + df["NCB"]
 
-df["opted_kms_New"] = df["opted_kms"].apply(lambda x: group_opted_kms(x) if x < 10000 else "_High Usage")
-df["opted_kms_New"] = df["opted_kms_New"].fillna("null")
-df["revised_plan_category"] = df["new_plan_category"] + df["opted_kms_New"]
-df["revised_plan_category"] = df["revised_plan_category"].apply(lambda x: correct_plan_name(x))
-df.drop(["is_claims_made_in_previous_policy", "type_of_cng_kit",  "NCB", "previous_ncb",
-         "opted_kms",
-         "is_tp_pd_liability", "is_bi_fuel_kit_liability", "is_cng_fitted", "new_plan_category", "opted_kms_New"],
-        axis=1, inplace=True)
-
-
-for var in large_model_col_list:
-    find_ttl_separation(df, var)
+for var in model_col_list:
+    find_gamma_separation(df, var)
 
 path = "Output/Sep/*.csv"
 files = glob.glob(path)
-writer = pd.ExcelWriter('Output\\ttl_Clubbing(2).xlsx')
+writer = pd.ExcelWriter('Output\\Gamma_Clubbing.xlsx')
 for file_name in files:
     frame = pd.read_csv(file_name)
     frame.to_excel(writer, sheet_name=file_name[11:-4])

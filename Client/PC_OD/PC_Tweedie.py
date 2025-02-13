@@ -47,7 +47,7 @@ def build_model(power, iter_, columns):
     tweedie_glm.fit(
         df_model, df_train["Loss_Cost"], regressor__sample_weight=df_train["LIVES_EXPOSED"]
     )
-    # joblib.dump(tweedie_glm, "Output\\Tweedie.sav")
+    joblib.dump(tweedie_glm, "Output\\TweedieLossCost.sav")
     return tweedie_glm, column_trans
 
 
@@ -85,7 +85,7 @@ def find_separation(dataframe, columns):
     df2.to_csv("Output\\Sep\\" + columns + ".csv")
 
 
-df = pd.read_csv("Output\\4WheelerGammaFile.csv")
+df = pd.read_csv("Output\\4WheelerLossCostFile.csv")
 # df["IDV_Loss_Cost"] = df["IDV_Loss_Cost"]
 # df["IDV_Loss_Cost"].fillna(0, inplace=True)
 df = df[df["LIVES_EXPOSED"] > 0]
@@ -102,7 +102,7 @@ variable_lost = (
     "vehicle_age_new make_name_new model_name_new  transmission_type_new  fuel_type_new cubic_capacity_new  "
     "vehicle_details_segment_new supplier_name_new policy_type registration_rto_code_new seating_capacity_new  "
     "revised_plan_category_new ncb_composite_new revised_is_cng_fitted_new   is_travel_pb_customer "
-    " lead_day_slot_new  "
+    " lead_day_slot_new owner_sr_new "
     "t_booking_new  "
     "previous_insurer_type  previous_policy_type_new ").split()
 # find_separation(df, "vehicle_age_new")

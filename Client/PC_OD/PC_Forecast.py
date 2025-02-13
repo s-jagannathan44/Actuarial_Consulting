@@ -1,6 +1,6 @@
 import pandas as pd
 import joblib
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 
 
 def execute_model(tweedie_model, dataframe):
@@ -11,7 +11,9 @@ def execute_model(tweedie_model, dataframe):
 
 
 def make_pivots(dataframe, column):
-    df2 = pd.pivot_table(dataframe, values="ultimate_paid_non_large  Pred_Cost sum_insured_in_hundreds Normalized_LIVES_EXPOSED".split(), columns=column,
+    df2 = pd.pivot_table(dataframe,
+                         values="ultimate_paid_non_large  Pred_Cost sum_insured_in_hundreds Normalized_LIVES_EXPOSED".split(),
+                         columns=column,
                          aggfunc="sum").T
     df2["Actual"] = df2["ultimate_paid_non_large"] / df2["sum_insured_in_hundreds"]
     df2["Predicted"] = df2["Pred_Cost"] / df2["sum_insured_in_hundreds"]
@@ -23,7 +25,9 @@ def make_pivots(dataframe, column):
 
 
 def make_multi(dataframe, columns):
-    df2 = pd.pivot_table(dataframe, values="ultimate_paid_non_large  Pred_Cost sum_insured_in_hundreds Normalized_LIVES_EXPOSED".split(), columns=columns,
+    df2 = pd.pivot_table(dataframe,
+                         values="ultimate_paid_non_large  Pred_Cost sum_insured_in_hundreds Normalized_LIVES_EXPOSED".split(),
+                         columns=columns,
                          aggfunc="sum").T
     df2["Actual"] = df2["ultimate_paid_non_large"] / df2["sum_insured_in_hundreds"]
     df2["Predicted"] = df2["Pred_Cost"] / df2["sum_insured_in_hundreds"]
@@ -34,18 +38,21 @@ def make_multi(dataframe, columns):
     df2.to_csv("Output\\Errors\\" + "multi" + ".csv")
 
 
-df = pd.read_csv("Output\\4WheelerCombinedFile.csv")
-df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
-model = joblib.load("Output\\Tweedie.sav")
+df = pd.read_csv("Output\\4WheelerLossCostCombinedFile.csv")
+# df = pd.read_csv("Output\\4WheelerUnClubbedLossCostFile.csv")
+# df_train, df_test = train_test_split(df, test_size=0.2, random_state=0)
+
+df_train, df_test = df, df
+model = joblib.load("Output\\TweedieLossCost.sav")
 model_ttl = joblib.load("Output\\Tweedie_ttl.sav")
 y_pred = model.predict(df_test)
 df_test["Pred_NL"] = y_pred
-df_test["Pred_Cost_NL"] = df_test["Pred_NL"] * df_test["sum_insured_in_hundreds"]
+df_test["Pred_Cost_NL"] = df_test["Pred_NL"] * df_test["Normalized_LIVES_EXPOSED"]
 
 y_pred = model_ttl.predict(df_test)
 df_test["Pred_ttl"] = y_pred
 df_test["Pred_Cost_ttl"] = df_test["Pred_ttl"] * df_test["sum_insured_in_hundreds"]
-df_test.to_csv("Output\\ModelOutput.csv")
+df_test.to_csv("Output\\ModelGammaInputCombined.csv")
 
 # df = pd.read_csv("Output\\ModelOutput.csv")
 # make_multi(df, "make_name new_plan_category cc_range seating_capacity previous_insurer_type".split())
@@ -61,4 +68,3 @@ df_test.to_csv("Output\\ModelOutput.csv")
 #
 # for var in master_col_list:
 #     make_pivots(df, var)
-
