@@ -181,8 +181,8 @@ old_list = [item for item in col_list if item != "is_ncbprot"]
 #     find_old_separation(old, var)
 
 for column in old_list:
-    new = pd.read_csv("Output\\Sep\\Old\\" + column + ".csv")
-    old = pd.read_csv("Output\\Sep\\New\\" + column + ".csv")
+    old = pd.read_csv("Output\\Sep\\Old\\" + column + ".csv")
+    new = pd.read_csv("Output\\Sep\\New\\" + column + ".csv")
     new.drop(["Ultimate_PAID"], axis=1, inplace=True)
     old.drop(["Ultimate_PAID"], axis=1, inplace=True)
     old.rename(columns={"Normalized_LIVES_EXPOSED": "Exposure_Old"}, inplace=True)
